@@ -17,6 +17,10 @@ let package = Package(
     ],
     targets: [
         .target(name: "AdventOfCode", dependencies: []),
-        .testTarget(name: "AdventOfCodeTests", dependencies: ["AdventOfCode"])
+        .testTarget(
+            name: "AdventOfCode-UnitTests",
+            dependencies: ["AdventOfCode"],
+            path: "Tests"
+        )
     ]
 )

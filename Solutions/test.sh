@@ -8,13 +8,16 @@ function test_solution()
     echo -n "day $PROBLEM: "
     $1 < input${PROBLEM}.txt > test.txt
 
-     if [ -e test.txt ] && { diff expected-output${PROBLEM}.txt test.txt; }
+    if [ -e test.txt ] && { diff expected-output${PROBLEM}.txt test.txt; }
     then
         echo "passed"
     fi
 
     rm -f test.txt
 }
+
+#Exit early on any failure.
+set -e
 
 for solution in *day*.swift
 do

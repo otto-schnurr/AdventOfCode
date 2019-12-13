@@ -39,7 +39,7 @@ enum Opcode: Int {
         result: inout Word,
         programCounter: inout ProgramCounter,
         inputBuffer: inout Buffer,
-        outputHandler: OutputHandler?
+        outputHandler: OutputHandler
     ) {
         switch self {
         case .add:
@@ -52,7 +52,7 @@ enum Opcode: Int {
             result = inputBuffer.remove(at: 0)
 
         case .output:
-            outputHandler?(parameters[0])
+            outputHandler(parameters[0])
 
         case .jump_if_true:
             if parameters[0] != 0 { programCounter = parameters[1] }

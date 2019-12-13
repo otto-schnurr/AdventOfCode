@@ -5,7 +5,7 @@
 //  AdventOfCode
 //
 //  Created by Otto Schnurr on 12/12/2019.
-//  Copyright © 2016 Otto Schnurr. All rights reserved.
+//  Copyright © 2019 Otto Schnurr. All rights reserved.
 //
 
 import PackageDescription

@@ -1,42 +1,20 @@
-#!/usr/bin/env swift
+#!/usr/bin/env swift sh
 
-enum Opcode: Int {
-    case add = 1
-    case multiply = 2
-
-    func apply(_ first: Int, _ second: Int) -> Int? {
-        switch self {
-        case .add:      return first + second
-        case .multiply: return first * second
-        }
-    }
-}
-
-extension Array where Element == Int {
-    mutating func run() {
-        var index = 0
-
-        while let result = run(at: index) {
-            self[self[index + 3]] = result
-            index += 4
-        }
-    }
-
-    func run(at index: Int) -> Int? {
-        return Opcode(rawValue: self[index])?.apply(
-            self[self[index + 1]], self[self[index + 2]]
-        )
-    }
-}
+import AdventOfCode // ..
 
 let original = readLine()!.split(separator: ",").map { Int($0)! }
 
-func run(noun: Int, verb: Int) -> Int {
+func makeProgram(noun: Word, verb: Word) -> Program {
     var program = original
     program[1] = noun
     program[2] = verb
-    program.run()
-    return program[0]
+    return program
+}
+
+func run(noun: Int, verb: Int) -> Int {
+    let computer = Computer(program: makeProgram(noun: noun, verb: verb))
+    computer.run()
+    return computer.firstWord!
 }
 
 print("part 1: \(run(noun: 12, verb: 2))")

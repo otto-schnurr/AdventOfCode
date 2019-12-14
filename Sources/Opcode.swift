@@ -9,7 +9,6 @@
 enum Opcode: Int {
 
     typealias ProgramCounter = Int
-    typealias Buffer = [Word]
     typealias OutputHandler = (Word) -> Void
 
     case add = 1

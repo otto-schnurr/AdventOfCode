@@ -10,6 +10,7 @@ public final class Computer {
     
     public var inputBuffer = Buffer()
     public private(set) var outputBuffer = Buffer()
+    public var firstWord: Word? { return program.first }
 
     public init(program: Program) {
         self.program = program

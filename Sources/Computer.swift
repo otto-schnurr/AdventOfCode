@@ -6,16 +6,21 @@
 //  Copyright © 2019 Otto Schnurr. All rights reserved.
 //
 
-final class Computer {
+public final class Computer {
     
-    var inputBuffer = Opcode.Buffer()
-    private(set) var outputBuffer = Opcode.Buffer()
+    public var inputBuffer = Buffer()
+    public private(set) var outputBuffer = Buffer()
 
-    init(program: Program) {
+    public init(program: Program) {
         self.program = program
     }
     
-    func run() {
+    public func load(program: Program) {
+        self.program = program
+        reset()
+    }
+    
+    public func run() {
         let outputHandler: Opcode.OutputHandler = { [weak self] in
             self?.outputBuffer.append($0)
         }
@@ -31,4 +36,14 @@ final class Computer {
     private var programCounter = Opcode.ProgramCounter()
     private var program: Program
     
+}
+
+
+// MARK: - Private
+private extension Computer {
+    func reset() {
+        inputBuffer.removeAll()
+        outputBuffer.removeAll()
+        programCounter = 0
+    }
 }

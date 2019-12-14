@@ -6,13 +6,13 @@
 //  Copyright © 2019 Otto Schnurr. All rights reserved.
 //
 
-typealias Program = [Word]
+public typealias Program = [Word]
 
 extension Array where Element == Word {
 
     mutating func executeInstruction(
         at programCounter: inout Opcode.ProgramCounter,
-        inputBuffer: inout Opcode.Buffer,
+        inputBuffer: inout Buffer,
         outputHandler: Opcode.OutputHandler
     ) -> Bool {
         guard

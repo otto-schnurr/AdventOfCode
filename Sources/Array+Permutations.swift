@@ -8,7 +8,9 @@
 
 public extension Array {
     var permutations: [[Element]] {
+        guard !isEmpty else { return [ ] }
+        
         // !!!: implement me
-        return [ ]
+        return [self]
     }
 }

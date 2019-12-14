@@ -13,4 +13,9 @@ class Array_Permutations_tests: XCTestCase {
     func test_permutationsOfEmptyArray_isEmpty() {
         XCTAssertEqual([Int]().permutations, [[Int]]())
     }
+    
+    func test_permutationsOfArrayWithSingleElement_isItself() {
+        XCTAssertEqual(["foo"].permutations, [["foo"]])
+    }
+    
 }

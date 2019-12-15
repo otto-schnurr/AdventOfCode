@@ -20,11 +20,12 @@ class Day02: XCTestCase {
             return program
         }
         
-        let computer = Computer(program: makeProgram(noun: 12, verb: 2))
+        let computer = Computer()
+        computer.load(makeProgram(noun: 12, verb: 2))
         computer.run()
         XCTAssertEqual(computer.firstWord, 4570637)
         
-        computer.load(program: makeProgram(noun: 54, verb: 85))
+        computer.load(makeProgram(noun: 54, verb: 85))
         computer.run()
         XCTAssertEqual(computer.firstWord, 19690720)
     }

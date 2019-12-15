@@ -9,7 +9,7 @@
 enum Opcode: Int {
 
     typealias ProgramCounter = Int
-    typealias OutputHandler = (Word) -> Void
+    typealias OutputHandler = (Word) -> OutputMode
 
     case add = 1
     case multiply = 2
@@ -33,13 +33,14 @@ enum Opcode: Int {
         }
     }
 
+    /// - returns: `true` if execution should continue.
     func apply(
         parameters: [Word],
         result: inout Word,
         programCounter: inout ProgramCounter,
         inputBuffer: inout Buffer,
         outputHandler: OutputHandler
-    ) {
+    ) -> Bool {
         switch self {
         case .add:
             result = parameters[0] + parameters[1]
@@ -51,7 +52,10 @@ enum Opcode: Int {
             result = inputBuffer.remove(at: 0)
 
         case .output:
-            outputHandler(parameters[0])
+            switch outputHandler(parameters[0]) {
+            case .continue: break
+            case .yield:    return false
+            }
 
         case .jump_if_true:
             if parameters[0] != 0 { programCounter = parameters[1] }
@@ -65,6 +69,8 @@ enum Opcode: Int {
         case .equals:
             result = parameters[0] == parameters[1] ? 1 : 0
         }
+        
+        return true
     }
 
 }

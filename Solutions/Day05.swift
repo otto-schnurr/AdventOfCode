@@ -13,17 +13,18 @@ import AdventOfCode
 class Day05: XCTestCase {
     
     func test_solution() {
-        let computer = Computer(program: _program)
+        let computer = Computer()
+        computer.load(_program)
         computer.inputBuffer = [1]
         computer.run()
         XCTAssertEqual(
-            computer.outputBuffer, [0, 0, 0, 0, 0, 0, 0, 0, 0, 16489636]
+            computer.harvestOutput(), [0, 0, 0, 0, 0, 0, 0, 0, 0, 16489636]
         )
 
-        computer.load(program: _program)
+        computer.load(_program)
         computer.inputBuffer = [5]
         computer.run()
-        XCTAssertEqual(computer.outputBuffer, [9386583])
+        XCTAssertEqual(computer.harvestOutput(), [9386583])
     }
     
 }

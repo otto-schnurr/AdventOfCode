@@ -12,12 +12,28 @@ import AdventOfCode
 
 class Day07: XCTestCase {
     
+    func test_example() {
+        let program = [
+            3, 26, 1001, 26, -4, 26, 3, 27, 1002, 27, 2, 27, 1, 27, 26, 27,
+            4, 27, 1001, 28, -1, 28, 1005, 28, 6, 99, 0, 0, 5
+        ]
+        let system = AmplifierSystem(count: 5, program: program)
+        
+        XCTAssertEqual(
+            system.configureAndRun(phases: [9, 8, 7, 6, 5]), 139629729
+        )
+    }
+    
     func test_solution() {
         let system = AmplifierSystem(count: 5, program: _program)
 
         XCTAssertEqual(
             Array(0..<5).permutations.map(system.configureAndRun).reduce(0, max),
             21000
+        )
+        XCTAssertEqual(
+            Array(5..<10).permutations.map(system.configureAndRun).reduce(0, max),
+            61379886
         )
     }
     

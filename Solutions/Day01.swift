@@ -19,15 +19,15 @@ class Day01: XCTestCase {
             return f > 0 ? f + totalFuel(for: f) : 0
         }
 
-        XCTAssertEqual(input.map(fuel).reduce(0, +), 3563458)
-        XCTAssertEqual(input.map(totalFuel).reduce(0, +), 5342292)
+        XCTAssertEqual(_masses.map(fuel).reduce(0, +), 3563458)
+        XCTAssertEqual(_masses.map(totalFuel).reduce(0, +), 5342292)
     }
     
 }
 
 
 // MARK: - Private
-let input = [
+private let _masses = [
     85364, 97431, 135519, 119130, 137800, 85946, 146593, 141318,
     103590, 138858, 92329, 94292, 132098, 144266, 72908, 112896,
     87046, 133058, 141121, 74681, 83458, 107417, 121426, 66005,

@@ -22,6 +22,7 @@ public final class Computer {
     public func run() {
         let outputHandler: Opcode.OutputHandler = { [weak self] in
             self?.outputBuffer.append($0)
+            return .continue
         }
 
         while program.executeInstruction(

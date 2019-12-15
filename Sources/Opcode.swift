@@ -9,7 +9,7 @@
 enum Opcode: Int {
 
     typealias ProgramCounter = Int
-    typealias OutputHandler = (Word) -> Void
+    typealias OutputHandler = (Word) -> OutputMode
 
     case add = 1
     case multiply = 2
@@ -52,7 +52,10 @@ enum Opcode: Int {
             result = inputBuffer.remove(at: 0)
 
         case .output:
-            outputHandler(parameters[0])
+            switch outputHandler(parameters[0]) {
+            case .continue: break
+            case .yield:    return false
+            }
 
         case .jump_if_true:
             if parameters[0] != 0 { programCounter = parameters[1] }

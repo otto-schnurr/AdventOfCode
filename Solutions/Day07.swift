@@ -13,20 +13,10 @@ import AdventOfCode
 class Day07: XCTestCase {
     
     func test_solution() {
-        func runAmplifier(phase: Int, source: Int) -> Int {
-            let computer = Computer()
-            computer.load(_program)
-            computer.inputBuffer = [phase, source]
-            computer.run()
-            return computer.outputBuffer[0]
-        }
-
-        func run(phases: [Int]) -> Int {
-            return phases.reduce(0) { runAmplifier(phase: $1, source: $0) }
-        }
+        let system = AmplifierSystem(count: 5)
 
         XCTAssertEqual(
-            Array(0..<5).permutations.map(run).reduce(0, max),
+            Array(0..<5).permutations.map(system.configureAndRun).reduce(0, max),
             21000
         )
     }
@@ -34,7 +24,38 @@ class Day07: XCTestCase {
 }
 
 
-// MARK: - Private
+// MARK: - Private Implementation
+private struct AmplifierSystem {
+    
+    let amplifiers: [Computer]
+    
+    init(count: Int) {
+        // TODO: Figure out a better way to do this.
+        var _amplifiers = [Computer]()
+        (0 ..< count).forEach { _ in _amplifiers.append(Computer()) }
+        
+        amplifiers = _amplifiers
+    }
+    
+    func configureAndRun(phases: [Word]) -> Word {
+        for (amplifier, phase) in zip(amplifiers, phases) {
+            amplifier.load(_program)
+            amplifier.inputBuffer = [phase]
+        }
+        
+        amplifiers.first?.inputBuffer.append(0)
+        
+        return amplifiers.reduce(0) { source, amplifier in
+            amplifier.inputBuffer.append(source)
+            amplifier.run()
+            return amplifier.outputBuffer.first!
+        }
+    }
+    
+}
+
+
+// Private Data
 private let _program = [
     3, 8, 1001, 8, 10, 8, 105, 1, 0, 0, 21, 46, 59, 72, 93, 110,
     191, 272, 353, 434, 99999, 3, 9, 101, 4, 9, 9, 1002, 9, 3, 9, 1001,

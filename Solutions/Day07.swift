@@ -32,7 +32,9 @@ private struct AmplifierSystem {
     init(count: Int) {
         // TODO: Figure out a better way to do this.
         var _amplifiers = [Computer]()
-        (0 ..< count).forEach { _ in _amplifiers.append(Computer()) }
+        (0 ..< count).forEach { _ in
+            return _amplifiers.append(Computer(outputMode: .yield))
+        }
         
         amplifiers = _amplifiers
     }
@@ -43,13 +45,25 @@ private struct AmplifierSystem {
             amplifier.inputBuffer = [phase]
         }
         
-        amplifiers.first?.inputBuffer.append(0)
+        var signal = 0
+        var continueLooping = true
         
-        return amplifiers.reduce(0) { source, amplifier in
-            amplifier.inputBuffer.append(source)
-            amplifier.run()
-            return amplifier.harvestOutput().first!
+        while continueLooping {
+            continueLooping = false
+
+            for amplifier in amplifiers {
+                amplifier.inputBuffer.append(signal)
+                amplifier.run()
+                guard let output = amplifier.harvestOutput().first else {
+                    break
+                }
+                
+                signal = output
+                continueLooping = amplifier === amplifiers.last
+            }
         }
+        
+        return signal
     }
     
 }

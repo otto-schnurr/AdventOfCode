@@ -1,6 +1,32 @@
-#!/usr/bin/env swift
+//
+//  Day04.swift
+//  AdventOfCode/Solutions
+//  
+//
+//  Created by Otto Schnurr on 12/15/2019.
+//  Copyright © 2019 Otto Schnurr. All rights reserved.
+//
 
-struct Digits: Sequence, IteratorProtocol {
+import XCTest
+
+class Day04: XCTestCase {
+    
+    func test_solution() {
+        let passwords = _passwordRange.filter {
+            $0.hasIncreasingDigits && $0.hasAtleastTwoAdjacentDigits
+        }
+
+        XCTAssertEqual(passwords.count, 1660)
+        XCTAssertEqual(passwords.filter { $0.hasTwoAdjacentDigits }.count, 1135)
+    }
+    
+}
+
+
+// MARK: - Private
+private let _passwordRange = (172851 ... 675869)
+
+private struct Digits: Sequence, IteratorProtocol {
     
     init(_ value: Int) { remainingDigits = value }
     
@@ -14,7 +40,7 @@ struct Digits: Sequence, IteratorProtocol {
     
 }
 
-struct DigitPairs: Sequence, IteratorProtocol {
+private struct DigitPairs: Sequence, IteratorProtocol {
     
     init(_ value: Int) { remainingDigits = value }
     
@@ -29,7 +55,7 @@ struct DigitPairs: Sequence, IteratorProtocol {
     
 }
 
-extension Int {
+private extension Int {
 
     var hasIncreasingDigits: Bool {
         DigitPairs(self).allSatisfy { $0 <= $1 }
@@ -58,11 +84,3 @@ extension Int {
     }
 
 }
-
-let numbers = readLine()!.split(separator: "-").map { Int($0)! }
-let passwords = (numbers[0] ... numbers[1]).filter { 
-    $0.hasIncreasingDigits && $0.hasAtleastTwoAdjacentDigits 
-}
-
-print("part 1: \(passwords.count)")
-print("part 2: \(passwords.filter { $0.hasTwoAdjacentDigits }.count)")

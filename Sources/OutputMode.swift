@@ -5,7 +5,7 @@
 //  Created by Otto Schnurr on 12/15/2019.
 //
 
-enum OutputMode: String {
+public enum OutputMode: String {
     /// Execution continues after an output is generated.
     case `continue`
     

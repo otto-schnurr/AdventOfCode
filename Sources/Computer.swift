@@ -12,7 +12,12 @@ public final class Computer {
     public private(set) var outputBuffer = Buffer()
     public var firstWord: Word? { return program.first }
 
-    public init() { }
+    /// - parameter outputMode:
+    ///   When set to `.continue`, `run()` will return after each output.
+    ///   Otherwise, `.run()` will block until the program is completed.
+    public init(outputMode: OutputMode = .continue) {
+        self.outputMode = outputMode
+    }
     
     public func load(_ program: Program) {
         self.program = program
@@ -21,8 +26,9 @@ public final class Computer {
     
     public func run() {
         let outputHandler: Opcode.OutputHandler = { [weak self] in
-            self?.outputBuffer.append($0)
-            return .continue
+            guard let self = self else { return .yield }
+            self.outputBuffer.append($0)
+            return self.outputMode
         }
 
         while program.executeInstruction(
@@ -33,6 +39,7 @@ public final class Computer {
     }
     
     // MARK: Private
+    private let outputMode: OutputMode
     private var programCounter = Opcode.ProgramCounter()
     private var program = Program()
     

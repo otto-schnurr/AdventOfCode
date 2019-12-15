@@ -13,7 +13,7 @@ import AdventOfCode
 class Day07: XCTestCase {
     
     func test_solution() {
-        let system = AmplifierSystem(count: 5)
+        let system = AmplifierSystem(count: 5, program: _program)
 
         XCTAssertEqual(
             Array(0..<5).permutations.map(system.configureAndRun).reduce(0, max),
@@ -28,8 +28,9 @@ class Day07: XCTestCase {
 private struct AmplifierSystem {
     
     let amplifiers: [Computer]
+    let program: Program
     
-    init(count: Int) {
+    init(count: Int, program: Program) {
         // TODO: Figure out a better way to do this.
         var _amplifiers = [Computer]()
         (0 ..< count).forEach { _ in
@@ -37,11 +38,12 @@ private struct AmplifierSystem {
         }
         
         amplifiers = _amplifiers
+        self.program = program
     }
     
     func configureAndRun(phases: [Word]) -> Word {
         for (amplifier, phase) in zip(amplifiers, phases) {
-            amplifier.load(_program)
+            amplifier.load(program)
             amplifier.inputBuffer = [phase]
         }
         

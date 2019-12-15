@@ -18,13 +18,13 @@ class Day05: XCTestCase {
         computer.inputBuffer = [1]
         computer.run()
         XCTAssertEqual(
-            computer.outputBuffer, [0, 0, 0, 0, 0, 0, 0, 0, 0, 16489636]
+            computer.harvestOutput(), [0, 0, 0, 0, 0, 0, 0, 0, 0, 16489636]
         )
 
         computer.load(_program)
         computer.inputBuffer = [5]
         computer.run()
-        XCTAssertEqual(computer.outputBuffer, [9386583])
+        XCTAssertEqual(computer.harvestOutput(), [9386583])
     }
     
 }

@@ -9,7 +9,6 @@
 public final class Computer {
     
     public var inputBuffer = Buffer()
-    public private(set) var outputBuffer = Buffer()
     public var firstWord: Word? { return program.first }
 
     /// - parameter outputMode:
@@ -38,10 +37,17 @@ public final class Computer {
         ) { }
     }
     
+    /// Returns any output generated since the last harvest.
+    public func harvestOutput() -> Buffer {
+        defer { outputBuffer.removeAll() }
+        return outputBuffer
+    }
+    
     // MARK: Private
     private let outputMode: OutputMode
     private var programCounter = Opcode.ProgramCounter()
     private var program = Program()
+    private var outputBuffer = Buffer()
     
 }
 

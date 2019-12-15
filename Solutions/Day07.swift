@@ -48,7 +48,7 @@ private struct AmplifierSystem {
         return amplifiers.reduce(0) { source, amplifier in
             amplifier.inputBuffer.append(source)
             amplifier.run()
-            return amplifier.outputBuffer.first!
+            return amplifier.harvestOutput().first!
         }
     }
     

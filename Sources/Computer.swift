@@ -12,11 +12,9 @@ public final class Computer {
     public private(set) var outputBuffer = Buffer()
     public var firstWord: Word? { return program.first }
 
-    public init(program: Program) {
-        self.program = program
-    }
+    public init() { }
     
-    public func load(program: Program) {
+    public func load(_ program: Program) {
         self.program = program
         reset()
     }
@@ -35,7 +33,7 @@ public final class Computer {
     
     // MARK: Private
     private var programCounter = Opcode.ProgramCounter()
-    private var program: Program
+    private var program = Program()
     
 }
 

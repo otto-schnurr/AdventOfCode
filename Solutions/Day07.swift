@@ -14,7 +14,8 @@ class Day07: XCTestCase {
     
     func test_solution() {
         func runAmplifier(phase: Int, source: Int) -> Int {
-            let computer = Computer(program: _program)
+            let computer = Computer()
+            computer.load(_program)
             computer.inputBuffer = [phase, source]
             computer.run()
             return computer.outputBuffer[0]

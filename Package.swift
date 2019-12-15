@@ -24,7 +24,7 @@ let package = Package(
         .testTarget(
             name: "AdventOfCode-UnitTests",
             dependencies: ["AdventOfCode"],
-            path: "Tests"
+            path: "Solutions"
         )
     ]
 )

@@ -33,13 +33,14 @@ enum Opcode: Int {
         }
     }
 
+    /// - returns: `true` if execution should continue.
     func apply(
         parameters: [Word],
         result: inout Word,
         programCounter: inout ProgramCounter,
         inputBuffer: inout Buffer,
         outputHandler: OutputHandler
-    ) {
+    ) -> Bool {
         switch self {
         case .add:
             result = parameters[0] + parameters[1]
@@ -65,6 +66,8 @@ enum Opcode: Int {
         case .equals:
             result = parameters[0] == parameters[1] ? 1 : 0
         }
+        
+        return true
     }
 
 }

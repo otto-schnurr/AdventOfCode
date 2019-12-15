@@ -37,15 +37,13 @@ extension Array where Element == Word {
         var outputIndex = self[programCounter - 1]
         outputIndex = outputIndex < count ? outputIndex : 0
 
-        opcode.apply(
+        return opcode.apply(
             parameters: parameters,
             result: &self[outputIndex],
             programCounter: &programCounter,
             inputBuffer: &inputBuffer,
             outputHandler: outputHandler
         )
-
-        return true
     }
 
 }

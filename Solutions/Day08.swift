@@ -9,14 +9,14 @@
 
 import XCTest
 
-private let _zero: Pixel = "0".utf8.first!
-private let _one: Pixel  = "1".utf8.first!
-private let _two: Pixel  = "2".utf8.first!
+private let _zero = Pixel("0")!
+private let _one  = Pixel("1")!
+private let _two  = Pixel("2")!
 
 class Day08: XCTestCase {
     
-    func test_example() {
-        let pixels = "123456789012".data(using: .utf8)!
+    func test_example_1() {
+        let pixels = Pixels(string: "123456789012")!
         let layers = pixels.asLayers(size: CGSize(width: 3, height: 2))
         let zeroCounts = layers.map{ $0.count(value: _zero) }
         let layer = layers[zeroCounts.enumerated().min { $0.1 < $1.1 }!.offset]
@@ -43,8 +43,34 @@ class Day08: XCTestCase {
 private typealias Pixel = UInt8
 private typealias Pixels = Data
 
+private extension Pixel {
+    init?(_ string: String) {
+        guard let result = string.utf8.first else { return nil }
+        self = result
+    }
+}
+
 private extension Pixels {
 
+    var asString: String? {
+        return String(data: self, encoding: .utf8)
+    }
+    
+    init?(string: String) {
+        guard let result = string.data(using: .utf8) else { return nil }
+        self = result
+    }
+    
+    init?(transparentWithSize size: CGSize) {
+        let pixelCount = Int(size.width) * Int(size.height)
+        guard
+            pixelCount > 0,
+            let result = Pixels(string: String(repeating: "2", count: pixelCount))
+        else { return nil }
+        
+        self = result
+    }
+    
     func asLayers(size: CGSize) -> [Pixels] {
         guard !isEmpty else { return []  }
 
@@ -53,10 +79,22 @@ private extension Pixels {
 
         return stride(
             from: 0, to: count - layerPixelCount + 1, by: layerPixelCount
-        ).map { index in self[index ..< index + layerPixelCount] }
+        ).map { index in self.subdata(in: index ..< index + layerPixelCount) }
     }
 
     func count(value: Pixel) -> Int { return filter { $0 == value }.count }
+    
+    func blended(with other: Pixels) -> Pixels {
+        assert(count == other.count)
+        var result = Pixels(count: count)
+        for index in 0 ..< count {
+            switch (self[index], other[index]) {
+                case (_two, _): result[index] = other[index]
+                default:        result[index] = self[index]
+            }
+        }
+        return result
+    }
     
 }
 

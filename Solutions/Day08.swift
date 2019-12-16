@@ -16,15 +16,10 @@ class Day08: XCTestCase {
         let layers = pixels.asLayers(size: CGSize(width: 3, height: 2))
 
         let zero = "0".utf8.first!
-        let zeroCounts = layers.map{ $0.filter { $0 == zero }.count }
-
-        let maximumEntry = zeroCounts
-            .enumerated()
-            .reduce((offset: 0, element: 0)) {
-                result, entry in
-                return entry.element >= result.element ? entry : result
-            }
-        XCTAssertEqual(maximumEntry.offset, 1)
+        let zeroCounts = layers.map{ $0.count { $0 == zero } }
+        XCTAssertEqual(
+            zeroCounts.enumerated().min { $0.1 < $1.1 }?.offset, 0
+        )
     }
     
 }
@@ -35,6 +30,7 @@ private typealias Pixel = UInt8
 private typealias Pixels = Data
 
 private extension Pixels {
+
     func asLayers(size: CGSize) -> [Pixels] {
         guard !isEmpty else { return []  }
 
@@ -45,6 +41,11 @@ private extension Pixels {
             from: 0, to: count - layerPixelCount + 1, by: layerPixelCount
         ).map { index in self[index ..< index + layerPixelCount] }
     }
+
+    func count(where _predicate: (Pixel) -> Bool) -> Int {
+        return filter(_predicate).count
+    }
+    
 }
 
 private let _pixels = "".data(using: .utf8)!

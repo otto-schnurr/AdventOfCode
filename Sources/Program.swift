@@ -29,8 +29,11 @@ extension Array where Element == Word {
         
         let parameters = zip(modes, remainingWords).map { (mode, word) -> Word in
             switch mode {
-            case .position:  return self[word]
-            case .immediate: return word
+            case .position:
+                expandToAccomodate(index: word)
+                return self[word]
+            case .immediate:
+                return word
             }
         }
 
@@ -44,6 +47,12 @@ extension Array where Element == Word {
             inputBuffer: &inputBuffer,
             outputHandler: outputHandler
         )
+    }
+    
+    mutating func expandToAccomodate(index: Word) {
+        defer { assert(index < count) }
+        if index < count { return }
+        self += Self(repeating: 0, count: index + 1 - count)
     }
 
 }

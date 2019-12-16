@@ -38,6 +38,7 @@ enum Opcode: Int {
         parameters: [Word],
         result: inout Word,
         programCounter: inout ProgramCounter,
+        relativeBase: inout ProgramCounter,
         inputBuffer: inout Buffer,
         outputHandler: OutputHandler
     ) -> Bool {

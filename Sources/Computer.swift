@@ -32,6 +32,7 @@ public final class Computer {
 
         while program.executeInstruction(
             at: &programCounter,
+            relativeBase: &relativeBase,
             inputBuffer: &inputBuffer,
             outputHandler: outputHandler
         ) { }
@@ -46,6 +47,7 @@ public final class Computer {
     // MARK: Private
     private let outputMode: OutputMode
     private var programCounter = Opcode.ProgramCounter()
+    private var relativeBase = Opcode.ProgramCounter()
     private var program = Program()
     private var outputBuffer = Buffer()
     

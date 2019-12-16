@@ -12,6 +12,7 @@ extension Array where Element == Word {
 
     mutating func executeInstruction(
         at programCounter: inout Opcode.ProgramCounter,
+        relativeBase: inout Opcode.ProgramCounter,
         inputBuffer: inout Buffer,
         outputHandler: Opcode.OutputHandler
     ) -> Bool {
@@ -44,6 +45,7 @@ extension Array where Element == Word {
             parameters: parameters,
             result: &self[outputIndex],
             programCounter: &programCounter,
+            relativeBase: &relativeBase,
             inputBuffer: &inputBuffer,
             outputHandler: outputHandler
         )

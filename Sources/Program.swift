@@ -35,6 +35,9 @@ extension Array where Element == Word {
                 return self[word]
             case .immediate:
                 return word
+            case .relative:
+                expandToAccomodate(index: relativeBase + word )
+                return self[relativeBase + word]
             }
         }
 

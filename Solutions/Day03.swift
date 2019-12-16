@@ -23,7 +23,7 @@ class Day03: XCTestCase {
         }
 
         XCTAssertEqual(
-            distances.filter { $0 > 0 }.reduce(Int.max, min), 870
+            distances.filter { $0 > 0 }.min(), 870
         )
 
         var length = 0
@@ -48,7 +48,7 @@ class Day03: XCTestCase {
         }
 
         XCTAssertEqual(
-            distances.filter { $0 > 0 }.reduce(Int.max, min), 13698
+            distances.filter { $0 > 0 }.min(), 13698
         )
     }
     

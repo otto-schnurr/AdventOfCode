@@ -28,11 +28,11 @@ class Day07: XCTestCase {
         let system = AmplifierSystem(count: 5, program: _program)
 
         XCTAssertEqual(
-            Array(0..<5).permutations.map(system.configureAndRun).reduce(0, max),
+            Array(0..<5).permutations.map(system.configureAndRun).max(),
             21000
         )
         XCTAssertEqual(
-            Array(5..<10).permutations.map(system.configureAndRun).reduce(0, max),
+            Array(5..<10).permutations.map(system.configureAndRun).max(),
             61379886
         )
     }

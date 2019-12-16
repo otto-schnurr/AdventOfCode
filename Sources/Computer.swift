@@ -60,5 +60,6 @@ private extension Computer {
         inputBuffer.removeAll()
         outputBuffer.removeAll()
         programCounter = 0
+        relativeBase = 0
     }
 }

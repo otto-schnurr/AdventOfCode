@@ -51,6 +51,12 @@ class Day09: XCTestCase {
         computer.run()
         
         XCTAssertEqual(computer.harvestOutput(), [2350741403])
+        
+        computer.load(_program)
+        computer.inputBuffer.append(2)
+        computer.run()
+        
+        XCTAssertEqual(computer.harvestOutput(), [53088])
     }
     
 }

@@ -28,25 +28,28 @@ extension Array where Element == Word {
         let remainingWords = self[programCounter ..< programCounter + opcode.parameterCount]
         programCounter += opcode.parameterCount
         
+        var lastIndex = 0
+
         let parameters = zip(modes, remainingWords).map { (mode, word) -> Word in
             switch mode {
             case .position:
-                expandToAccomodate(index: word)
-                return self[word]
+                lastIndex = word
+                expandToAccomodate(index: lastIndex)
+                return self[lastIndex]
             case .immediate:
                 return word
             case .relative:
-                expandToAccomodate(index: relativeBase + word )
-                return self[relativeBase + word]
+                lastIndex = relativeBase + word
+                expandToAccomodate(index: lastIndex)
+                return self[lastIndex]
             }
         }
 
-        var outputIndex = Swift.max(self[programCounter - 1], 0)
-        outputIndex = outputIndex < count ? outputIndex : 0
+        lastIndex = lastIndex < count ? lastIndex : 0
 
         return opcode.apply(
             parameters: parameters,
-            result: &self[outputIndex],
+            result: &self[lastIndex],
             programCounter: &programCounter,
             relativeBase: &relativeBase,
             inputBuffer: &inputBuffer,

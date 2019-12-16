@@ -41,7 +41,7 @@ extension Array where Element == Word {
             }
         }
 
-        var outputIndex = self[programCounter - 1]
+        var outputIndex = Swift.max(self[programCounter - 1], 0)
         outputIndex = outputIndex < count ? outputIndex : 0
 
         return opcode.apply(

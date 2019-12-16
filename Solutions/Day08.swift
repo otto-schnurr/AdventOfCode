@@ -18,8 +18,8 @@ class Day08: XCTestCase {
     func test_example_1() {
         let pixels = Pixels(string: "123456789012")!
         let layers = pixels.asLayers(size: CGSize(width: 3, height: 2))
-        let zeroCounts = layers.map{ $0.count(value: _black) }
-        let layer = layers[zeroCounts.enumerated().min { $0.1 < $1.1 }!.offset]
+        let blackCounts = layers.map{ $0.count(value: _black) }
+        let layer = layers[blackCounts.enumerated().min { $0.1 < $1.1 }!.offset]
 
         XCTAssertEqual(
             layer.count(value: _white) * layer.count(value: _transparent), 1
@@ -38,13 +38,18 @@ class Day08: XCTestCase {
     }
 
     func test_solution() {
-        let layers = _pixels.asLayers(size: CGSize(width: 25, height: 6))
-        let zeroCounts = layers.map{ $0.count(value: _black) }
-        let layer = layers[zeroCounts.enumerated().min { $0.1 < $1.1 }!.offset]
+        let size = CGSize(width: 25, height: 6)
+        let layers = _pixels.asLayers(size: size)
+        let blackCounts = layers.map{ $0.count(value: _black) }
+        let layer = layers[blackCounts.enumerated().min { $0.1 < $1.1 }!.offset]
 
         XCTAssertEqual(
             layer.count(value: _white) * layer.count(value: _transparent), 1905
         )
+        
+        layers.reduce(Pixels(transparentWithSize: size)!) {
+            return $0.blended(with: $1)
+        }.print(width: Int(size.width))
     }
     
 }
@@ -63,10 +68,6 @@ private extension Pixel {
 
 private extension Pixels {
 
-    var asString: String? {
-        return String(data: self, encoding: .utf8)
-    }
-    
     init?(string: String) {
         guard let result = string.data(using: .utf8) else { return nil }
         self = result
@@ -107,6 +108,21 @@ private extension Pixels {
             }
         }
         return result
+    }
+    
+    func print(width: Int) {
+        guard let rawString = String(data: self, encoding: .utf8) else { return }
+
+        let characters = rawString.map { (c: Character) -> Character in
+            switch c {
+                case "1": return "."
+                default:  return " "
+            }
+        }
+        
+        for offset in stride(from: 0, to: count, by: width) {
+            Swift.print(String(characters[offset ..< offset + width]))
+        }
     }
     
 }

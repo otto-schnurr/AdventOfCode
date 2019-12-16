@@ -19,10 +19,11 @@ enum Opcode: Int {
     case jump_if_false = 6
     case less_than = 7
     case equals = 8
+    case adjust_relative_base = 9
 
     var parameterCount: Int {
         switch self {
-        case .input, .output:
+        case .input, .output, .adjust_relative_base:
             return 1
 
         case .jump_if_true, .jump_if_false:
@@ -69,6 +70,9 @@ enum Opcode: Int {
 
         case .equals:
             result = parameters[0] == parameters[1] ? 1 : 0
+        
+        case .adjust_relative_base:
+            relativeBase += parameters[0]
         }
         
         return true

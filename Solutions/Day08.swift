@@ -26,6 +26,17 @@ class Day08: XCTestCase {
         )
     }
  
+    func test_example_2() {
+        let size = CGSize(width: 2, height: 2)
+        let pixels = Pixels(string: "0222112222120000")!
+        let layers = pixels.asLayers(size: size)
+        
+        let result = layers.reduce(Pixels(transparentWithSize: size)!) {
+            return $0.blended(with: $1)
+        }
+        XCTAssertEqual(result, Pixels(string: "0110")!)
+    }
+
     func test_solution() {
         let layers = _pixels.asLayers(size: CGSize(width: 25, height: 6))
         let zeroCounts = layers.map{ $0.count(value: _zero) }

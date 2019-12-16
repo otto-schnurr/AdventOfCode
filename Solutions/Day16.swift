@@ -11,10 +11,21 @@ import XCTest
 class Day16: XCTestCase {
     
     func test_example() {
-        let signal = "12345678".asSignal
         XCTAssertEqual(
-            signal?.convolved(phaseCount: 4),
+            "12345678".asSignal?.convolved(phaseCount: 4),
             [0, 1, 0, 2, 9, 4, 9, 8]
+        )
+        XCTAssertEqual(
+            "80871224585914546619083218645595".asSignal?.convolved(phaseCount: 100).prefix(8),
+            [2, 4, 1, 7, 6, 1, 7, 6]
+        )
+        XCTAssertEqual(
+            "19617804207202209144916044189917".asSignal?.convolved(phaseCount: 100).prefix(8),
+            [7, 3, 7, 4, 5, 4, 1, 8]
+        )
+        XCTAssertEqual(
+            "69317163492948606335995924319873".asSignal?.convolved(phaseCount: 100).prefix(8),
+            [5, 2, 4, 3, 2, 1, 3, 3]
         )
     }
 

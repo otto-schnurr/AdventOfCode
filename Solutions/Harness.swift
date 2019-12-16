@@ -11,10 +11,10 @@ import Foundation
 extension URL {
     
     // reference: https://stackoverflow.com/a/58034307/148076
-    static func make(testHarnessResource: String) -> URL {
+    init(testHarnessResource: String) {
         let thisSourceFile = URL(fileURLWithPath: #file)
         let thisDirectory = thisSourceFile.deletingLastPathComponent()
-        return thisDirectory
+        self = thisDirectory
             .appendingPathComponent("Resources")
             .appendingPathComponent(testHarnessResource)
     }

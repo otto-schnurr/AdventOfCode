@@ -61,6 +61,6 @@ private extension Pixels {
 }
 
 private let _pixels: Pixels = {
-    let resourceURL = URL.make(testHarnessResource: "input08.txt")
+    let resourceURL = URL(testHarnessResource: "input08.txt")
     return try! Data(contentsOf: resourceURL)
 }()

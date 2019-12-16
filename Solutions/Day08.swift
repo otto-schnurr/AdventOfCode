@@ -9,20 +9,20 @@
 
 import XCTest
 
-private let _zero = Pixel("0")!
-private let _one  = Pixel("1")!
-private let _two  = Pixel("2")!
+private let _black        = Pixel("0")!
+private let _white        = Pixel("1")!
+private let _transparent  = Pixel("2")!
 
 class Day08: XCTestCase {
     
     func test_example_1() {
         let pixels = Pixels(string: "123456789012")!
         let layers = pixels.asLayers(size: CGSize(width: 3, height: 2))
-        let zeroCounts = layers.map{ $0.count(value: _zero) }
+        let zeroCounts = layers.map{ $0.count(value: _black) }
         let layer = layers[zeroCounts.enumerated().min { $0.1 < $1.1 }!.offset]
 
         XCTAssertEqual(
-            layer.count(value: _one) * layer.count(value: _two), 1
+            layer.count(value: _white) * layer.count(value: _transparent), 1
         )
     }
  
@@ -39,11 +39,11 @@ class Day08: XCTestCase {
 
     func test_solution() {
         let layers = _pixels.asLayers(size: CGSize(width: 25, height: 6))
-        let zeroCounts = layers.map{ $0.count(value: _zero) }
+        let zeroCounts = layers.map{ $0.count(value: _black) }
         let layer = layers[zeroCounts.enumerated().min { $0.1 < $1.1 }!.offset]
 
         XCTAssertEqual(
-            layer.count(value: _one) * layer.count(value: _two), 1905
+            layer.count(value: _white) * layer.count(value: _transparent), 1905
         )
     }
     
@@ -100,8 +100,10 @@ private extension Pixels {
         var result = Pixels(count: count)
         for index in 0 ..< count {
             switch (self[index], other[index]) {
-                case (_two, _): result[index] = other[index]
-                default:        result[index] = self[index]
+                case (_transparent, _):
+                    result[index] = other[index]
+                default:
+                    result[index] = self[index]
             }
         }
         return result

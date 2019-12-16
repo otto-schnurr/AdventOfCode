@@ -9,16 +9,30 @@
 
 import XCTest
 
+private let _zero: Pixel = "0".utf8.first!
+private let _one: Pixel  = "1".utf8.first!
+private let _two: Pixel  = "2".utf8.first!
+
 class Day08: XCTestCase {
     
     func test_example() {
         let pixels = "123456789012".data(using: .utf8)!
         let layers = pixels.asLayers(size: CGSize(width: 3, height: 2))
+        let zeroCounts = layers.map{ $0.count(value: _zero) }
+        let layer = layers[zeroCounts.enumerated().min { $0.1 < $1.1 }!.offset]
 
-        let zero = "0".utf8.first!
-        let zeroCounts = layers.map{ $0.count { $0 == zero } }
         XCTAssertEqual(
-            zeroCounts.enumerated().min { $0.1 < $1.1 }?.offset, 0
+            layer.count(value: _one) * layer.count(value: _two), 1
+        )
+    }
+ 
+    func test_solution() {
+        let layers = _pixels.asLayers(size: CGSize(width: 25, height: 6))
+        let zeroCounts = layers.map{ $0.count(value: _zero) }
+        let layer = layers[zeroCounts.enumerated().min { $0.1 < $1.1 }!.offset]
+
+        XCTAssertEqual(
+            layer.count(value: _one) * layer.count(value: _two), 1905
         )
     }
     
@@ -42,10 +56,11 @@ private extension Pixels {
         ).map { index in self[index ..< index + layerPixelCount] }
     }
 
-    func count(where _predicate: (Pixel) -> Bool) -> Int {
-        return filter(_predicate).count
-    }
+    func count(value: Pixel) -> Int { return filter { $0 == value }.count }
     
 }
 
-private let _pixels = "".data(using: .utf8)!
+private let _pixels: Pixels = {
+    let resourceURL = URL.make(testHarnessResource: "input08.txt")
+    return try! Data(contentsOf: resourceURL)
+}()

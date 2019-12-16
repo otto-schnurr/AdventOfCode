@@ -23,9 +23,10 @@ class Day16: XCTestCase {
 
 
 // MARK: - Private
-private let _input: Data = {
-    let resourceURL = URL(testHarnessResource: "input10.txt")
-    return try! Data(contentsOf: resourceURL)
+private let _signal: [Int] = {
+    let resourceURL = URL(testHarnessResource: "input16.txt")
+    let data = try! Data(contentsOf: resourceURL)
+    return data.map { Int($0) - 48 }
 }()
 
 private let _basePattern = [0, 1, 0, -1]
@@ -60,10 +61,8 @@ private extension Array where Element == Int {
     func convolved(order: Int) -> Element {
         let pattern = Pattern(order: order)
         let accumulation = zip(self, pattern).reduce(0) { result, entry in
-            print("\(entry.0)*\(entry.1) + ", terminator: "")
             return result + entry.0 * entry.1
         }
-        print("= \(abs(accumulation) % 10)")
         return abs(accumulation) % 10
     }
     

@@ -12,6 +12,7 @@ extension Array where Element == Word {
 
     mutating func executeInstruction(
         at programCounter: inout Opcode.ProgramCounter,
+        relativeBase: inout Opcode.ProgramCounter,
         inputBuffer: inout Buffer,
         outputHandler: Opcode.OutputHandler
     ) -> Bool {
@@ -27,23 +28,39 @@ extension Array where Element == Word {
         let remainingWords = self[programCounter ..< programCounter + opcode.parameterCount]
         programCounter += opcode.parameterCount
         
+        var lastIndex = 0
+
         let parameters = zip(modes, remainingWords).map { (mode, word) -> Word in
             switch mode {
-            case .position:  return self[word]
-            case .immediate: return word
+            case .position:
+                lastIndex = word
+                expandToAccomodate(index: lastIndex)
+                return self[lastIndex]
+            case .immediate:
+                return word
+            case .relative:
+                lastIndex = relativeBase + word
+                expandToAccomodate(index: lastIndex)
+                return self[lastIndex]
             }
         }
 
-        var outputIndex = self[programCounter - 1]
-        outputIndex = outputIndex < count ? outputIndex : 0
+        lastIndex = lastIndex < count ? lastIndex : 0
 
         return opcode.apply(
             parameters: parameters,
-            result: &self[outputIndex],
+            result: &self[lastIndex],
             programCounter: &programCounter,
+            relativeBase: &relativeBase,
             inputBuffer: &inputBuffer,
             outputHandler: outputHandler
         )
+    }
+    
+    mutating func expandToAccomodate(index: Word) {
+        defer { assert(index < count) }
+        if index < count { return }
+        self += Self(repeating: 0, count: index + 1 - count)
     }
 
 }

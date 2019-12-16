@@ -10,6 +10,7 @@ enum ParameterMode: Int {
 
     case position = 0
     case immediate = 1
+    case relative = 2
     
     static func parse(count: Int, from word: Word) -> [ParameterMode] {
         guard count > 0 && word > 0 else { return [] }
@@ -28,6 +29,7 @@ extension ParameterMode: CustomStringConvertible {
         switch self {
         case .position:  return "position"
         case .immediate: return "immediate"
+        case .relative:  return "relative"
         }
     }
 }

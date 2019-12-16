@@ -11,10 +11,9 @@ import XCTest
 class Day16: XCTestCase {
     
     func test_example() {
-        let data = "12345678".data(using: .utf8)!
-        let signal = data.map { Int($0) - 48 }
+        let signal = "12345678".asSignal
         XCTAssertEqual(
-            signal.convolved(phaseCount: 4),
+            signal?.convolved(phaseCount: 4),
             [0, 1, 0, 2, 9, 4, 9, 8]
         )
     }
@@ -23,13 +22,21 @@ class Day16: XCTestCase {
 
 
 // MARK: - Private
-private let _signal: [Int] = {
+private typealias Signal = [Int]
+
+private let _signal: Signal = {
     let resourceURL = URL(testHarnessResource: "input16.txt")
     let data = try! Data(contentsOf: resourceURL)
     return data.map { Int($0) - 48 }
 }()
 
 private let _basePattern = [0, 1, 0, -1]
+
+private extension String {
+    var asSignal: Signal? {
+        return self.data(using: .utf8)?.map { Int($0) - 48 }
+    }
+}
 
 private struct Pattern: Sequence, IteratorProtocol {
     

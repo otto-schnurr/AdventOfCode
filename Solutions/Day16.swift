@@ -29,6 +29,13 @@ class Day16: XCTestCase {
         )
     }
 
+    func test_solution() {
+        XCTAssertEqual(
+            _signal.convolved(phaseCount: 100).prefix(8),
+            [2, 9, 9, 5, 6, 4, 9, 5]
+        )
+    }
+    
 }
 
 
@@ -38,7 +45,7 @@ private typealias Signal = [Int]
 private let _signal: Signal = {
     let resourceURL = URL(testHarnessResource: "input16.txt")
     let data = try! Data(contentsOf: resourceURL)
-    return data.map { Int($0) - 48 }
+    return data.map { Int($0) - 48 }.filter { $0 >= 0 }
 }()
 
 private let _basePattern = [0, 1, 0, -1]

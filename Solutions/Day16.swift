@@ -10,6 +10,30 @@ import XCTest
 
 class Day16: XCTestCase {
     
+    func test_pattern() {
+        XCTAssertNil(Pattern(order: 0))
+        
+        var pattern = Pattern(order: 1)!
+        XCTAssertEqual(pattern.next(), 1)
+        XCTAssertEqual(pattern.next(), 0)
+        XCTAssertEqual(pattern.next(), -1)
+        XCTAssertEqual(pattern.next(), 0)
+        XCTAssertEqual(pattern.next(), 1)
+
+        pattern = Pattern(order: 2)!
+        XCTAssertEqual(pattern.next(), 0)
+        XCTAssertEqual(pattern.next(), 1)
+        XCTAssertEqual(pattern.next(), 1)
+        XCTAssertEqual(pattern.next(), 0)
+        XCTAssertEqual(pattern.next(), 0)
+        XCTAssertEqual(pattern.next(), -1)
+        XCTAssertEqual(pattern.next(), -1)
+        XCTAssertEqual(pattern.next(), 0)
+        XCTAssertEqual(pattern.next(), 0)
+        XCTAssertEqual(pattern.next(), 1)
+        XCTAssertEqual(pattern.next(), 1)
+    }
+    
     func test_example() {
         XCTAssertEqual(
             "12345678".asSignal?.convolved(phaseCount: 4),
@@ -29,7 +53,7 @@ class Day16: XCTestCase {
         )
     }
 
-    func test_solution() {
+    func DISABLED_test_solution() {
         XCTAssertEqual(
             _signal.convolved(phaseCount: 100).prefix(8),
             [2, 9, 9, 5, 6, 4, 9, 5]
@@ -61,7 +85,10 @@ private struct Pattern: Sequence, IteratorProtocol {
     let order: Int
     var index = 1
     
-    init(order: Int) { self.order = order }
+    init?(order: Int) {
+        guard order > 0 else { return nil }
+        self.order = order
+    }
     
     mutating func next() -> Int? {
         let patternIndex = (index / order) % _basePattern.count
@@ -77,14 +104,14 @@ private extension Array where Element == Int {
         var result = self
         
         for _ in 1...phaseCount {
-            result = (1...result.count).map { result.convolved(order: $0) }
+            result = (1...result.count).map { result.convolved(order: $0)! }
         }
         
         return result
     }
     
-    func convolved(order: Int) -> Element {
-        let pattern = Pattern(order: order)
+    func convolved(order: Int) -> Element? {
+        guard let pattern = Pattern(order: order) else { return nil }
         let accumulation = zip(self, pattern).reduce(0) { result, entry in
             return result + entry.0 * entry.1
         }

@@ -125,14 +125,32 @@ private extension Array where Element == Int {
     func convolved(order: Int) -> Element? {
         guard let pattern = Pattern(order: order, count: count) else { return nil }
 
+        let sum = self.reduce(0, +)
         let accumulation = pattern.reduce(0) { result, entry in
-            return result + entry.factor * integrate(across: entry.range)
+            return result + entry.factor * integrate(across: entry.range, sum: sum)
         }
         return abs(accumulation) % 10
     }
     
-    func integrate(across range: Range<Element>) -> Element {
-        return self[range].reduce(0, +)
+    func integrate(across range: Range<Element>, sum: Int) -> Element {
+        guard !range.isEmpty else { return 0 }
+        
+        let startingEpoch = range.startIndex / count
+        let endingEpoch = range.endIndex / count
+        let startIndex = range.startIndex % count
+        let endIndex = range.endIndex % count
+
+        switch (endingEpoch - startingEpoch, endIndex) {
+            case (0, _), (1, 0): return self[range].reduce(0, +)
+            default:             break
+        }
+        
+        assert(endingEpoch - startingEpoch > 0)
+        
+        return
+            self[startIndex ..< count].reduce(0, +) +
+            (endingEpoch - startingEpoch) * sum +
+            self[0 ..< endIndex].reduce(0, +)
     }
     
 }

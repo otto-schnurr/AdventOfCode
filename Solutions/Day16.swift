@@ -8,6 +8,9 @@
 
 import XCTest
 
+// Setting this to true will include tests that take a long time to run.
+private let _enableAllTests = false
+
 class Day16: XCTestCase {
     
     func test_pattern() {
@@ -79,6 +82,8 @@ class Day16: XCTestCase {
             _signal.convolved(phaseCount: 100).prefix(8),
             [2, 9, 9, 5, 6, 4, 9, 5]
         )
+        
+        guard _enableAllTests else { return }
         
         let signal = _signal.repeating(count: 10_000)
         let offset = signal.offsetFromPrefix

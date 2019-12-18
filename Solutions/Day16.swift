@@ -147,28 +147,7 @@ private extension Array where Element == Int {
     }
     
     func integrate(across range: Range<Element>, cumulative: Self) -> Element {
-        guard !range.isEmpty else { return 0 }
-        
-        let startingEpoch = range.startIndex / count
-        let endingEpoch = range.endIndex / count
-        let startIndex = range.startIndex % count
-        let endIndex = range.endIndex % count
-        
-        switch (endingEpoch - startingEpoch, endIndex) {
-            case (1, 0):
-                return cumulative[count] - cumulative[startIndex]
-            case (0, _):
-                return cumulative[endIndex] - cumulative[startIndex]
-            default:
-                break
-        }
-        
-        assert(endingEpoch - startingEpoch > 0)
-        
-        return
-            cumulative[count] - cumulative[startIndex] +
-            (endingEpoch - startingEpoch) * cumulative.last! +
-            cumulative[endIndex] - cumulative[0]
+        return cumulative[range.endIndex] - cumulative[range.startIndex]
     }
     
 }

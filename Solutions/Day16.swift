@@ -32,7 +32,7 @@ class Day16: XCTestCase {
         XCTAssertNil(pattern.next())
     }
     
-    func test_example() {
+    func test_examples_part1() {
         XCTAssertEqual(
             "12345678".asSignal?.convolved(phaseCount: 4),
             [0, 1, 0, 2, 9, 4, 9, 8]
@@ -48,6 +48,29 @@ class Day16: XCTestCase {
         XCTAssertEqual(
             "69317163492948606335995924319873".asSignal?.convolved(phaseCount: 100).prefix(8),
             [5, 2, 4, 3, 2, 1, 3, 3]
+        )
+    }
+    
+    func test_examples_part2() {
+        var signal = "03036732577212944063491565474664".asSignal!.repeating(count: 10_000)
+        var offset = signal.offsetFromPrefix
+        XCTAssertEqual(
+            signal.convolved(phaseCount: 100, offset: offset).prefix(8),
+            [8, 4, 4, 6, 2, 0, 2, 6]
+        )
+        
+        signal = "02935109699940807407585447034323".asSignal!.repeating(count: 10_000)
+        offset = signal.offsetFromPrefix
+        XCTAssertEqual(
+            signal.convolved(phaseCount: 100, offset: offset).prefix(8),
+            [7, 8, 7, 2, 5, 2, 7, 0]
+        )
+        
+        signal = "03081770884921959731165446850517".asSignal!.repeating(count: 10_000)
+        offset = signal.offsetFromPrefix
+        XCTAssertEqual(
+            signal.convolved(phaseCount: 100, offset: offset).prefix(8),
+            [5, 3, 5, 5, 3, 7, 3, 1]
         )
     }
 
@@ -110,6 +133,7 @@ private struct Pattern: Sequence, IteratorProtocol {
 
 }
 
+// MARK: Full convolution
 private extension Array where Element == Int {
 
     func makeCumulative() -> Self {
@@ -148,6 +172,36 @@ private extension Array where Element == Int {
     
     func integrate(across range: Range<Element>, cumulative: Self) -> Element {
         return cumulative[range.endIndex] - cumulative[range.startIndex]
+    }
+    
+}
+
+// MARK: Short Cut Convolution
+private extension Array where Element == Int {
+
+    var offsetFromPrefix: Int {
+        var factor = 1
+        return prefix(7).reversed().reduce(0) { result, element in
+            defer { factor *= 10 }
+            return result + factor * element
+        }
+    }
+    
+    func repeating(count _count: Int) -> Self {
+        return Array(Array<Self>(repeating: self, count: _count).joined())
+    }
+
+    func convolved(phaseCount: Int, offset: Int) -> Self {
+        var result = Array(self[offset...])
+        
+        for _ in 1...phaseCount {
+            var total = 0
+            result = result
+                .reversed().map { total += $0; return total }
+                .reversed().map { abs($0) % 10 }
+        }
+        
+        return result
     }
     
 }

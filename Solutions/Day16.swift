@@ -113,19 +113,21 @@ private struct Pattern: Sequence, IteratorProtocol {
 private extension Array where Element == Int {
     
     func convolved(phaseCount: Int) -> Self {
+        let sum = self.reduce(0, +)
         var result = self
         
         for _ in 1...phaseCount {
-            result = (1 ... result.count).map { result.convolved(order: $0)! }
+            result = (1 ... result.count).map {
+                result.convolved(order: $0, sum: sum)!
+            }
         }
         
         return result
     }
     
-    func convolved(order: Int) -> Element? {
+    func convolved(order: Int, sum: Int) -> Element? {
         guard let pattern = Pattern(order: order, count: count) else { return nil }
 
-        let sum = self.reduce(0, +)
         let accumulation = pattern.reduce(0) { result, entry in
             return result + entry.factor * integrate(across: entry.range, sum: sum)
         }

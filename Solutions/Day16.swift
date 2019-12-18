@@ -8,6 +8,9 @@
 
 import XCTest
 
+// Setting this to true will include tests that take a long time to run.
+private let _enableAllTests = false
+
 class Day16: XCTestCase {
     
     func test_pattern() {
@@ -32,7 +35,7 @@ class Day16: XCTestCase {
         XCTAssertNil(pattern.next())
     }
     
-    func test_example() {
+    func test_examples_part1() {
         XCTAssertEqual(
             "12345678".asSignal?.convolved(phaseCount: 4),
             [0, 1, 0, 2, 9, 4, 9, 8]
@@ -50,11 +53,43 @@ class Day16: XCTestCase {
             [5, 2, 4, 3, 2, 1, 3, 3]
         )
     }
+    
+    func test_examples_part2() {
+        var signal = "03036732577212944063491565474664".asSignal!.repeating(count: 10_000)
+        var offset = signal.offsetFromPrefix
+        XCTAssertEqual(
+            signal.convolved(phaseCount: 100, offset: offset).prefix(8),
+            [8, 4, 4, 6, 2, 0, 2, 6]
+        )
+
+        signal = "02935109699940807407585447034323".asSignal!.repeating(count: 10_000)
+        offset = signal.offsetFromPrefix
+        XCTAssertEqual(
+            signal.convolved(phaseCount: 100, offset: offset).prefix(8),
+            [7, 8, 7, 2, 5, 2, 7, 0]
+        )
+        
+        signal = "03081770884921959731165446850517".asSignal!.repeating(count: 10_000)
+        offset = signal.offsetFromPrefix
+        XCTAssertEqual(
+            signal.convolved(phaseCount: 100, offset: offset).prefix(8),
+            [5, 3, 5, 5, 3, 7, 3, 1]
+        )
+    }
 
     func test_solution() {
         XCTAssertEqual(
             _signal.convolved(phaseCount: 100).prefix(8),
             [2, 9, 9, 5, 6, 4, 9, 5]
+        )
+        
+        guard _enableAllTests else { return }
+        
+        let signal = _signal.repeating(count: 10_000)
+        let offset = signal.offsetFromPrefix
+        XCTAssertEqual(
+            signal.convolved(phaseCount: 100, offset: offset).prefix(8),
+            [7, 3, 5, 5, 6, 5, 0, 4]
         )
     }
     
@@ -110,6 +145,7 @@ private struct Pattern: Sequence, IteratorProtocol {
 
 }
 
+// MARK: Full convolution
 private extension Array where Element == Int {
 
     func makeCumulative() -> Self {
@@ -148,6 +184,34 @@ private extension Array where Element == Int {
     
     func integrate(across range: Range<Element>, cumulative: Self) -> Element {
         return cumulative[range.endIndex] - cumulative[range.startIndex]
+    }
+    
+}
+
+// MARK: Short Cut Convolution
+private extension Array where Element == Int {
+
+    var offsetFromPrefix: Int {
+        var factor = 1
+        return prefix(7).reversed().reduce(0) { result, element in
+            defer { factor *= 10 }
+            return result + factor * element
+        }
+    }
+    
+    func repeating(count _count: Int) -> Self {
+        return Array(Array<Self>(repeating: self, count: _count).joined())
+    }
+
+    func convolved(phaseCount: Int, offset: Int) -> Self {
+        var result = Array(self[offset...].reversed())
+        
+        for _ in 1...phaseCount {
+            var total = 0
+            result = result.map { total += $0; return abs(total) % 10 }
+        }
+        
+        return Array(result.reversed())
     }
     
 }

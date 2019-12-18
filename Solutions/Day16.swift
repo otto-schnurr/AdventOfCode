@@ -111,48 +111,64 @@ private struct Pattern: Sequence, IteratorProtocol {
 }
 
 private extension Array where Element == Int {
+
+    func makeCumulative() -> Self {
+        var total = 0
+        return [0] + self.map {
+            total += $0
+            return total
+        }
+    }
     
     func convolved(phaseCount: Int) -> Self {
-        let sum = self.reduce(0, +)
         var result = self
         
         for _ in 1...phaseCount {
+            let cumulative = result.makeCumulative()
+            assert(cumulative.count == count + 1)
+            
             result = (1 ... result.count).map {
-                result.convolved(order: $0, sum: sum)!
+                result.convolved(order: $0, cumulative: cumulative)!
             }
         }
         
         return result
     }
     
-    func convolved(order: Int, sum: Int) -> Element? {
+    func convolved(order: Int, cumulative: Self) -> Element? {
         guard let pattern = Pattern(order: order, count: count) else { return nil }
 
-        let accumulation = pattern.reduce(0) { result, entry in
-            return result + entry.factor * integrate(across: entry.range, sum: sum)
+        let total = pattern.reduce(0) { result, entry in
+            return result + entry.factor * integrate(
+                across: entry.range, cumulative: cumulative
+            )
         }
-        return abs(accumulation) % 10
+        return abs(total) % 10
     }
     
-    func integrate(across range: Range<Element>, sum: Int) -> Element {
+    func integrate(across range: Range<Element>, cumulative: Self) -> Element {
         guard !range.isEmpty else { return 0 }
         
         let startingEpoch = range.startIndex / count
         let endingEpoch = range.endIndex / count
         let startIndex = range.startIndex % count
         let endIndex = range.endIndex % count
-
+        
         switch (endingEpoch - startingEpoch, endIndex) {
-            case (0, _), (1, 0): return self[range].reduce(0, +)
-            default:             break
+            case (1, 0):
+                return cumulative[count] - cumulative[startIndex]
+            case (0, _):
+                return cumulative[endIndex] - cumulative[startIndex]
+            default:
+                break
         }
         
         assert(endingEpoch - startingEpoch > 0)
         
         return
-            self[startIndex ..< count].reduce(0, +) +
-            (endingEpoch - startingEpoch) * sum +
-            self[0 ..< endIndex].reduce(0, +)
+            cumulative[count] - cumulative[startIndex] +
+            (endingEpoch - startingEpoch) * cumulative.last! +
+            cumulative[endIndex] - cumulative[0]
     }
     
 }

@@ -10,6 +10,28 @@ import XCTest
 
 class Day16: XCTestCase {
     
+    func test_pattern() {
+        XCTAssertNil(Pattern(order: 0, count: 1))
+        
+        var pattern = Pattern(order: 1, count: 5)!
+        XCTAssertEqual(pattern.next(), PatternElement(range: (0..<1), factor: +1))
+        XCTAssertEqual(pattern.next(), PatternElement(range: (2..<3), factor: -1))
+        XCTAssertEqual(pattern.next(), PatternElement(range: (4..<5), factor: +1))
+        XCTAssertNil(pattern.next())
+
+        pattern = Pattern(order: 2, count: 11)!
+        XCTAssertEqual(pattern.next(), PatternElement(range: (1..<3), factor: +1))
+        XCTAssertEqual(pattern.next(), PatternElement(range: (5..<7), factor: -1))
+        XCTAssertEqual(pattern.next(), PatternElement(range: (9..<11), factor: +1))
+        XCTAssertNil(pattern.next())
+
+        pattern = Pattern(order: 3, count: 17)!
+        XCTAssertEqual(pattern.next(), PatternElement(range: (2..<5), factor: +1))
+        XCTAssertEqual(pattern.next(), PatternElement(range: (8..<11), factor: -1))
+        XCTAssertEqual(pattern.next(), PatternElement(range: (14..<17), factor: +1))
+        XCTAssertNil(pattern.next())
+    }
+    
     func test_example() {
         XCTAssertEqual(
             "12345678".asSignal?.convolved(phaseCount: 4),
@@ -56,39 +78,76 @@ private extension String {
     }
 }
 
+private struct PatternElement: Equatable {
+    let range: Range<Int>
+    let factor: Int
+}
+
 private struct Pattern: Sequence, IteratorProtocol {
     
     let order: Int
-    var index = 1
+    let fullRange: Range<Int>
+    var index: Int
+    var factor = +1
     
-    init(order: Int) { self.order = order }
+    init?(order: Int, count: Int) {
+        guard order > 0 && count > 0 else { return nil }
+        self.order = order
+        fullRange = 0 ..< count
+        index = order - 1
+    }
     
-    mutating func next() -> Int? {
-        let patternIndex = (index / order) % _basePattern.count
-        index += 1
-        return _basePattern[patternIndex]
+    mutating func next() -> PatternElement? {
+        guard fullRange.contains(index) else { return nil }
+        defer {
+            index += 2 * order
+            factor = -factor
+        }
+
+        let range = (index ..< index + order).clamped(to: fullRange)
+        return PatternElement(range: range, factor: factor)
     }
 
 }
 
 private extension Array where Element == Int {
+
+    func makeCumulative() -> Self {
+        var total = 0
+        return [0] + self.map {
+            total += $0
+            return total
+        }
+    }
     
     func convolved(phaseCount: Int) -> Self {
         var result = self
         
         for _ in 1...phaseCount {
-            result = (1...result.count).map { result.convolved(order: $0) }
+            let cumulative = result.makeCumulative()
+            assert(cumulative.count == count + 1)
+            
+            result = (1 ... result.count).map {
+                result.convolved(order: $0, cumulative: cumulative)!
+            }
         }
         
         return result
     }
     
-    func convolved(order: Int) -> Element {
-        let pattern = Pattern(order: order)
-        let accumulation = zip(self, pattern).reduce(0) { result, entry in
-            return result + entry.0 * entry.1
+    func convolved(order: Int, cumulative: Self) -> Element? {
+        guard let pattern = Pattern(order: order, count: count) else { return nil }
+
+        let total = pattern.reduce(0) { result, entry in
+            return result + entry.factor * integrate(
+                across: entry.range, cumulative: cumulative
+            )
         }
-        return abs(accumulation) % 10
+        return abs(total) % 10
+    }
+    
+    func integrate(across range: Range<Element>, cumulative: Self) -> Element {
+        return cumulative[range.endIndex] - cumulative[range.startIndex]
     }
     
 }

@@ -58,7 +58,7 @@ class Day16: XCTestCase {
             signal.convolved(phaseCount: 100, offset: offset).prefix(8),
             [8, 4, 4, 6, 2, 0, 2, 6]
         )
-        
+
         signal = "02935109699940807407585447034323".asSignal!.repeating(count: 10_000)
         offset = signal.offsetFromPrefix
         XCTAssertEqual(
@@ -78,6 +78,13 @@ class Day16: XCTestCase {
         XCTAssertEqual(
             _signal.convolved(phaseCount: 100).prefix(8),
             [2, 9, 9, 5, 6, 4, 9, 5]
+        )
+        
+        let signal = _signal.repeating(count: 10_000)
+        let offset = signal.offsetFromPrefix
+        XCTAssertEqual(
+            signal.convolved(phaseCount: 100, offset: offset).prefix(8),
+            [7, 3, 5, 5, 6, 5, 0, 4]
         )
     }
     

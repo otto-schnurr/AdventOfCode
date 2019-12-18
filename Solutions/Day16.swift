@@ -192,16 +192,14 @@ private extension Array where Element == Int {
     }
 
     func convolved(phaseCount: Int, offset: Int) -> Self {
-        var result = Array(self[offset...])
+        var result = Array(self[offset...].reversed())
         
         for _ in 1...phaseCount {
             var total = 0
-            result = result
-                .reversed().map { total += $0; return total }
-                .reversed().map { abs($0) % 10 }
+            result = result.map { total += $0; return abs(total) % 10 }
         }
         
-        return result
+        return Array(result.reversed())
     }
     
 }

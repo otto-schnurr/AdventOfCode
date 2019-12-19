@@ -14,21 +14,27 @@ class Day10: XCTestCase {
         let map = """
         .#..#
         .....
-        #####
-        ....#
         ...##
         """
         
-        print(parseCoordinates(from: map))
+        XCTAssertEqual(
+            parseCoordinates(from: map),
+            [Coordinate(0, 1), Coordinate(0, 4), Coordinate(2, 3), Coordinate(2, 4)]
+        )
     }
     
 }
 
 
 // MARK: - Private
-private struct Coordinate {
+private struct Coordinate: Equatable {
     let x: Int
     let y: Int
+    
+    init(_ x: Int, _ y: Int) {
+        self.x = x
+        self.y = y
+    }
 }
 
 extension Coordinate: CustomStringConvertible {
@@ -36,6 +42,13 @@ extension Coordinate: CustomStringConvertible {
 }
 
 private func parseCoordinates(from map: String) -> [Coordinate] {
-    // !!!: implement me
-    return [Coordinate(x: 0, y: 0)]
+    var result = [Coordinate]()
+
+    for (x, row) in map.split(separator: "\n").enumerated() {
+        for (y, _) in row.enumerated().filter({ $0.element == "#" }) {
+            result.append(Coordinate(x, y))
+        }
+    }
+    
+    return result
 }

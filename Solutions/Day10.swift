@@ -70,6 +70,14 @@ class Day10: XCTestCase {
             Array(InteriorCoordinates(between: unit, and: .zero)),
             [ ]
         )
+        XCTAssertEqual(
+            Array(InteriorCoordinates(between: .zero, and: 4 * unit)),
+            [ unit, 2 * unit, 3 * unit ]
+        )
+        XCTAssertEqual(
+            Array(InteriorCoordinates(between: 4 * unit, and: .zero)),
+            [ 3 * unit, 2 * unit, unit ]
+        )
     }
     
     func test_coordinateParsing() {
@@ -136,13 +144,21 @@ extension Coordinate: CustomStringConvertible {
 private struct InteriorCoordinates: Sequence, IteratorProtocol {
     
     init(between a: Coordinate, and b: Coordinate) {
-        
+        current = a
+        step = (b - a).reduced
+        target = b
     }
     
     mutating func next() -> Coordinate? {
-        // !!!: implement me
-        return nil
+        guard current != target else { return nil }
+        current = current + step
+        guard current != target else { return nil }
+        return current
     }
+    
+    private var current: Coordinate
+    private let step: Coordinate
+    private let target: Coordinate
     
 }
 

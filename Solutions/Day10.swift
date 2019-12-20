@@ -105,7 +105,7 @@ class Day10: XCTestCase {
         
         XCTAssertEqual(
             [Coordinate](from: map),
-            [Coordinate(0, 1), Coordinate(0, 4), Coordinate(2, 3), Coordinate(2, 4)]
+            [Coordinate(1, 0), Coordinate(4, 0), Coordinate(3, 2), Coordinate(4, 2)]
         )
     }
             
@@ -282,8 +282,8 @@ extension Array where Element == Coordinate {
     init(from map: String) {
         var result = [Coordinate]()
 
-        for (x, row) in map.split(separator: "\n").enumerated() {
-            for (y, _) in row.enumerated().filter({ $0.element == "#" }) {
+        for (y, row) in map.split(separator: "\n").enumerated() {
+            for (x, _) in row.enumerated().filter({ $0.element == "#" }) {
                 result.append(Coordinate(x, y))
             }
         }

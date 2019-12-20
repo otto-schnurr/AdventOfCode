@@ -26,22 +26,24 @@ class Day11: XCTestCase {
     }
     
     func test_solution() {
-        let computer = Computer()
-        computer.load(_program)
+        var panels = Panels()
+        var robot = Robot()
+        robot.run(on: &panels)
+        XCTAssertEqual(panels.count, 2322)
     }
     
 }
 
 
 // MARK: - Private
-private typealias Area = [Coordinate: Color]
+private typealias Panels = [Coordinate: Color]
 
-private enum Color: Int {
+private enum Color: Word {
     case black = 0
     case white = 1
 }
 
-private enum Turn: Int {
+private enum Turn: Word {
     case left = 0
     case right = 1
 }
@@ -101,11 +103,41 @@ private enum Direction {
 
 private struct Robot {
     
-    var position: Coordinate
+    var position = Coordinate.zero
+    
+    init() {
+        computer = Computer(outputMode: .yield)
+    }
+    
+    mutating func run(on panels: inout Panels) {
+        computer.load(_program)
+        var shouldKeepRunning = true
+
+        repeat {
+            computer.inputBuffer.append(
+                panels[position]?.rawValue ?? Color.black.rawValue
+            )
+            var output = Buffer()
+            
+            computer.run()
+            output += computer.harvestOutput()
+            computer.run()
+            output += computer.harvestOutput()
+            
+            guard output.count >= 2 else {
+                shouldKeepRunning = false
+                continue
+            }
+            
+            panels[position] = Color(rawValue: output[0])!
+            direction = direction.turned(Turn(rawValue: output[1])!)
+            position = position + direction.asCoordinate
+        } while shouldKeepRunning
+    }
     
     // MARK: Private
     private let computer: Computer
-    private var direction: Direction
+    private var direction = Direction.up
     
 }
 

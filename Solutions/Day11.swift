@@ -20,6 +20,38 @@ class Day11: XCTestCase {
 
 
 // MARK: - Private
+private typealias Area = [Coordinate: Color]
+
+private enum Color: Int {
+    case black = 0
+    case white = 1
+}
+
+private enum Direction {
+    
+    case up, down, left, right
+    
+    var asCoordinate: Coordinate {
+        switch self {
+        case .up:    return Coordinate(0, 1)
+        case .down:  return Coordinate(0, -1)
+        case .left:  return Coordinate(-1, 0)
+        case .right: return Coordinate(1, 0)
+        }
+    }
+    
+}
+
+private struct Robot {
+    
+    var position: Coordinate
+    
+    // MARK: Private
+    private let computer: Computer
+    private var direction: Direction
+    
+}
+
 private let _program: Program = [
     3, 8, 1005, 8, 304, 1106, 0, 11, 0, 0, 0, 104, 1, 104, 0, 3, 8, 102,
     -1, 8, 10, 101, 1, 10, 10, 4, 10, 1008, 8, 1, 10, 4, 10, 1002, 8, 1,

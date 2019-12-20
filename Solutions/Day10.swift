@@ -86,14 +86,14 @@ class Day10: XCTestCase {
     
     func test_coordinateAngles() {
         XCTAssertEqual(Coordinate.zero.angle, 0)
-        XCTAssertEqual(Coordinate(0, +1).angle, 0, accuracy: 0.001)
-        XCTAssertEqual(Coordinate(+1, +1).angle, CGFloat.pi / 4, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(0, -1).angle, 0, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(+1, -1).angle, CGFloat.pi / 4, accuracy: 0.001)
         XCTAssertEqual(Coordinate(+1, 0).angle, CGFloat.pi / 2, accuracy: 0.001)
-        XCTAssertEqual(Coordinate(+1, -1).angle, 3 * CGFloat.pi / 4, accuracy: 0.001)
-        XCTAssertEqual(Coordinate(0, -1).angle, CGFloat.pi, accuracy: 0.001)
-        XCTAssertEqual(Coordinate(-1, -1).angle, 5 * CGFloat.pi / 4, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(+1, +1).angle, 3 * CGFloat.pi / 4, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(0, +1).angle, CGFloat.pi, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(-1, +1).angle, 5 * CGFloat.pi / 4, accuracy: 0.001)
         XCTAssertEqual(Coordinate(-1, 0).angle, 3 * CGFloat.pi / 2, accuracy: 0.001)
-        XCTAssertEqual(Coordinate(-1, +1).angle, 7 * CGFloat.pi / 4, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(-1, -1).angle, 7 * CGFloat.pi / 4, accuracy: 0.001)
     }
     
     func test_coordinateParsing() {
@@ -217,7 +217,7 @@ private struct Coordinate: Equatable, Hashable {
 private extension Coordinate {
     
     var angle: CGFloat {
-        let result = atan2(CGFloat(x), CGFloat(y))
+        let result = atan2(CGFloat(x), CGFloat(-y))
         return result >= 0 ? result : result + 2 * .pi
     }
     

@@ -11,13 +11,17 @@ import XCTest
 class Day10: XCTestCase {
     
     func test_coordinateArithmetic() {
-        XCTAssertEqual(0 * Coordinate(1, 1), .zero)
+        let unit = Coordinate(1, 1)
+        
+        XCTAssertEqual(0 * unit, .zero)
         XCTAssertEqual(3 * Coordinate.zero, .zero)
-        XCTAssertEqual(-1 * Coordinate(1, 1), Coordinate(-1, -1))
+        XCTAssertEqual(-1 * unit, Coordinate(-1, -1))
 
-        XCTAssertEqual(Coordinate(1, 1) * 0, .zero)
+        XCTAssertEqual(unit * 0, .zero)
         XCTAssertEqual(Coordinate.zero * 3, .zero)
-        XCTAssertEqual(Coordinate(1, 1) * -1, Coordinate(-1, -1))
+        XCTAssertEqual(unit * -1, Coordinate(-1, -1))
+        
+        XCTAssertEqual(unit + unit, Coordinate(2, 2))
     }
     
     func test_reduceCoordinate() {
@@ -47,22 +51,22 @@ class Day10: XCTestCase {
     }
     
     func test_interiorCoordinates() {
-        let one = Coordinate(1, 1)
+        let unit = Coordinate(1, 1)
         
         XCTAssertEqual(
             Array(InteriorCoordinates(between: .zero, and: .zero)),
             [ ]
         )
         XCTAssertEqual(
-            Array(InteriorCoordinates(between: one, and: one)),
+            Array(InteriorCoordinates(between: unit, and: unit)),
             [ ]
         )
         XCTAssertEqual(
-            Array(InteriorCoordinates(between: .zero, and: one)),
+            Array(InteriorCoordinates(between: .zero, and: unit)),
             [ ]
         )
         XCTAssertEqual(
-            Array(InteriorCoordinates(between: one, and: .zero)),
+            Array(InteriorCoordinates(between: unit, and: .zero)),
             [ ]
         )
     }
@@ -112,6 +116,10 @@ private extension Coordinate {
     
     static func *(coordinate: Coordinate, _ factor: Int) -> Coordinate {
         return factor * coordinate
+    }
+    
+    static func +(lhs: Coordinate, rhs: Coordinate) -> Coordinate {
+        return Coordinate(lhs.x + rhs.x, lhs.x + rhs.y)
     }
     
 }

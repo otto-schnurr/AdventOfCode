@@ -213,7 +213,14 @@ class Day10: XCTestCase {
     
     func test_solution() {
         let coordinates = [Coordinate](from: _map)
-        XCTAssertEqual(coordinates.visiblityCounts.max()!, 309)
+        let visbility = coordinates.visiblityCounts
+        let visibilityMaximum = visbility.max()!
+        XCTAssertEqual(visibilityMaximum, 309)
+
+        let maximumIndex = visbility.firstIndex { $0 == visibilityMaximum }!
+        let station = coordinates[maximumIndex]
+        let sortedCoordinates = coordinates.sorted(around: station)
+        XCTAssertEqual(sortedCoordinates[199], Coordinate(4, 16))
     }
     
 }

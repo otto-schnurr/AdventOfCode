@@ -46,6 +46,27 @@ class Day10: XCTestCase {
         XCTAssertEqual(Coordinate(-5, -5).reduced, Coordinate(-1, -1))
     }
     
+    func test_interiorCoordinates() {
+        let one = Coordinate(1, 1)
+        
+        XCTAssertEqual(
+            Array(InteriorCoordinates(between: .zero, and: .zero)),
+            [ ]
+        )
+        XCTAssertEqual(
+            Array(InteriorCoordinates(between: one, and: one)),
+            [ ]
+        )
+        XCTAssertEqual(
+            Array(InteriorCoordinates(between: .zero, and: one)),
+            [ ]
+        )
+        XCTAssertEqual(
+            Array(InteriorCoordinates(between: one, and: .zero)),
+            [ ]
+        )
+    }
+    
     func test_coordinateParsing() {
         let map = """
         .#..#
@@ -97,6 +118,19 @@ private extension Coordinate {
 
 extension Coordinate: CustomStringConvertible {
     var description: String { return "(\(x), \(y))" }
+}
+
+private struct InteriorCoordinates: Sequence, IteratorProtocol {
+    
+    init(between a: Coordinate, and b: Coordinate) {
+        
+    }
+    
+    mutating func next() -> Coordinate? {
+        // !!!: implement me
+        return nil
+    }
+    
 }
 
 extension Array where Element == Coordinate {

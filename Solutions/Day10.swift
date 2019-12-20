@@ -84,6 +84,10 @@ class Day10: XCTestCase {
         )
     }
     
+    func test_coordinateAngles() {
+        XCTAssertEqual(Coordinate.zero.angle, 0)
+    }
+    
     func test_coordinateParsing() {
         let map = """
         .#..#
@@ -203,6 +207,11 @@ private struct Coordinate: Equatable, Hashable {
 }
 
 private extension Coordinate {
+    
+    var angle: CGFloat {
+        // !!!: implement me
+        return 0
+    }
     
     var reduced: Coordinate {
         guard self != .zero else { return self }

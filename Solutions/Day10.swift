@@ -22,6 +22,7 @@ class Day10: XCTestCase {
         XCTAssertEqual(unit * -1, Coordinate(-1, -1))
         
         XCTAssertEqual(unit + unit, Coordinate(2, 2))
+        XCTAssertEqual(unit - unit, .zero)
     }
     
     func test_reduceCoordinate() {
@@ -110,16 +111,20 @@ private extension Coordinate {
         return Coordinate(x/divisor, y/divisor)
     }
 
+    static func +(lhs: Coordinate, rhs: Coordinate) -> Coordinate {
+        return Coordinate(lhs.x + rhs.x, lhs.x + rhs.y)
+    }
+    
+    static func -(lhs: Coordinate, rhs: Coordinate) -> Coordinate {
+        return Coordinate(lhs.x - rhs.x, lhs.x - rhs.y)
+    }
+    
     static func *(_ factor: Int, coordinate: Coordinate) -> Coordinate {
         return Coordinate(factor * coordinate.x, factor * coordinate.y)
     }
     
     static func *(coordinate: Coordinate, _ factor: Int) -> Coordinate {
         return factor * coordinate
-    }
-    
-    static func +(lhs: Coordinate, rhs: Coordinate) -> Coordinate {
-        return Coordinate(lhs.x + rhs.x, lhs.x + rhs.y)
     }
     
 }

@@ -10,17 +10,14 @@ import XCTest
 
 class Day10: XCTestCase {
     
-    func test_coordinateParsing() {
-        let map = """
-        .#..#
-        .....
-        ...##
-        """
-        
-        XCTAssertEqual(
-            [Coordinate](from: map),
-            [Coordinate(0, 1), Coordinate(0, 4), Coordinate(2, 3), Coordinate(2, 4)]
-        )
+    func test_coordinateArithmetic() {
+        XCTAssertEqual(0 * Coordinate(1, 1), .zero)
+        XCTAssertEqual(3 * Coordinate.zero, .zero)
+        XCTAssertEqual(-1 * Coordinate(1, 1), Coordinate(-1, -1))
+
+        XCTAssertEqual(Coordinate(1, 1) * 0, .zero)
+        XCTAssertEqual(Coordinate.zero * 3, .zero)
+        XCTAssertEqual(Coordinate(1, 1) * -1, Coordinate(-1, -1))
     }
     
     func test_reduceCoordinate() {
@@ -49,6 +46,19 @@ class Day10: XCTestCase {
         XCTAssertEqual(Coordinate(-5, -5).reduced, Coordinate(-1, -1))
     }
     
+    func test_coordinateParsing() {
+        let map = """
+        .#..#
+        .....
+        ...##
+        """
+        
+        XCTAssertEqual(
+            [Coordinate](from: map),
+            [Coordinate(0, 1), Coordinate(0, 4), Coordinate(2, 3), Coordinate(2, 4)]
+        )
+    }
+    
 }
 
 
@@ -60,17 +70,29 @@ private struct Coordinate: Equatable {
     let x: Int
     let y: Int
     
+    init(_ x: Int, _ y: Int) {
+        self.x = x
+        self.y = y
+    }
+
+}
+
+private extension Coordinate {
+    
     var reduced: Coordinate {
         guard self != .zero else { return self }
         let divisor = gcd(abs(x), abs(y))
         return Coordinate(x/divisor, y/divisor)
     }
 
-    init(_ x: Int, _ y: Int) {
-        self.x = x
-        self.y = y
+    static func *(_ factor: Int, coordinate: Coordinate) -> Coordinate {
+        return Coordinate(factor * coordinate.x, factor * coordinate.y)
     }
-
+    
+    static func *(coordinate: Coordinate, _ factor: Int) -> Coordinate {
+        return factor * coordinate
+    }
+    
 }
 
 extension Coordinate: CustomStringConvertible {

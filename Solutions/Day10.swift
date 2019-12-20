@@ -108,7 +108,37 @@ class Day10: XCTestCase {
             [Coordinate(1, 0), Coordinate(4, 0), Coordinate(3, 2), Coordinate(4, 2)]
         )
     }
-            
+    
+    func test_coordinateSorting() {
+        let map = """
+        #.#
+        ...
+        #.#
+        """
+        let coordinates = [Coordinate](from: map)
+        
+        XCTAssertEqual(
+            coordinates.sorted(around: .zero),
+            [ Coordinate(2, 0), Coordinate(2, 2), Coordinate(0, 2) ]
+        )
+        XCTAssertEqual(
+            coordinates.sorted(around: Coordinate(2, 0)),
+            [ Coordinate(2, 2), Coordinate(0, 2), .zero ]
+        )
+        XCTAssertEqual(
+            coordinates.sorted(around: Coordinate(2, 2)),
+            [ Coordinate(2, 0), Coordinate(0, 2), .zero ]
+        )
+        XCTAssertEqual(
+            coordinates.sorted(around: Coordinate(0, 2)),
+            [ .zero, Coordinate(2, 0), Coordinate(2, 2) ]
+        )
+        XCTAssertEqual(
+            coordinates.sorted(around: Coordinate(1, 1)),
+            [ Coordinate(2, 0), Coordinate(2, 2), Coordinate(0, 2), .zero ]
+        )
+    }
+    
     func test_examples() {
         var map = """
         .#..#
@@ -299,6 +329,12 @@ extension Array where Element == Coordinate {
             return InteriorCoordinates(between: station, and: target)
                 .allSatisfy { return !fastCoordinates.contains($0) }
         }.count
+    }
+    
+    func sorted(around station: Coordinate) -> Self {
+        var result = self
+        result.removeAll { $0 == station }
+        return result.sorted { ($0 - station).angle < ($1 - station).angle }
     }
     
 }

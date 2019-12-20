@@ -200,24 +200,15 @@ class Day10: XCTestCase {
     }
     
     func test_examples_part2() {
-        let map = """
-        .#....#####...#..
-        ##...##.#####..##
-        ##...#...#.#####.
-        ..#.....X...###..
-        ..#.#.....#....##
-        """
-        let coordinates = [Coordinate](from: map)
-        
-        XCTAssertEqual(
-            coordinates.sorted(around: Coordinate(8, 3)).prefix(8),
-            [
-                Coordinate(8, 1), Coordinate(9, 0), Coordinate(9, 1),
-                Coordinate(10, 0), Coordinate(9, 2), Coordinate(11, 1),
-                Coordinate(12, 1), Coordinate(11, 2)
-            ]
-        )
+        let coordinates = [Coordinate](from: _exampleMap)
+        let visbility = coordinates.visiblityCounts
+        let visibilityMaximum = visbility.max()!
+        XCTAssertEqual(visibilityMaximum, 210)
 
+        let maximumIndex = visbility.firstIndex { $0 == visibilityMaximum }!
+        let station = coordinates[maximumIndex]
+        let sortedCoordinates = coordinates.sorted(around: station)
+        XCTAssertEqual(sortedCoordinates[199], Coordinate(8, 2))
     }
     
     func test_solution() {
@@ -333,6 +324,8 @@ extension Array where Element == Coordinate {
     }
     
     func sorted(around station: Coordinate) -> Self {
+        guard count > 1 else { return self }
+        
         func delta(_ coordinate: Coordinate) -> Coordinate {
             return coordinate - station
         }
@@ -352,7 +345,12 @@ extension Array where Element == Coordinate {
         }
         
         for index in 1 ..< result.count {
-            if delta(result[index - 1]).reduced == delta(result[index]).reduced {
+            // important: Avoid infinite loop if theres a co-linear group at the end.
+            for _ in index ..< count {
+                guard
+                    delta(result[index - 1]).reduced == delta(result[index]).reduced
+                else { break }
+                
                 let blockedCoordinate = result.remove(at: index)
                 result.append(blockedCoordinate)
             }

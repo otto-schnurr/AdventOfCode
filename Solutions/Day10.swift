@@ -96,12 +96,94 @@ class Day10: XCTestCase {
             [Coordinate(0, 1), Coordinate(0, 4), Coordinate(2, 3), Coordinate(2, 4)]
         )
     }
+            
+    func test_examples() {
+        var map = """
+        .#..#
+        .....
+        #####
+        ....#
+        ...##
+        """
+        var coordinates = [Coordinate](from: map)
+        XCTAssertEqual(coordinates.visiblityCounts.max()!, 8)
+        
+        map = """
+        ......#.#.
+        #..#.#....
+        ..#######.
+        .#.#.###..
+        .#..#.....
+        ..#....#.#
+        #..#....#.
+        .##.#..###
+        ##...#..#.
+        .#....####
+        """
+        coordinates = [Coordinate](from: map)
+        XCTAssertEqual(coordinates.visiblityCounts.max()!, 33)
+        
+        map = """
+        #.#...#.#.
+        .###....#.
+        .#....#...
+        ##.#.#.#.#
+        ....#.#.#.
+        .##..###.#
+        ..#...##..
+        ..##....##
+        ......#...
+        .####.###.
+        """
+        coordinates = [Coordinate](from: map)
+        XCTAssertEqual(coordinates.visiblityCounts.max()!, 35)
+        
+        map = """
+        .#..#..###
+        ####.###.#
+        ....###.#.
+        ..###.##.#
+        ##.##.#.#.
+        ....###..#
+        ..#.#..#.#
+        #..#.#.###
+        .##...##.#
+        .....#.#..
+        """
+        coordinates = [Coordinate](from: map)
+        XCTAssertEqual(coordinates.visiblityCounts.max()!, 41)
+        
+        map = """
+        .#..##.###...#######
+        ##.############..##.
+        .#.######.########.#
+        .###.#######.####.#.
+        #####.##.#.##.###.##
+        ..#####..#.#########
+        ####################
+        #.####....###.#.#.##
+        ##.#################
+        #####.##.###..####..
+        ..######..##.#######
+        ####.##.####...##..#
+        .#####..#.######.###
+        ##...#.##########...
+        #.##########.#######
+        .####.#.###.###.#.##
+        ....##.##.###..#####
+        .#.#.###########.###
+        #.#.#.#####.####.###
+        ###.##.####.##.#..##
+        """
+        coordinates = [Coordinate](from: map)
+        XCTAssertEqual(coordinates.visiblityCounts.max()!, 210)
+    }
     
 }
 
 
 // MARK: - Private
-private struct Coordinate: Equatable {
+private struct Coordinate: Equatable, Hashable {
 
     static let zero = Coordinate(0, 0)
 
@@ -168,6 +250,13 @@ private struct InteriorCoordinates: Sequence, IteratorProtocol {
 
 extension Array where Element == Coordinate {
     
+    var visiblityCounts: [Int] {
+        let fastCoordinates = Set(self)
+        return self.map {
+            visibility(from: $0, fastCoordinates: fastCoordinates)
+        }
+    }
+    
     init(from map: String) {
         var result = [Coordinate]()
 
@@ -179,6 +268,17 @@ extension Array where Element == Coordinate {
         
         self = result
     }
+    
+    func visibility(
+        from station: Coordinate, fastCoordinates: Set<Coordinate>
+    ) -> Int {
+        return self.filter { target in
+            guard station != target else { return false }
+            return InteriorCoordinates(between: station, and: target)
+                .allSatisfy { return !fastCoordinates.contains($0) }
+        }.count
+    }
+    
 }
 
 // reference: https://github.com/raywenderlich/swift-algorithm-club

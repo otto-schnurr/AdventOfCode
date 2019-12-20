@@ -78,6 +78,10 @@ class Day10: XCTestCase {
             Array(InteriorCoordinates(between: 4 * unit, and: .zero)),
             [ 3 * unit, 2 * unit, unit ]
         )
+        XCTAssertEqual(
+            Array(InteriorCoordinates(between: Coordinate(0, 1), and: Coordinate(0, 4))),
+            [ Coordinate(0, 2), Coordinate(0, 3) ]
+        )
     }
     
     func test_coordinateParsing() {
@@ -120,11 +124,11 @@ private extension Coordinate {
     }
 
     static func +(lhs: Coordinate, rhs: Coordinate) -> Coordinate {
-        return Coordinate(lhs.x + rhs.x, lhs.x + rhs.y)
+        return Coordinate(lhs.x + rhs.x, lhs.y + rhs.y)
     }
     
     static func -(lhs: Coordinate, rhs: Coordinate) -> Coordinate {
-        return Coordinate(lhs.x - rhs.x, lhs.x - rhs.y)
+        return Coordinate(lhs.x - rhs.x, lhs.y - rhs.y)
     }
     
     static func *(_ factor: Int, coordinate: Coordinate) -> Coordinate {

@@ -139,7 +139,7 @@ class Day10: XCTestCase {
         )
     }
     
-    func test_examples() {
+    func test_examples_part1() {
         var map = """
         .#..#
         .....
@@ -221,6 +221,27 @@ class Day10: XCTestCase {
         XCTAssertEqual(coordinates.visiblityCounts.max()!, 210)
     }
     
+    func test_examples_part2() {
+        let map = """
+        .#....#####...#..
+        ##...##.#####..##
+        ##...#...#.#####.
+        ..#.....X...###..
+        ..#.#.....#....##
+        """
+        let coordinates = [Coordinate](from: map)
+        
+        XCTAssertEqual(
+            coordinates.sorted(around: Coordinate(8, 3)).prefix(8),
+            [
+                Coordinate(8, 1), Coordinate(9, 0), Coordinate(9, 1),
+                Coordinate(10, 0), Coordinate(9, 2), Coordinate(11, 1),
+                Coordinate(12, 1), Coordinate(11, 2)
+            ]
+        )
+
+    }
+    
     func test_solution() {
         let coordinates = [Coordinate](from: _map)
         XCTAssertEqual(coordinates.visiblityCounts.max()!, 309)
@@ -245,6 +266,8 @@ private struct Coordinate: Equatable, Hashable {
 }
 
 private extension Coordinate {
+    
+    var length: Int { return abs(x) + abs(y) }
     
     var angle: CGFloat {
         let result = atan2(CGFloat(x), CGFloat(-y))
@@ -332,9 +355,32 @@ extension Array where Element == Coordinate {
     }
     
     func sorted(around station: Coordinate) -> Self {
+        func delta(_ coordinate: Coordinate) -> Coordinate {
+            return coordinate - station
+        }
+        
         var result = self
-        result.removeAll { $0 == station }
-        return result.sorted { ($0 - station).angle < ($1 - station).angle }
+        result.removeAll { delta($0) == .zero }
+        
+        result.sort {
+            let a = delta($0)
+            let b = delta($1)
+            
+            if a.reduced == b.reduced {
+                return a.length < b.length
+            } else {
+                return a.angle < b.angle
+            }
+        }
+        
+        for index in 1 ..< result.count {
+            if delta(result[index - 1]).reduced == delta(result[index]).reduced {
+                let blockedCoordinate = result.remove(at: index)
+                result.append(blockedCoordinate)
+            }
+        }
+        
+        return result
     }
     
 }

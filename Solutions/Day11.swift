@@ -12,17 +12,17 @@ import AdventOfCode
 class Day11: XCTestCase {
     
     func test_directions() {
-        XCTAssertEqual(Direction.up.turnedLeft(), .left)
-        XCTAssertEqual(Direction.up.turnedRight(), .right)
+        XCTAssertEqual(Direction.up.turned(.left), .left)
+        XCTAssertEqual(Direction.up.turned(.right), .right)
         
-        XCTAssertEqual(Direction.right.turnedLeft(), .up)
-        XCTAssertEqual(Direction.right.turnedRight(), .down)
+        XCTAssertEqual(Direction.right.turned(.left), .up)
+        XCTAssertEqual(Direction.right.turned(.right), .down)
         
-        XCTAssertEqual(Direction.down.turnedLeft(), .right)
-        XCTAssertEqual(Direction.down.turnedRight(), .left)
+        XCTAssertEqual(Direction.down.turned(.left), .right)
+        XCTAssertEqual(Direction.down.turned(.right), .left)
         
-        XCTAssertEqual(Direction.left.turnedLeft(), .down)
-        XCTAssertEqual(Direction.left.turnedRight(), .up)
+        XCTAssertEqual(Direction.left.turned(.left), .down)
+        XCTAssertEqual(Direction.left.turned(.right), .up)
     }
     
     func test_solution() {
@@ -41,6 +41,11 @@ private enum Color: Int {
     case white = 1
 }
 
+private enum Turn: Int {
+    case left = 0
+    case right = 1
+}
+
 private enum Direction {
     
     case up, down, left, right
@@ -51,6 +56,26 @@ private enum Direction {
         case .down:  return Coordinate(0, -1)
         case .left:  return Coordinate(-1, 0)
         case .right: return Coordinate(1, 0)
+        }
+    }
+    
+    func turned(_ turn: Turn) -> Self {
+        switch turn {
+        case .left:
+            switch self {
+            case .up: return .left
+            case .down: return .right
+            case .left: return .down
+            case .right: return .up
+            }
+
+        case .right:
+            switch self {
+            case .up: return .right
+            case .down: return .left
+            case .left: return .up
+            case .right: return .down
+            }
         }
     }
     

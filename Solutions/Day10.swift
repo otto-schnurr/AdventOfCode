@@ -84,6 +84,18 @@ class Day10: XCTestCase {
         )
     }
     
+    func test_coordinateAngles() {
+        XCTAssertEqual(Coordinate.zero.angle, 0)
+        XCTAssertEqual(Coordinate(0, -1).angle, 0, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(+1, -1).angle, CGFloat.pi / 4, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(+1, 0).angle, CGFloat.pi / 2, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(+1, +1).angle, 3 * CGFloat.pi / 4, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(0, +1).angle, CGFloat.pi, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(-1, +1).angle, 5 * CGFloat.pi / 4, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(-1, 0).angle, 3 * CGFloat.pi / 2, accuracy: 0.001)
+        XCTAssertEqual(Coordinate(-1, -1).angle, 7 * CGFloat.pi / 4, accuracy: 0.001)
+    }
+    
     func test_coordinateParsing() {
         let map = """
         .#..#
@@ -93,11 +105,41 @@ class Day10: XCTestCase {
         
         XCTAssertEqual(
             [Coordinate](from: map),
-            [Coordinate(0, 1), Coordinate(0, 4), Coordinate(2, 3), Coordinate(2, 4)]
+            [Coordinate(1, 0), Coordinate(4, 0), Coordinate(3, 2), Coordinate(4, 2)]
         )
     }
-            
-    func test_examples() {
+    
+    func test_coordinateSorting() {
+        let map = """
+        #.#
+        ...
+        #.#
+        """
+        let coordinates = [Coordinate](from: map)
+        
+        XCTAssertEqual(
+            coordinates.sorted(around: .zero),
+            [ Coordinate(2, 0), Coordinate(2, 2), Coordinate(0, 2) ]
+        )
+        XCTAssertEqual(
+            coordinates.sorted(around: Coordinate(2, 0)),
+            [ Coordinate(2, 2), Coordinate(0, 2), .zero ]
+        )
+        XCTAssertEqual(
+            coordinates.sorted(around: Coordinate(2, 2)),
+            [ Coordinate(2, 0), Coordinate(0, 2), .zero ]
+        )
+        XCTAssertEqual(
+            coordinates.sorted(around: Coordinate(0, 2)),
+            [ .zero, Coordinate(2, 0), Coordinate(2, 2) ]
+        )
+        XCTAssertEqual(
+            coordinates.sorted(around: Coordinate(1, 1)),
+            [ Coordinate(2, 0), Coordinate(2, 2), Coordinate(0, 2), .zero ]
+        )
+    }
+    
+    func test_examples_part1() {
         var map = """
         .#..#
         .....
@@ -153,35 +195,32 @@ class Day10: XCTestCase {
         coordinates = [Coordinate](from: map)
         XCTAssertEqual(coordinates.visiblityCounts.max()!, 41)
         
-        map = """
-        .#..##.###...#######
-        ##.############..##.
-        .#.######.########.#
-        .###.#######.####.#.
-        #####.##.#.##.###.##
-        ..#####..#.#########
-        ####################
-        #.####....###.#.#.##
-        ##.#################
-        #####.##.###..####..
-        ..######..##.#######
-        ####.##.####...##..#
-        .#####..#.######.###
-        ##...#.##########...
-        #.##########.#######
-        .####.#.###.###.#.##
-        ....##.##.###..#####
-        .#.#.###########.###
-        #.#.#.#####.####.###
-        ###.##.####.##.#..##
-        """
-        coordinates = [Coordinate](from: map)
+        coordinates = [Coordinate](from: _exampleMap)
         XCTAssertEqual(coordinates.visiblityCounts.max()!, 210)
+    }
+    
+    func test_examples_part2() {
+        let coordinates = [Coordinate](from: _exampleMap)
+        let visbility = coordinates.visiblityCounts
+        let visibilityMaximum = visbility.max()!
+        XCTAssertEqual(visibilityMaximum, 210)
+
+        let maximumIndex = visbility.firstIndex { $0 == visibilityMaximum }!
+        let station = coordinates[maximumIndex]
+        let sortedCoordinates = coordinates.sorted(around: station)
+        XCTAssertEqual(sortedCoordinates[199], Coordinate(8, 2))
     }
     
     func test_solution() {
         let coordinates = [Coordinate](from: _map)
-        XCTAssertEqual(coordinates.visiblityCounts.max()!, 309)
+        let visbility = coordinates.visiblityCounts
+        let visibilityMaximum = visbility.max()!
+        XCTAssertEqual(visibilityMaximum, 309)
+
+        let maximumIndex = visbility.firstIndex { $0 == visibilityMaximum }!
+        let station = coordinates[maximumIndex]
+        let sortedCoordinates = coordinates.sorted(around: station)
+        XCTAssertEqual(sortedCoordinates[199], Coordinate(4, 16))
     }
     
 }
@@ -203,6 +242,13 @@ private struct Coordinate: Equatable, Hashable {
 }
 
 private extension Coordinate {
+    
+    var length: Int { return abs(x) + abs(y) }
+    
+    var angle: CGFloat {
+        let result = atan2(CGFloat(x), CGFloat(-y))
+        return result >= 0 ? result : result + 2 * .pi
+    }
     
     var reduced: Coordinate {
         guard self != .zero else { return self }
@@ -265,8 +311,8 @@ extension Array where Element == Coordinate {
     init(from map: String) {
         var result = [Coordinate]()
 
-        for (x, row) in map.split(separator: "\n").enumerated() {
-            for (y, _) in row.enumerated().filter({ $0.element == "#" }) {
+        for (y, row) in map.split(separator: "\n").enumerated() {
+            for (x, _) in row.enumerated().filter({ $0.element == "#" }) {
                 result.append(Coordinate(x, y))
             }
         }
@@ -282,6 +328,42 @@ extension Array where Element == Coordinate {
             return InteriorCoordinates(between: station, and: target)
                 .allSatisfy { return !fastCoordinates.contains($0) }
         }.count
+    }
+    
+    func sorted(around station: Coordinate) -> Self {
+        guard count > 1 else { return self }
+        
+        func delta(_ coordinate: Coordinate) -> Coordinate {
+            return coordinate - station
+        }
+        
+        var result = self
+        result.removeAll { delta($0) == .zero }
+        
+        result.sort {
+            let a = delta($0)
+            let b = delta($1)
+            
+            if a.reduced == b.reduced {
+                return a.length < b.length
+            } else {
+                return a.angle < b.angle
+            }
+        }
+        
+        for index in 1 ..< result.count {
+            // important: Avoid infinite loop if theres a co-linear group at the end.
+            for _ in index ..< count {
+                guard
+                    delta(result[index - 1]).reduced == delta(result[index]).reduced
+                else { break }
+                
+                let blockedCoordinate = result.remove(at: index)
+                result.append(blockedCoordinate)
+            }
+        }
+        
+        return result
     }
     
 }
@@ -302,6 +384,29 @@ private func gcd(_ m: Int, _ n: Int) -> Int {
 
 
 // Private Input
+private let _exampleMap = """
+.#..##.###...#######
+##.############..##.
+.#.######.########.#
+.###.#######.####.#.
+#####.##.#.##.###.##
+..#####..#.#########
+####################
+#.####....###.#.#.##
+##.#################
+#####.##.###..####..
+..######..##.#######
+####.##.####...##..#
+.#####..#.######.###
+##...#.##########...
+#.##########.#######
+.####.#.###.###.#.##
+....##.##.###..#####
+.#.#.###########.###
+#.#.#.#####.####.###
+###.##.####.##.#..##
+"""
+
 private let _map = """
 #.#................#..............#......#......
 .......##..#..#....#.#.....##...#.........#.#...

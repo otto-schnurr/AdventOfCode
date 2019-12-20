@@ -18,7 +18,7 @@ class Day10: XCTestCase {
         """
         
         XCTAssertEqual(
-            parseCoordinates(from: map),
+            [Coordinate](from: map),
             [Coordinate(0, 1), Coordinate(0, 4), Coordinate(2, 3), Coordinate(2, 4)]
         )
     }
@@ -77,16 +77,19 @@ extension Coordinate: CustomStringConvertible {
     var description: String { return "(\(x), \(y))" }
 }
 
-private func parseCoordinates(from map: String) -> [Coordinate] {
-    var result = [Coordinate]()
-
-    for (x, row) in map.split(separator: "\n").enumerated() {
-        for (y, _) in row.enumerated().filter({ $0.element == "#" }) {
-            result.append(Coordinate(x, y))
-        }
-    }
+extension Array where Element == Coordinate {
     
-    return result
+    init(from map: String) {
+        var result = [Coordinate]()
+
+        for (x, row) in map.split(separator: "\n").enumerated() {
+            for (y, _) in row.enumerated().filter({ $0.element == "#" }) {
+                result.append(Coordinate(x, y))
+            }
+        }
+        
+        self = result
+    }
 }
 
 // reference: https://github.com/raywenderlich/swift-algorithm-club

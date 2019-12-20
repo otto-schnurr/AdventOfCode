@@ -11,6 +11,20 @@ import AdventOfCode
 
 class Day11: XCTestCase {
     
+    func test_directions() {
+        XCTAssertEqual(Direction.up.turnedLeft(), .left)
+        XCTAssertEqual(Direction.up.turnedRight(), .right)
+        
+        XCTAssertEqual(Direction.right.turnedLeft(), .up)
+        XCTAssertEqual(Direction.right.turnedRight(), .down)
+        
+        XCTAssertEqual(Direction.down.turnedLeft(), .right)
+        XCTAssertEqual(Direction.down.turnedRight(), .left)
+        
+        XCTAssertEqual(Direction.left.turnedLeft(), .down)
+        XCTAssertEqual(Direction.left.turnedRight(), .up)
+    }
+    
     func test_solution() {
         let computer = Computer()
         computer.load(_program)
@@ -37,6 +51,24 @@ private enum Direction {
         case .down:  return Coordinate(0, -1)
         case .left:  return Coordinate(-1, 0)
         case .right: return Coordinate(1, 0)
+        }
+    }
+    
+    func turnedLeft() -> Self {
+        switch self {
+        case .up: return .left
+        case .down: return .right
+        case .left: return .down
+        case .right: return .up
+        }
+    }
+    
+    func turnedRight() -> Self {
+        switch self {
+        case .up: return .right
+        case .down: return .left
+        case .left: return .up
+        case .right: return .down
         }
     }
     

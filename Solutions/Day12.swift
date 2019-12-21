@@ -11,7 +11,25 @@ import XCTest
 class Day12: XCTestCase {
 
     func test_example() {
+        var moons = [
+            Moon(position: Vector(-1, 0, 2)),
+            Moon(position: Vector(2, -10, -7)),
+            Moon(position: Vector(4, -8, 8)),
+            Moon(position: Vector(3, 5, -1)),
+        ]
+        var system = System(moons: moons)
+        for _ in 1...10 { system.tic() }
+        XCTAssertEqual(system.energy, 179)
         
+        moons = [
+            Moon(position: Vector(-8, -10, 0)),
+            Moon(position: Vector(5, 5, 10)),
+            Moon(position: Vector(2, -7, 3)),
+            Moon(position: Vector(9, -8, -3))
+        ]
+        system = System(moons: moons)
+        for _ in 1...100 { system.tic() }
+        XCTAssertEqual(system.energy, 1940)
     }
     
 }
@@ -19,6 +37,8 @@ class Day12: XCTestCase {
 
 // MARK: - Private
 private struct Vector {
+    
+    static let zero = Vector(0, 0, 0)
     
     let x: Int
     let y: Int
@@ -42,23 +62,60 @@ private struct Vector {
     
 }
 
+extension Vector: CustomStringConvertible {
+    var description: String { "(\(x), \(y), \(z))" }
+}
+
 private struct Moon {
     
     var position: Vector
-    var velocity: Vector
+    var velocity = Vector.zero
     var energy: Int { position.lenth * velocity.lenth }
     
-    mutating func applyGravity(from other: inout Moon) {
+    mutating func applyGravity(from other: Moon) {
         let gravity = Vector(
             (other.position.x - position.x).signum(),
             (other.position.y - position.y).signum(),
             (other.position.z - position.z).signum()
         )
-        
         velocity = velocity + gravity
-        other.velocity = other.velocity - gravity
     }
     
     mutating func tic() { position = position + velocity }
     
+}
+
+extension Moon: CustomStringConvertible {
+    var description: String {
+        "position: \(position), velocity: \(velocity)"
+    }
+}
+
+private struct System {
+    
+    var energy: Int { moons.map { $0.energy }.reduce(0, +) }
+    
+    init(moons: [Moon]) {
+        self.moons = moons
+    }
+    
+    mutating func tic() {
+        for first in 0 ..< moons.count {
+            for second in first + 1 ..< moons.count {
+                moons[first].applyGravity(from: moons[second])
+                moons[second].applyGravity(from: moons[first])
+            }
+        }
+        
+        for index in 0 ..< moons.count { moons[index].tic() }
+    }
+    
+    private var moons: [Moon]
+    
+}
+
+extension System: CustomStringConvertible {
+    var description: String {
+        moons.map { $0.description }.joined(separator: "\n")
+    }
 }

@@ -9,7 +9,7 @@
 public enum Combinatorics {
     
     // reference: https://github.com/raywenderlich/swift-algorithm-club
-    static func gcd<T>(_ m: T, _ n: T) -> T where T: BinaryInteger {
+    public static func gcd<T>(_ m: T, _ n: T) -> T where T: BinaryInteger {
         var a = T()
         var b = max(m, n)
         var r = min(m, n)
@@ -22,6 +22,10 @@ public enum Combinatorics {
         return b
     }
     
+    public static func lcm<T>(_ m: T, _ n: T) -> T where T:BinaryInteger {
+        guard m != 0 && n != 0 else { return 0 }
+        return m / gcd(m, n) * n
+    }
 }
 
 public extension Array {

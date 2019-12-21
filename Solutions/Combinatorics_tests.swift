@@ -1,5 +1,5 @@
 //
-//  Array+Permutations_tests.swift
+//  Combinatorics_tests.swift
 //  AdventOfCode
 //
 //  Created by Otto Schnurr on 12/14/2019.
@@ -7,8 +7,9 @@
 //
 
 import XCTest
+import AdventOfCode
 
-class Array_Permutations_tests: XCTestCase {
+class Combinatorics_tests: XCTestCase {
 
     func test_permutationsOfEmptyArray_isEmpty() {
         XCTAssertEqual([Int]().permutations, [[Int]]())
@@ -41,6 +42,18 @@ class Array_Permutations_tests: XCTestCase {
     
     func test_fiveElementArray_hasExpectedNumberOfPermutations() {
         XCTAssertEqual(Array((1...5)).permutations.count, 120)
+    }
+    
+    func test_values_haveExpectedLowestCommonMultiples() {
+        XCTAssertEqual(Combinatorics.lcm(1, 1), 1)
+
+        XCTAssertEqual(Combinatorics.lcm(1, 2), 2)
+        XCTAssertEqual(Combinatorics.lcm(2, 4), 4)
+        XCTAssertEqual(Combinatorics.lcm(3, 7), 21)
+
+        XCTAssertEqual(Combinatorics.lcm(2, 1), 2)
+        XCTAssertEqual(Combinatorics.lcm(4, 2), 4)
+        XCTAssertEqual(Combinatorics.lcm(7, 3), 21)
     }
 
 }

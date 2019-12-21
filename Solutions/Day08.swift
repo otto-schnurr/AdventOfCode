@@ -114,8 +114,8 @@ private extension Pixels {
 
         let characters = rawString.map { (c: Character) -> Character in
             switch c {
-                case "1": return "."
-                default:  return " "
+                case "1": return "⬛️"
+                default:  return "⬜️"
             }
         }
         

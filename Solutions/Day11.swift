@@ -51,8 +51,8 @@ private enum Color: Word, CustomStringConvertible {
     
     var asCharacter: Character {
         switch self {
-        case .black: return Character("⬛️")
-        case .white: return Character("⬜️")
+        case .black: return "⬛️"
+        case .white: return "⬜️"
         }
     }
     

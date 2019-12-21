@@ -30,6 +30,11 @@ class Day11: XCTestCase {
         var robot = Robot()
         robot.run(on: &panels)
         XCTAssertEqual(panels.count, 2322)
+        
+        panels = [.zero: .white]
+        robot.position = .zero
+        robot.run(on: &panels)
+        render_hack(panels)
     }
     
 }
@@ -38,9 +43,20 @@ class Day11: XCTestCase {
 // MARK: - Private
 private typealias Panels = [Coordinate: Color]
 
-private enum Color: Word {
+private enum Color: Word, CustomStringConvertible {
     case black = 0
     case white = 1
+    
+    var description: String { String(self.asCharacter) }
+    
+    var asCharacter: Character {
+        switch self {
+        case .black: return Character("⬛️")
+        case .white: return Character("⬜️")
+        }
+    }
+    
+    
 }
 
 private enum Turn: Word {
@@ -54,8 +70,8 @@ private enum Direction {
     
     var asCoordinate: Coordinate {
         switch self {
-        case .up:    return Coordinate(0, 1)
-        case .down:  return Coordinate(0, -1)
+        case .up:    return Coordinate(0, -1)
+        case .down:  return Coordinate(0, +1)
         case .left:  return Coordinate(-1, 0)
         case .right: return Coordinate(1, 0)
         }
@@ -137,8 +153,30 @@ private struct Robot {
     
     // MARK: Private
     private let computer: Computer
-    private var direction = Direction.up
+    private var direction = Direction.right
     
+}
+
+private extension ClosedRange where Element == Int {
+    func expanded(toInclude bound: Bound) -> Self {
+        return Swift.min(bound, lowerBound) ... Swift.max(bound, upperBound)
+    }
+}
+
+// TODO: Figure out why the axis are reversed.
+private func render_hack(_ panels: Panels) {
+    let rowRange = panels.reduce(0...0) { $0.expanded(toInclude: $1.key.y) }
+    let columnRange = panels.reduce(0...0) { $0.expanded(toInclude: $1.key.x) }
+    
+    let emptyRow = Array(repeating: Color.black.asCharacter, count: columnRange.count)
+    var panelDisplay = Array(repeating: emptyRow, count: rowRange.count)
+    
+    panels.forEach {
+        let rowIndex = $0.key.y - rowRange.lowerBound
+        let columnIndex = $0.key.x - columnRange.lowerBound
+        panelDisplay[rowIndex][columnIndex] = $0.value.asCharacter
+    }
+    panelDisplay.forEach { print(String($0)) }
 }
 
 private let _program: Program = [

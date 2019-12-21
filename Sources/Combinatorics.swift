@@ -6,6 +6,24 @@
 //  Copyright © 2019 Otto Schnurr. All rights reserved.
 //
 
+public enum Combinatorics {
+    
+    // reference: https://github.com/raywenderlich/swift-algorithm-club
+    static func gcd<T>(_ m: T, _ n: T) -> T where T: BinaryInteger {
+        var a = T()
+        var b = max(m, n)
+        var r = min(m, n)
+        
+        while r != T() {
+            a = b
+            b = r
+            r = a % b
+        }
+        return b
+    }
+    
+}
+
 public extension Array {
     var permutations: [[Element]] {
         guard !isEmpty else { return [ ] }
@@ -18,7 +36,7 @@ public extension Array {
 
 
 // MARK: - Private
-private enum Combinatorics {
+private extension Combinatorics {
 
     // reference https://github.com/raywenderlich/swift-algorithm-club/tree/master/Combinatorics
     static func permuteWirth<T>(_ a: [T], _ n: Int, result: inout [[T]]) {

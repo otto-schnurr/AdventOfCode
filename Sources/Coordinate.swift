@@ -33,7 +33,7 @@ public extension Coordinate {
     
     var reduced: Coordinate {
         guard self != .zero else { return self }
-        let divisor = gcd(abs(x), abs(y))
+        let divisor = Combinatorics.gcd(abs(x), abs(y))
         return Coordinate(x/divisor, y/divisor)
     }
 
@@ -57,21 +57,4 @@ public extension Coordinate {
 
 extension Coordinate: CustomStringConvertible {
     public var description: String { return "(\(x), \(y))" }
-}
-
-
-// MARK: - Private
-
-// reference: https://github.com/raywenderlich/swift-algorithm-club
-private func gcd(_ m: Int, _ n: Int) -> Int {
-    var a: Int = 0
-    var b: Int = max(m, n)
-    var r: Int = min(m, n)
-    
-    while r != 0 {
-        a = b
-        b = r
-        r = a % b
-    }
-    return b
 }

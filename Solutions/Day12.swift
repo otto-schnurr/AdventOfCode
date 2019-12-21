@@ -30,6 +30,20 @@ class Day12: XCTestCase {
         system = System(moons: moons)
         for _ in 1...100 { system.tic() }
         XCTAssertEqual(system.energy, 1940)
+        
+        moons = [
+            Moon(position: Vector(-1, 0, 2)),
+            Moon(position: Vector(2, -10, -7)),
+            Moon(position: Vector(4, -8, 8)),
+            Moon(position: Vector(3, 5, -1)),
+        ]
+        system = System(moons: moons)
+        var history = Set<System>()
+        while !history.contains(system) {
+            history.insert(system)
+            system.tic()
+        }
+        XCTAssertEqual(history.count, 2772)
     }
     
     func test_solutions() {

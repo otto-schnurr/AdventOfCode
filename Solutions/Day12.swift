@@ -61,6 +61,34 @@ class Day12: XCTestCase {
         var system = System(moons: _moons)
         for _ in 1...1_000 { system.tic() }
         XCTAssertEqual(system.energy, 12351)
+
+        let moonsX = [
+            Moon(position: _moons[0].position.x),
+            Moon(position: _moons[1].position.x),
+            Moon(position: _moons[2].position.x),
+            Moon(position: _moons[3].position.x),
+        ]
+        let moonsY = [
+            Moon(position: _moons[0].position.y),
+            Moon(position: _moons[1].position.y),
+            Moon(position: _moons[2].position.y),
+            Moon(position: _moons[3].position.y),
+        ]
+        let moonsZ = [
+            Moon(position: _moons[0].position.z),
+            Moon(position: _moons[1].position.z),
+            Moon(position: _moons[2].position.z),
+            Moon(position: _moons[3].position.z),
+        ]
+
+        let epochX = findEpoch(for: moonsX)
+        let epochY = findEpoch(for: moonsY)
+        let epochZ = findEpoch(for: moonsZ)
+
+        XCTAssertEqual(
+            Combinatorics.lcm(Combinatorics.lcm(epochX, epochY), epochZ),
+            380635029877596
+        )
     }
     
 }

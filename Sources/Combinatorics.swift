@@ -11,25 +11,28 @@ public extension Array {
         guard !isEmpty else { return [ ] }
         
         var result = [[Element]]()
-        permuteWirth(self, count - 1, result: &result)
+        Combinatorics.permuteWirth(self, count - 1, result: &result)
         return result
     }
 }
 
 
 // MARK: - Private
+private enum Combinatorics {
 
-// reference https://github.com/raywenderlich/swift-algorithm-club/tree/master/Combinatorics
-func permuteWirth<T>(_ a: [T], _ n: Int, result: inout [[T]]) {
-    if n == 0 {
-        result.append(a)
-    } else {
-        var a = a
-        permuteWirth(a, n - 1, result: &result)
-        for i in 0..<n {
-            a.swapAt(i, n)
+    // reference https://github.com/raywenderlich/swift-algorithm-club/tree/master/Combinatorics
+    static func permuteWirth<T>(_ a: [T], _ n: Int, result: inout [[T]]) {
+        if n == 0 {
+            result.append(a)
+        } else {
+            var a = a
             permuteWirth(a, n - 1, result: &result)
-            a.swapAt(i, n)
+            for i in 0..<n {
+                a.swapAt(i, n)
+                permuteWirth(a, n - 1, result: &result)
+                a.swapAt(i, n)
+            }
         }
     }
+
 }

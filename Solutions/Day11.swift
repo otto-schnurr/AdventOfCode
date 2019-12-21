@@ -30,6 +30,11 @@ class Day11: XCTestCase {
         var robot = Robot()
         robot.run(on: &panels)
         XCTAssertEqual(panels.count, 2322)
+        
+        panels = [.zero: .white]
+        robot.position = .zero
+        robot.run(on: &panels)
+        render_hack(panels)
     }
     
 }
@@ -38,9 +43,20 @@ class Day11: XCTestCase {
 // MARK: - Private
 private typealias Panels = [Coordinate: Color]
 
-private enum Color: Word {
+private enum Color: Word, CustomStringConvertible {
     case black = 0
     case white = 1
+    
+    var description: String { String(self.asCharacter) }
+    
+    var asCharacter: Character {
+        switch self {
+        case .black: return Character("⬛️")
+        case .white: return Character("⬜️")
+        }
+    }
+    
+    
 }
 
 private enum Turn: Word {
@@ -139,6 +155,19 @@ private struct Robot {
     private let computer: Computer
     private var direction = Direction.up
     
+}
+
+// TODO: Figure out why the axis are reversed.
+private func render_hack(_ panels: Panels) {
+    let rowCount = panels.max { $0.key.x < $1.key.x }!.key.x + 1
+    let columnCount = panels.max { $0.key.y < $1.key.y }!.key.y + 1
+    
+    let emptyRow = Array(repeating: Color.black.asCharacter, count: columnCount)
+    var panelDisplay = Array(repeating: emptyRow, count: rowCount)
+    
+    panels.forEach { panelDisplay[$0.key.x][$0.key.y] = $0.value.asCharacter }
+    
+    panelDisplay.forEach { print(String($0)) }
 }
 
 private let _program: Program = [

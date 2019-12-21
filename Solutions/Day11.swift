@@ -70,8 +70,8 @@ private enum Direction {
     
     var asCoordinate: Coordinate {
         switch self {
-        case .up:    return Coordinate(0, 1)
-        case .down:  return Coordinate(0, -1)
+        case .up:    return Coordinate(0, -1)
+        case .down:  return Coordinate(0, +1)
         case .left:  return Coordinate(-1, 0)
         case .right: return Coordinate(1, 0)
         }
@@ -153,7 +153,7 @@ private struct Robot {
     
     // MARK: Private
     private let computer: Computer
-    private var direction = Direction.up
+    private var direction = Direction.right
     
 }
 

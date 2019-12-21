@@ -10,7 +10,7 @@ import XCTest
 
 class Day12: XCTestCase {
 
-    func test_examples() {
+    func test_examples_part1() {
         var moons = [
             Moon(position: Vector(-1, 0, 2)),
             Moon(position: Vector(2, -10, -7)),
@@ -30,15 +30,17 @@ class Day12: XCTestCase {
         system = System(moons: moons)
         for _ in 1...100 { system.tic() }
         XCTAssertEqual(system.energy, 1940)
+    }
         
-        moons = [
+    func test_examples_part2() {
+        let moons = [
             Moon(position: Vector(-1, 0, 2)),
             Moon(position: Vector(2, -10, -7)),
             Moon(position: Vector(4, -8, 8)),
             Moon(position: Vector(3, 5, -1)),
         ]
-        system = System(moons: moons)
-        var history = Set<System>()
+        var system = System(moons: moons)
+        var history = Set<System<Vector>>()
         while !history.contains(system) {
             history.insert(system)
             system.tic()
@@ -63,7 +65,14 @@ private let _moons = [
     Moon(position: Vector(-3, 0, -13)),
 ]
 
-private struct Vector: Hashable {
+private protocol Quantity: Hashable {
+    static var zero: Self  { get }
+    static func +(_ lhs: Self, _ rhs: Self) -> Self
+    static func -(_ lhs: Self, _ rhs: Self) -> Self
+    func signum() -> Self
+}
+
+private struct Vector: Quantity {
     
     static let zero = Vector(0, 0, 0)
     
@@ -87,24 +96,21 @@ private struct Vector: Hashable {
         return Vector(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z)
     }
     
-}
-
-extension Vector: CustomStringConvertible {
-    var description: String { "(\(x), \(y), \(z))" }
-}
-
-private struct Moon: Hashable {
+    func signum() -> Vector {
+        return Vector(x.signum(), y.signum(), z.signum())
+    }
     
-    var position: Vector
-    var velocity = Vector.zero
-    var energy: Int { position.lenth * velocity.lenth }
+}
+
+private struct Moon<T> where T: Quantity {
+    
+    typealias Element = T
+    
+    var position: T
+    var velocity = T.zero
     
     mutating func applyGravity(from other: Moon) {
-        let gravity = Vector(
-            (other.position.x - position.x).signum(),
-            (other.position.y - position.y).signum(),
-            (other.position.z - position.z).signum()
-        )
+        let gravity = (other.position - self.position).signum()
         velocity = velocity + gravity
     }
     
@@ -112,17 +118,17 @@ private struct Moon: Hashable {
     
 }
 
-extension Moon: CustomStringConvertible {
-    var description: String {
-        "position: \(position), velocity: \(velocity)"
-    }
+extension Moon: Hashable { }
+
+private extension Moon where Element == Vector {
+    var energy: Int { position.lenth * velocity.lenth }
 }
 
-private struct System: Hashable {
+private struct System<T> where T: Quantity {
     
-    var energy: Int { moons.map { $0.energy }.reduce(0, +) }
-    
-    init(moons: [Moon]) {
+    typealias Element = T
+
+    init(moons: [Moon<T>]) {
         self.moons = moons
     }
     
@@ -137,12 +143,12 @@ private struct System: Hashable {
         for index in 0 ..< moons.count { moons[index].tic() }
     }
     
-    private var moons: [Moon]
+    private var moons: [Moon<T>]
     
 }
 
-extension System: CustomStringConvertible {
-    var description: String {
-        moons.map { $0.description }.joined(separator: "\n")
-    }
+extension System: Hashable { }
+
+private extension System where Element == Vector {
+    var energy: Int { moons.map { $0.energy }.reduce(0, +) }
 }

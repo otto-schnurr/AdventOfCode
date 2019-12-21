@@ -157,16 +157,25 @@ private struct Robot {
     
 }
 
+private extension ClosedRange where Element == Int {
+    func expanded(toInclude bound: Bound) -> Self {
+        return Swift.min(bound, lowerBound) ... Swift.max(bound, upperBound)
+    }
+}
+
 // TODO: Figure out why the axis are reversed.
 private func render_hack(_ panels: Panels) {
-    let rowCount = panels.max { $0.key.x < $1.key.x }!.key.x + 1
-    let columnCount = panels.max { $0.key.y < $1.key.y }!.key.y + 1
+    let rowRange = panels.reduce(0...0) { $0.expanded(toInclude: $1.key.y) }
+    let columnRange = panels.reduce(0...0) { $0.expanded(toInclude: $1.key.x) }
     
-    let emptyRow = Array(repeating: Color.black.asCharacter, count: columnCount)
-    var panelDisplay = Array(repeating: emptyRow, count: rowCount)
+    let emptyRow = Array(repeating: Color.black.asCharacter, count: columnRange.count)
+    var panelDisplay = Array(repeating: emptyRow, count: rowRange.count)
     
-    panels.forEach { panelDisplay[$0.key.x][$0.key.y] = $0.value.asCharacter }
-    
+    panels.forEach {
+        let rowIndex = $0.key.y - rowRange.lowerBound
+        let columnIndex = $0.key.x - columnRange.lowerBound
+        panelDisplay[rowIndex][columnIndex] = $0.value.asCharacter
+    }
     panelDisplay.forEach { print(String($0)) }
 }
 

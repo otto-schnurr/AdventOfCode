@@ -39,13 +39,7 @@ class Day12: XCTestCase {
             Moon(position: Vector(4, -8, 8)),
             Moon(position: Vector(3, 5, -1)),
         ]
-        var system = System(moons: moons)
-        var history = Set<System<Vector>>()
-        while !history.contains(system) {
-            history.insert(system)
-            system.tic()
-        }
-        XCTAssertEqual(history.count, 2772)
+        XCTAssertEqual(findEpoch(for: moons), 2772)
     }
     
     func test_solutions() {
@@ -151,4 +145,16 @@ extension System: Hashable { }
 
 private extension System where Element == Vector {
     var energy: Int { moons.map { $0.energy }.reduce(0, +) }
+}
+
+private func findEpoch<T>(for moons: [Moon<T>]) -> Int {
+    var system = System(moons: moons)
+    var history = Set<System<T>>()
+    
+    while !history.contains(system) {
+        history.insert(system)
+        system.tic()
+    }
+    
+    return history.count
 }

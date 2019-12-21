@@ -10,7 +10,7 @@ import XCTest
 
 class Day12: XCTestCase {
 
-    func test_example() {
+    func test_examples() {
         var moons = [
             Moon(position: Vector(-1, 0, 2)),
             Moon(position: Vector(2, -10, -7)),
@@ -32,11 +32,24 @@ class Day12: XCTestCase {
         XCTAssertEqual(system.energy, 1940)
     }
     
+    func test_solutions() {
+        var system = System(moons: _moons)
+        for _ in 1...1_000 { system.tic() }
+        XCTAssertEqual(system.energy, 12351)
+    }
+    
 }
 
 
 // MARK: - Private
-private struct Vector {
+private let _moons = [
+    Moon(position: Vector(3, 3, 0)),
+    Moon(position: Vector(4, -16, 2)),
+    Moon(position: Vector(-10, -6, 5)),
+    Moon(position: Vector(-3, 0, -13)),
+]
+
+private struct Vector: Hashable {
     
     static let zero = Vector(0, 0, 0)
     
@@ -66,7 +79,7 @@ extension Vector: CustomStringConvertible {
     var description: String { "(\(x), \(y), \(z))" }
 }
 
-private struct Moon {
+private struct Moon: Hashable {
     
     var position: Vector
     var velocity = Vector.zero
@@ -91,7 +104,7 @@ extension Moon: CustomStringConvertible {
     }
 }
 
-private struct System {
+private struct System: Hashable {
     
     var energy: Int { moons.map { $0.energy }.reduce(0, +) }
     

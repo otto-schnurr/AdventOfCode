@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import AdventOfCode
 
 class Day12: XCTestCase {
 
@@ -33,13 +34,27 @@ class Day12: XCTestCase {
     }
         
     func test_examples_part2() {
-        let moons = [
-            Moon(position: Vector(-1, 0, 2)),
-            Moon(position: Vector(2, -10, -7)),
-            Moon(position: Vector(4, -8, 8)),
-            Moon(position: Vector(3, 5, -1)),
+        let moonsX = [
+            Moon(position: -1), Moon(position: 2),
+            Moon(position: 4), Moon(position: 3)
         ]
-        XCTAssertEqual(findEpoch(for: moons), 2772)
+        let moonsY = [
+            Moon(position: 0), Moon(position: -10),
+            Moon(position: -8), Moon(position: 5)
+        ]
+        let moonsZ = [
+            Moon(position: 2), Moon(position: -7),
+            Moon(position: 8), Moon(position: -1)
+        ]
+
+        let epochX = findEpoch(for: moonsX)
+        let epochY = findEpoch(for: moonsY)
+        let epochZ = findEpoch(for: moonsZ)
+
+        XCTAssertEqual(
+            Combinatorics.lcm(Combinatorics.lcm(epochX, epochY), epochZ),
+            2772
+        )
     }
     
     func test_solutions() {
@@ -65,6 +80,8 @@ private protocol Quantity: Hashable {
     static func -(_ lhs: Self, _ rhs: Self) -> Self
     func signum() -> Self
 }
+
+extension Int: Quantity { }
 
 private struct Vector: Quantity {
     

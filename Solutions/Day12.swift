@@ -9,6 +9,9 @@
 import XCTest
 import AdventOfCode
 
+// Setting this to true will include tests that take a long time to run.
+private let _enableAllTests = false
+
 class Day12: XCTestCase {
 
     func test_examples_part1() {
@@ -62,6 +65,8 @@ class Day12: XCTestCase {
         for _ in 1...1_000 { system.tic() }
         XCTAssertEqual(system.energy, 12351)
 
+        guard _enableAllTests else { return }
+        
         let moonsX = [
             Moon(position: _moons[0].position.x),
             Moon(position: _moons[1].position.x),

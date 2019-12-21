@@ -12,12 +12,57 @@ import AdventOfCode
 class Day13: XCTestCase {
     
     func test_solution() {
+        var screen = Screen()
+        var game = Game()
+        game.run(on: &screen)
+        XCTAssertEqual(screen.filter { $0.value == .block }.count, 207)
     }
     
 }
 
 
 // MARK: - Private
+private typealias Screen = [Coordinate: Tile]
+
+private enum Tile: Word {
+    case empty = 0
+    case wall = 1
+    case block = 2
+    case paddle = 3
+    case ball = 4
+}
+
+private struct Game {
+    
+    init() {
+        computer = Computer(outputMode: .yield)
+    }
+    
+    mutating func run(on screen: inout Screen) {
+        computer.load(_program)
+        var shouldKeepRunning = true
+
+        repeat {
+            computer.run()
+            computer.run()
+            computer.run()
+            let output = computer.harvestOutput()
+            
+            guard output.count >= 3 else {
+                shouldKeepRunning = false
+                continue
+            }
+            
+            let position = Coordinate(output[0], output[1])
+            screen[position] = Tile(rawValue: output[2])!
+        } while shouldKeepRunning
+    }
+    
+    // MARK: Private
+    private let computer: Computer
+    
+}
+
 private let _program: Program = [
     1, 380, 379, 385, 1008, 2319, 769929, 381, 1005, 381, 12, 99, 109,
     2320, 1101, 0, 0, 383, 1102, 1, 0, 382, 20101, 0, 382, 1, 20101, 0,

@@ -15,7 +15,8 @@ class Day13: XCTestCase {
         var game = Game()
         game.run()
         XCTAssertEqual(
-            game.screen.initialPixelCount(for: Tile.block.characterValue), 207
+            game.screen.initialPixelCount(for: Game.Tile.block.characterValue),
+            207
         )
         game.render()
     }
@@ -24,26 +25,15 @@ class Day13: XCTestCase {
 
 
 // MARK: - Private
-private enum Tile: Word {
-
-    case empty = 0
-    case wall = 1
-    case block = 2
-    case paddle = 3
-    case ball = 4
-
-    var characterValue: Character {
-        switch self {
-        case .empty:  return " "
-        case .wall:   return "X"
-        case .block:  return "O"
-        case .paddle: return "-"
-        case .ball:   return "*"
-        }
-    }
-}
-
 private struct Game {
+    
+    enum Tile: Word {
+        case empty = 0
+        case wall = 1
+        case block = 2
+        case paddle = 3
+        case ball = 4
+    }
     
     private(set) var screen = Display(backgroundColor: " ")
     
@@ -76,6 +66,18 @@ private struct Game {
     // MARK: Private
     private let computer: Computer
     
+}
+
+private extension Game.Tile {
+    var characterValue: Character {
+        switch self {
+        case .empty:  return " "
+        case .wall:   return "X"
+        case .block:  return "O"
+        case .paddle: return "-"
+        case .ball:   return "*"
+        }
+    }
 }
 
 private let _program: Program = [

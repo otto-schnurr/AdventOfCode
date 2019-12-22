@@ -25,11 +25,22 @@ class Day13: XCTestCase {
 private typealias Screen = [Coordinate: Tile]
 
 private enum Tile: Word {
+
     case empty = 0
     case wall = 1
     case block = 2
     case paddle = 3
     case ball = 4
+
+    var characterValue: Character {
+        switch self {
+        case .empty:  return " "
+        case .wall:   return "⬛️"
+        case .block:  return "⬜️"
+        case .paddle: return "🀰"
+        case .ball:   return "⚾️"
+        }
+    }
 }
 
 private struct Game {

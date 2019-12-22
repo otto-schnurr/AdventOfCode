@@ -12,18 +12,19 @@ import AdventOfCode
 class Day13: XCTestCase {
     
     func test_solution() {
-        var screen = Screen()
+        var screen = Display(backgroundColor: " ")
         var game = Game()
         game.run(on: &screen)
-        XCTAssertEqual(screen.filter { $0.value == .block }.count, 207)
+        XCTAssertEqual(
+            screen.initialPixelCount(for: Tile.block.characterValue),
+            207
+        )
     }
     
 }
 
 
 // MARK: - Private
-private typealias Screen = [Coordinate: Tile]
-
 private enum Tile: Word {
 
     case empty = 0
@@ -49,7 +50,7 @@ private struct Game {
         computer = Computer(outputMode: .yield)
     }
     
-    mutating func run(on screen: inout Screen) {
+    mutating func run(on screen: inout Display) {
         computer.load(_program)
         var shouldKeepRunning = true
 
@@ -65,7 +66,7 @@ private struct Game {
             }
             
             let position = Coordinate(output[0], output[1])
-            screen[position] = Tile(rawValue: output[2])!
+            screen[position] = Tile(rawValue: output[2])!.characterValue
         } while shouldKeepRunning
     }
     

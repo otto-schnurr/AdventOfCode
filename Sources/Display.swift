@@ -42,6 +42,10 @@ public extension Display {
     
     var initialPixelCount: Int { return initialPixels.count }
     
+    func initialPixelCount(for character: Character) -> Int {
+        return initialPixels.filter { $0.value == character }.count
+    }
+    
     mutating func render() {
         screen = screen ??
             Screen(pixels: initialPixels, backgroundColor: backgroundColor)

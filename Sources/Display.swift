@@ -13,14 +13,14 @@ public struct Display {
     subscript(coordinate: Coordinate) -> Pixel {
         get {
             if let screen = screen {
-                return screen[coordinate.y][coordinate.x]
+                return screen[coordinate]
             } else {
                 return initialPixels[coordinate] ?? backgroundColor
             }
         }
         set(newValue) {
             if var screen = screen {
-                screen[coordinate.y][coordinate.x] = newValue
+                screen[coordinate] = newValue
             } else {
                 initialPixels[coordinate] = newValue
             }
@@ -32,11 +32,18 @@ public struct Display {
     }
     
     // MARK: Private
-    private typealias Screen = [[Pixel]]
     private let backgroundColor: Pixel
     private var initialPixels = [Coordinate: Pixel]()
     private var screen: Screen?
     
+}
+
+public extension Display {
+    mutating func render() {
+        screen = screen ??
+            Screen(pixels: initialPixels, backgroundColor: backgroundColor)
+        screen?.render()
+    }
 }
 
 
@@ -78,5 +85,7 @@ private extension Screen {
         pixels.forEach { screen[$0] = $1 }
         self = screen
     }
+    
+    func render() { pixels.forEach { print(String($0)) } }
     
 }

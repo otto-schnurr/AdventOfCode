@@ -8,4 +8,16 @@
 
 struct Display {
     
+    typealias Pixel = Character
+    
+    subscript(coordinate: Coordinate) -> Pixel {
+        get {
+            // !!!: implement me
+            return " "
+        }
+        set(newValue) {
+            // !!!: implement me
+        }
+    }
+    
 }

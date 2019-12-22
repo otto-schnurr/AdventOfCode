@@ -133,12 +133,10 @@ private struct Robot {
             computer.inputBuffer.append(
                 panels[position]?.rawValue ?? Color.black.rawValue
             )
-            var output = Buffer()
             
             computer.run()
-            output += computer.harvestOutput()
             computer.run()
-            output += computer.harvestOutput()
+            let output = computer.harvestOutput()
             
             guard output.count >= 2 else {
                 shouldKeepRunning = false

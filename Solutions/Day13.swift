@@ -16,9 +16,9 @@ class Day13: XCTestCase {
         var game = Game()
         game.run(on: &screen)
         XCTAssertEqual(
-            screen.initialPixelCount(for: Tile.block.characterValue),
-            207
+            screen.initialPixelCount(for: Tile.block.characterValue), 207
         )
+        screen.render()
     }
     
 }
@@ -36,10 +36,10 @@ private enum Tile: Word {
     var characterValue: Character {
         switch self {
         case .empty:  return " "
-        case .wall:   return "⬛️"
-        case .block:  return "⬜️"
-        case .paddle: return "🀰"
-        case .ball:   return "⚾️"
+        case .wall:   return "X"
+        case .block:  return "O"
+        case .paddle: return "-"
+        case .ball:   return "*"
         }
     }
 }

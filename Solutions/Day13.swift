@@ -12,13 +12,12 @@ import AdventOfCode
 class Day13: XCTestCase {
     
     func test_solution() {
-        var screen = Display(backgroundColor: " ")
         var game = Game()
-        game.run(on: &screen)
+        game.run()
         XCTAssertEqual(
-            screen.initialPixelCount(for: Tile.block.characterValue), 207
+            game.screen.initialPixelCount(for: Tile.block.characterValue), 207
         )
-        screen.render()
+        game.render()
     }
     
 }
@@ -46,11 +45,13 @@ private enum Tile: Word {
 
 private struct Game {
     
+    private(set) var screen = Display(backgroundColor: " ")
+    
     init() {
         computer = Computer(outputMode: .yield)
     }
     
-    mutating func run(on screen: inout Display) {
+    mutating func run() {
         computer.load(_program)
         var shouldKeepRunning = true
 
@@ -69,6 +70,8 @@ private struct Game {
             screen[position] = Tile(rawValue: output[2])!.characterValue
         } while shouldKeepRunning
     }
+    
+    mutating func render() { screen.render() }
     
     // MARK: Private
     private let computer: Computer

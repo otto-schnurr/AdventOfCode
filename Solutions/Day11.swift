@@ -26,36 +26,44 @@ class Day11: XCTestCase {
     }
     
     func test_solution() {
-        var panels = Panels()
+        var panels = Display(backgroundColor: "⬛️")
         var robot = Robot()
         robot.run(on: &panels)
-        XCTAssertEqual(panels.count, 2322)
+        XCTAssertEqual(panels.initialPixelCount, 2322)
         
-        panels = [.zero: .white]
+        panels = Display(backgroundColor: "⬛️")
+        panels[.zero] = Color.white.characterValue
         robot.run(on: &panels)
-        render(panels)
+        panels.render()
     }
     
 }
 
 
 // MARK: - Private
-private typealias Panels = [Coordinate: Color]
-
 private enum Color: Word, CustomStringConvertible {
     case black = 0
     case white = 1
     
-    var description: String { String(self.asCharacter) }
+    var description: String { String(self.characterValue) }
     
-    var asCharacter: Character {
+    var characterValue: Character {
         switch self {
         case .black: return "⬛️"
         case .white: return "⬜️"
         }
     }
     
-    
+}
+
+private extension Character {
+    var colorValue: Color? {
+        switch self {
+        case "⬛️": return .black
+        case "⬜️": return .white
+        default:   return nil
+        }
+    }
 }
 
 private enum Turn: Word {
@@ -124,17 +132,16 @@ private struct Robot {
         computer = Computer(outputMode: .yield)
     }
     
-    mutating func run(on panels: inout Panels) {
-        computer.load(_program)
+    mutating func run(on panels: inout Display) {
         position = .zero
         direction = .up
         
+        computer.load(_program)
         var shouldKeepRunning = true
 
         repeat {
-            computer.inputBuffer.append(
-                panels[position]?.rawValue ?? Color.black.rawValue
-            )
+            let input = panels[position].colorValue ?? .black
+            computer.inputBuffer.append(input.rawValue)
             
             computer.run()
             computer.run()
@@ -145,7 +152,7 @@ private struct Robot {
                 continue
             }
             
-            panels[position] = Color(rawValue: output[0])!
+            panels[position] = Color(rawValue: output[0])!.characterValue
             direction = direction.turned(Turn(rawValue: output[1])!)
             position = position + direction.asCoordinate
         } while shouldKeepRunning
@@ -153,7 +160,7 @@ private struct Robot {
     
     // MARK: Private
     private let computer: Computer
-    private var direction = Direction.right
+    private var direction = Direction.up
     
 }
 
@@ -161,21 +168,6 @@ private extension ClosedRange where Element == Int {
     func expanded(toInclude bound: Bound) -> Self {
         return Swift.min(bound, lowerBound) ... Swift.max(bound, upperBound)
     }
-}
-
-private func render(_ panels: Panels) {
-    let rowRange = panels.reduce(0...0) { $0.expanded(toInclude: $1.key.y) }
-    let columnRange = panels.reduce(0...0) { $0.expanded(toInclude: $1.key.x) }
-    
-    let emptyRow = Array(repeating: Color.black.asCharacter, count: columnRange.count)
-    var panelDisplay = Array(repeating: emptyRow, count: rowRange.count)
-    
-    panels.forEach {
-        let rowIndex = $0.key.y - rowRange.lowerBound
-        let columnIndex = $0.key.x - columnRange.lowerBound
-        panelDisplay[rowIndex][columnIndex] = $0.value.asCharacter
-    }
-    panelDisplay.forEach { print(String($0)) }
 }
 
 private let _program: Program = [

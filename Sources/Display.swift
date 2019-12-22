@@ -8,9 +8,9 @@
 
 public struct Display {
     
-    typealias Pixel = Character
+    public typealias Pixel = Character
     
-    subscript(coordinate: Coordinate) -> Pixel {
+    public subscript(coordinate: Coordinate) -> Pixel {
         get {
             if let screen = screen {
                 return screen[coordinate]
@@ -27,7 +27,7 @@ public struct Display {
         }
     }
     
-    init(backgroundColor: Pixel) {
+    public init(backgroundColor: Pixel) {
         self.backgroundColor = backgroundColor
     }
     
@@ -39,11 +39,15 @@ public struct Display {
 }
 
 public extension Display {
+    
+    var initialPixelCount: Int { return initialPixels.count }
+    
     mutating func render() {
         screen = screen ??
             Screen(pixels: initialPixels, backgroundColor: backgroundColor)
         screen?.render()
     }
+    
 }
 
 
@@ -75,8 +79,8 @@ private struct Screen {
 private extension Screen {
     
     init?(pixels: [Coordinate: Display.Pixel], backgroundColor: Character) {
-        let width = pixels.reduce(0) { max($0, $1.key.x) }
-        let height = pixels.reduce(0) { max($0, $1.key.y) }
+        let width = pixels.reduce(0) { max($0, $1.key.x) } + 1
+        let height = pixels.reduce(0) { max($0, $1.key.y) } + 1
         guard
             var screen = Screen(
                 width: width, height: height, initialColor: backgroundColor

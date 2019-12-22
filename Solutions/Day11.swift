@@ -32,9 +32,8 @@ class Day11: XCTestCase {
         XCTAssertEqual(panels.count, 2322)
         
         panels = [.zero: .white]
-        robot.position = .zero
         robot.run(on: &panels)
-        render_hack(panels)
+        render(panels)
     }
     
 }
@@ -119,7 +118,7 @@ private enum Direction {
 
 private struct Robot {
     
-    var position = Coordinate.zero
+    private(set) var position = Coordinate.zero
     
     init() {
         computer = Computer(outputMode: .yield)
@@ -127,6 +126,9 @@ private struct Robot {
     
     mutating func run(on panels: inout Panels) {
         computer.load(_program)
+        position = .zero
+        direction = .up
+        
         var shouldKeepRunning = true
 
         repeat {
@@ -161,8 +163,7 @@ private extension ClosedRange where Element == Int {
     }
 }
 
-// TODO: Figure out why the axis are reversed.
-private func render_hack(_ panels: Panels) {
+private func render(_ panels: Panels) {
     let rowRange = panels.reduce(0...0) { $0.expanded(toInclude: $1.key.y) }
     let columnRange = panels.reduce(0...0) { $0.expanded(toInclude: $1.key.x) }
     

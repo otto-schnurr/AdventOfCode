@@ -13,7 +13,7 @@ class Day13: XCTestCase {
     
     func test_solution() {
         var game = Game()
-        game.run()
+        game.run(quarters: 1)
         XCTAssertEqual(
             game.screen.initialPixelCount(for: Game.Tile.block.characterValue),
             207
@@ -25,6 +25,8 @@ class Day13: XCTestCase {
 
 
 // MARK: - Private
+private let _segmentDisplayCoordinate = Coordinate(-1, 0)
+
 private struct Game {
     
     enum Tile: Word {
@@ -35,14 +37,18 @@ private struct Game {
         case ball = 4
     }
     
+    private(set) public var score = Word()
     private(set) var screen = Display(backgroundColor: " ")
     
     init() {
         computer = Computer(outputMode: .yield)
     }
     
-    mutating func run() {
-        computer.load(_program)
+    mutating func run(quarters: Int) {
+        var program = _program
+        program[0] = quarters
+        computer.load(program)
+
         var shouldKeepRunning = true
 
         repeat {
@@ -57,7 +63,12 @@ private struct Game {
             }
             
             let position = Coordinate(output[0], output[1])
-            screen[position] = Tile(rawValue: output[2])!.characterValue
+
+            if position == _segmentDisplayCoordinate {
+                score = output[2]
+            } else {
+                screen[position] = Tile(rawValue: output[2])!.characterValue
+            }
         } while shouldKeepRunning
     }
     

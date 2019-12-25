@@ -19,7 +19,7 @@ public struct Display {
             }
         }
         set(newValue) {
-            if var screen = screen {
+            if let screen = screen {
                 screen[coordinate] = newValue
             } else {
                 initialPixels[coordinate] = newValue
@@ -56,7 +56,7 @@ public extension Display {
 
 
 // MARK: Private
-private struct Screen {
+private final class Screen {
     
     let width: Int
     let height: Int
@@ -82,16 +82,11 @@ private struct Screen {
 
 private extension Screen {
     
-    init?(pixels: [Coordinate: Display.Pixel], backgroundColor: Character) {
+    convenience init?(pixels: [Coordinate: Display.Pixel], backgroundColor: Character) {
         let width = pixels.reduce(0) { max($0, $1.key.x) } + 1
         let height = pixels.reduce(0) { max($0, $1.key.y) } + 1
-        guard
-            var screen = Screen(
-                width: width, height: height, initialColor: backgroundColor
-        ) else { return nil }
-        
-        pixels.forEach { screen[$0] = $1 }
-        self = screen
+        self.init(width: width, height: height, initialColor: backgroundColor)
+        pixels.forEach { self[$0] = $1 }
     }
     
     func render() { pixels.forEach { print(String($0)) } }

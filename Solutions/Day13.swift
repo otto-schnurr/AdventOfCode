@@ -12,45 +12,36 @@ import AdventOfCode
 class Day13: XCTestCase {
     
     func test_solution() {
-        var screen = Display(backgroundColor: " ")
         var game = Game()
-        game.run(on: &screen)
+        game.run()
         XCTAssertEqual(
-            screen.initialPixelCount(for: Tile.block.characterValue),
+            game.screen.initialPixelCount(for: Game.Tile.block.characterValue),
             207
         )
+        game.render()
     }
     
 }
 
 
 // MARK: - Private
-private enum Tile: Word {
-
-    case empty = 0
-    case wall = 1
-    case block = 2
-    case paddle = 3
-    case ball = 4
-
-    var characterValue: Character {
-        switch self {
-        case .empty:  return " "
-        case .wall:   return "⬛️"
-        case .block:  return "⬜️"
-        case .paddle: return "🀰"
-        case .ball:   return "⚾️"
-        }
-    }
-}
-
 private struct Game {
+    
+    enum Tile: Word {
+        case empty = 0
+        case wall = 1
+        case block = 2
+        case paddle = 3
+        case ball = 4
+    }
+    
+    private(set) var screen = Display(backgroundColor: " ")
     
     init() {
         computer = Computer(outputMode: .yield)
     }
     
-    mutating func run(on screen: inout Display) {
+    mutating func run() {
         computer.load(_program)
         var shouldKeepRunning = true
 
@@ -70,9 +61,23 @@ private struct Game {
         } while shouldKeepRunning
     }
     
+    mutating func render() { screen.render() }
+    
     // MARK: Private
     private let computer: Computer
     
+}
+
+private extension Game.Tile {
+    var characterValue: Character {
+        switch self {
+        case .empty:  return " "
+        case .wall:   return "X"
+        case .block:  return "O"
+        case .paddle: return "-"
+        case .ball:   return "*"
+        }
+    }
 }
 
 private let _program: Program = [

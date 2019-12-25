@@ -12,7 +12,7 @@ import AdventOfCode
 class Day13: XCTestCase {
     
     func test_solution() {
-        var game = Game()
+        var game = Game(quarters: 1)
         game.run()
         XCTAssertEqual(
             game.screen.initialPixelCount(for: Game.Tile.block.characterValue),
@@ -37,12 +37,16 @@ private struct Game {
     
     private(set) var screen = Display(backgroundColor: " ")
     
-    init() {
+    init(quarters: Int) {
         computer = Computer(outputMode: .yield)
+        self.quarters = quarters
     }
     
     mutating func run() {
-        computer.load(_program)
+        var program = _program
+        program[0] = quarters
+        computer.load(program)
+
         var shouldKeepRunning = true
 
         repeat {
@@ -65,6 +69,7 @@ private struct Game {
     
     // MARK: Private
     private let computer: Computer
+    private let quarters: Int
     
 }
 

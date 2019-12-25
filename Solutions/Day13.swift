@@ -25,6 +25,8 @@ class Day13: XCTestCase {
 
 
 // MARK: - Private
+private let _segmentDisplayCoordinate = Coordinate(-1, 0)
+
 private struct Game {
     
     enum Tile: Word {
@@ -35,6 +37,7 @@ private struct Game {
         case ball = 4
     }
     
+    private(set) public var score = Word()
     private(set) var screen = Display(backgroundColor: " ")
     
     init(quarters: Int) {
@@ -61,7 +64,12 @@ private struct Game {
             }
             
             let position = Coordinate(output[0], output[1])
-            screen[position] = Tile(rawValue: output[2])!.characterValue
+
+            if position == _segmentDisplayCoordinate {
+                score = output[2]
+            } else {
+                screen[position] = Tile(rawValue: output[2])!.characterValue
+            }
         } while shouldKeepRunning
     }
     

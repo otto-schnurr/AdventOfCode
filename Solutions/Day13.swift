@@ -12,7 +12,7 @@ import AdventOfCode
 class Day13: XCTestCase {
     
     func test_solution() {
-        var game = Game()
+        let game = Game()
         game.run(quarters: 1)
         XCTAssertEqual(
             game.screen.initialPixelCount(for: Game.Tile.block.characterValue),
@@ -27,7 +27,7 @@ class Day13: XCTestCase {
 // MARK: - Private
 private let _segmentDisplayCoordinate = Coordinate(-1, 0)
 
-private struct Game {
+private final class Game {
     
     enum Tile: Word {
         case empty = 0
@@ -44,17 +44,19 @@ private struct Game {
         computer = Computer(outputMode: .yield)
     }
     
-    mutating func run(quarters: Int) {
+    func run(quarters: Int) {
         var program = _program
         program[0] = quarters
         computer.load(program)
 
+        let inputHandler = { [weak self] in return self?.handleInput() ?? 0 }
+        
         var shouldKeepRunning = true
 
         repeat {
-            computer.run()
-            computer.run()
-            computer.run()
+            computer.run(inputHandler: inputHandler)
+            computer.run(inputHandler: inputHandler)
+            computer.run(inputHandler: inputHandler)
             let output = computer.harvestOutput()
             
             guard output.count >= 3 else {
@@ -67,15 +69,28 @@ private struct Game {
             if position == _segmentDisplayCoordinate {
                 score = output[2]
             } else {
-                screen[position] = Tile(rawValue: output[2])!.characterValue
+                handle(tile: Tile(rawValue: output[2])!, at: position)
             }
         } while shouldKeepRunning
     }
     
-    mutating func render() { screen.render() }
+    func render() { screen.render() }
     
     // MARK: Private
     private let computer: Computer
+    
+}
+
+private extension Game {
+    
+    func handleInput() -> Word {
+        // !!!: implement me
+        return 0
+    }
+    
+    func handle(tile: Tile, at position: Coordinate) {
+        screen[position] = tile.characterValue
+    }
     
 }
 

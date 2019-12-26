@@ -9,6 +9,7 @@
 enum Opcode: Int {
 
     typealias ProgramCounter = Int
+    typealias InputHandler = () -> Word
     typealias OutputHandler = (Word) -> OutputMode
 
     case add = 1
@@ -40,7 +41,7 @@ enum Opcode: Int {
         result: inout Word,
         programCounter: inout ProgramCounter,
         relativeBase: inout ProgramCounter,
-        inputBuffer: inout Buffer,
+        inputHandler: InputHandler,
         outputHandler: OutputHandler
     ) -> Bool {
         switch self {
@@ -51,7 +52,7 @@ enum Opcode: Int {
             result = parameters[0] * parameters[1]
 
         case .input:
-            result = inputBuffer.remove(at: 0)
+            result = inputHandler()
 
         case .output:
             switch outputHandler(parameters[0]) {

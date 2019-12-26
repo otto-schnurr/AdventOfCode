@@ -24,6 +24,11 @@ public final class Computer {
     }
     
     public func run() {
+        let inputHandler: Opcode.InputHandler = { [weak self] in
+            guard let self = self else { return 0 }
+            return self.inputBuffer.remove(at: 0)
+        }
+        
         let outputHandler: Opcode.OutputHandler = { [weak self] in
             guard let self = self else { return .yield }
             self.outputBuffer.append($0)
@@ -33,7 +38,7 @@ public final class Computer {
         while program.executeInstruction(
             at: &programCounter,
             relativeBase: &relativeBase,
-            inputBuffer: &inputBuffer,
+            inputHandler: inputHandler,
             outputHandler: outputHandler
         ) { }
     }

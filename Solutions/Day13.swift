@@ -9,6 +9,8 @@
 import XCTest
 import AdventOfCode
 
+private let _automaticallyRenderGame = false
+
 class Day13: XCTestCase {
     
     func test_solution() {
@@ -21,6 +23,7 @@ class Day13: XCTestCase {
         game.render()
         
         game.run(quarters: 2)
+        XCTAssertEqual(game.score, 10247)
     }
     
 }
@@ -84,19 +87,33 @@ private final class Game {
     
     // MARK: Private
     private let computer: Computer
+    private var ballPosition: Coordinate?
+    private var paddlePosition: Coordinate?
     
 }
 
 private extension Game {
     
     func handleInput() -> Word {
-        // !!!: implement me
-        render()
-        return 0
+        defer {
+            if _automaticallyRenderGame { render() }
+        }
+        guard
+            let ballPosition = ballPosition,
+            let paddlePosition = paddlePosition
+        else { return 0 }
+        
+        return (ballPosition.x - paddlePosition.x).signum()
     }
     
     func handle(tile: Tile, at position: Coordinate) {
         screen[position] = tile.characterValue
+        
+        switch tile {
+        case .ball:   ballPosition = position
+        case .paddle: paddlePosition = position
+        default:      break
+        }
     }
     
 }

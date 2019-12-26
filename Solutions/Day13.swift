@@ -19,6 +19,8 @@ class Day13: XCTestCase {
             207
         )
         game.render()
+        
+        game.run(quarters: 2)
     }
     
 }
@@ -74,7 +76,11 @@ private final class Game {
         } while shouldKeepRunning
     }
     
-    func render() { screen.render() }
+    func render() {
+        print()
+        print("SCORE: \(score)")
+        screen.render()
+    }
     
     // MARK: Private
     private let computer: Computer
@@ -85,6 +91,7 @@ private extension Game {
     
     func handleInput() -> Word {
         // !!!: implement me
+        render()
         return 0
     }
     

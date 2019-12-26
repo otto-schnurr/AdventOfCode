@@ -8,6 +8,8 @@
 
 public final class Computer {
     
+    public typealias InputHandler = () -> Word
+    
     public var inputBuffer = Buffer()
     public var firstWord: Word? { return program.first }
 
@@ -23,8 +25,8 @@ public final class Computer {
         reset()
     }
     
-    public func run() {
-        let inputHandler: Opcode.InputHandler = { [weak self] in
+    public func run(inputHandler: InputHandler? = nil) {
+        let _inputHandler = inputHandler ?? { [weak self] in
             guard let self = self else { return 0 }
             return self.inputBuffer.remove(at: 0)
         }
@@ -38,7 +40,7 @@ public final class Computer {
         while program.executeInstruction(
             at: &programCounter,
             relativeBase: &relativeBase,
-            inputHandler: inputHandler,
+            inputHandler: _inputHandler,
             outputHandler: outputHandler
         ) { }
     }

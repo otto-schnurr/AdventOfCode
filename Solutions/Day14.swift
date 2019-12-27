@@ -25,18 +25,15 @@ class Day14: XCTestCase {
     }
 
     func test_examples() {
-        let recipes = [
+        let reactions = [
             "10 ORE => 10 A",
             "1 ORE => 1 B",
             "7 A, 1 B => 1 C",
             "7 A, 1 C => 1 D",
             "7 A, 1 D => 1 E",
             "7 A, 1 E => 1 FUEL"
-        ].map { Reaction(recipe: $0) }.reduce(RecipeBook()) {
-            var result = $0
-            result[$1.chemical] = $1
-            return result
-        }
+        ].map { Reaction(recipe: $0) }
+        let recipes = parseRecipes(from: reactions)
         XCTAssertEqual(
             breakdown(["FUEL": 1], using: recipes)["ORE"]!, 31
         )
@@ -90,6 +87,14 @@ extension Reaction: CustomStringConvertible {
             .map { "\($0.value) \($0.key)" }
             .joined(separator: ", ")
         + " => \(amount) \(chemical)"
+    }
+}
+
+private func parseRecipes(from reactions: [Reaction]) -> RecipeBook {
+    return reactions.reduce(RecipeBook()) {
+        var result = $0
+        result[$1.chemical] = $1
+        return result
     }
 }
 

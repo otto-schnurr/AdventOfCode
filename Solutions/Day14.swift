@@ -9,6 +9,21 @@ import XCTest
 
 class Day14: XCTestCase {
 
+    func test_reactionParsing() {
+        XCTAssertEqual(
+            Reaction(recipe: "10 ORE => 10 A"),
+            Reaction(chemical: "A", amount: 10, ingredients: ["ORE": 10])
+        )
+        
+        XCTAssertEqual(
+            Reaction(recipe: "7 A, 1 B => 1 C"),
+            Reaction(
+                chemical: "C", amount: 1,
+                ingredients: ["A": 7, "B": 1]
+            )
+        )
+    }
+
 }
 
 
@@ -23,6 +38,12 @@ private struct Reaction: Hashable {
     let amount: Int
     let ingredients: Ingredients
 
+    init(chemical: Chemical, amount: Int, ingredients: Ingredients) {
+        self.chemical = chemical
+        self.amount = amount
+        self.ingredients = ingredients
+    }
+    
     init(recipe: String) {
         let components = recipe
             .filter { $0 != "," && $0 != "=" && $0 != ">" }
@@ -42,4 +63,13 @@ private struct Reaction: Hashable {
             }
     }
     
+}
+
+extension Reaction: CustomStringConvertible {
+    var description: String {
+        ingredients
+            .map { "\($0.value) \($0.key)" }
+            .joined(separator: ", ")
+        + " => \(amount) \(chemical)"
+    }
 }

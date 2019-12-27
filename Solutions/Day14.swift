@@ -24,6 +24,24 @@ class Day14: XCTestCase {
         )
     }
 
+    func test_examples() {
+        let recipes = [
+            "10 ORE => 10 A",
+            "1 ORE => 1 B",
+            "7 A, 1 B => 1 C",
+            "7 A, 1 C => 1 D",
+            "7 A, 1 D => 1 E",
+            "7 A, 1 E => 1 FUEL"
+        ].map { Reaction(recipe: $0) }.reduce(RecipeBook()) {
+            var result = $0
+            result[$1.chemical] = $1
+            return result
+        }
+        XCTAssertEqual(
+            breakdown(["FUEL": 1], using: recipes)["ORE"]!, 31
+        )
+    }
+    
 }
 
 
@@ -31,6 +49,7 @@ class Day14: XCTestCase {
 private typealias Chemical = String
 private typealias Ingredient = Ingredients.Element
 private typealias Ingredients = [Chemical: Int]
+private typealias RecipeBook = [Chemical: Reaction]
 
 private struct Reaction: Hashable {
 
@@ -71,5 +90,37 @@ extension Reaction: CustomStringConvertible {
             .map { "\($0.value) \($0.key)" }
             .joined(separator: ", ")
         + " => \(amount) \(chemical)"
+    }
+}
+
+private func breakdown(
+    _ ingredients: Ingredients,
+    using recipes: RecipeBook,
+    useExactAmounts: Bool = true
+) -> Ingredients {
+    var newIngredients = ingredients
+    
+    for ingredient in ingredients {
+        guard
+            let reaction = recipes[ingredient.key],
+            ingredient.value >= reaction.amount || !useExactAmounts
+        else { continue }
+        assert(reaction.chemical == ingredient.key)
+        
+        if newIngredients[ingredient.key]! <= reaction.amount {
+            newIngredients.removeValue(forKey: ingredient.key)
+        } else {
+            newIngredients[ingredient.key]! -= reaction.amount
+        }
+        
+        newIngredients.merge(reaction.ingredients) { $0 + $1 }
+    }
+    
+    if newIngredients != ingredients {
+        return breakdown(newIngredients, using: recipes)
+    } else if useExactAmounts {
+        return breakdown(ingredients, using: recipes, useExactAmounts: false)
+    } else {
+        return ingredients
     }
 }

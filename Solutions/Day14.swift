@@ -25,7 +25,7 @@ class Day14: XCTestCase {
     }
 
     func test_examples() {
-        let reactions = [
+        var reactions = [
             "10 ORE => 10 A",
             "1 ORE => 1 B",
             "7 A, 1 B => 1 C",
@@ -33,9 +33,23 @@ class Day14: XCTestCase {
             "7 A, 1 D => 1 E",
             "7 A, 1 E => 1 FUEL"
         ].map { Reaction(recipe: $0) }
-        let recipes = parseRecipes(from: reactions)
+        var recipes = parseRecipes(from: reactions)
         XCTAssertEqual(
             breakdown(["FUEL": 1], using: recipes)["ORE"]!, 31
+        )
+
+        reactions = [
+            "9 ORE => 2 A",
+            "8 ORE => 3 B",
+            "7 ORE => 5 C",
+            "3 A, 4 B => 1 AB",
+            "5 B, 7 C => 1 BC",
+            "4 C, 1 A => 1 CA",
+            "2 AB, 3 BC, 4 CA => 1 FUEL"
+        ].map { Reaction(recipe: $0) }
+        recipes = parseRecipes(from: reactions)
+        XCTAssertEqual(
+            breakdown(["FUEL": 1], using: recipes)["ORE"]!, 165
         )
     }
     

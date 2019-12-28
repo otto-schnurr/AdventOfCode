@@ -9,7 +9,7 @@
 import XCTest
 import AdventOfCode
 
-class Day11: XCTestCase {
+final class Day11: XCTestCase {
     
     func test_directions() {
         XCTAssertEqual(Direction.up.turned(.left), .left)

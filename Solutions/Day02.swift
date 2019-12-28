@@ -9,7 +9,7 @@
 import XCTest
 import AdventOfCode
 
-class Day02: XCTestCase {
+final class Day02: XCTestCase {
     
     func test_solution() {
         func makeProgram(noun: Word, verb: Word) -> Program {

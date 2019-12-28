@@ -8,7 +8,7 @@
 
 import XCTest
 
-class Day04: XCTestCase {
+final class Day04: XCTestCase {
     
     func test_solution() {
         let passwords = _passwordRange.filter {

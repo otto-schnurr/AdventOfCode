@@ -8,7 +8,7 @@
 
 import XCTest
 
-class Day01: XCTestCase {
+final class Day01: XCTestCase {
     
     func test_solution() {
         func fuel(for mass: Int) -> Int { return mass / 3 - 2 }

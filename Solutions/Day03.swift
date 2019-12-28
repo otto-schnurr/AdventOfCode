@@ -8,7 +8,7 @@
 
 import XCTest
 
-class Day03: XCTestCase {
+final class Day03: XCTestCase {
     
     func test_solution() {
         let lines = parse(paths: _paths)

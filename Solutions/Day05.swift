@@ -9,7 +9,7 @@
 import XCTest
 import AdventOfCode
 
-class Day05: XCTestCase {
+final class Day05: XCTestCase {
     
     func test_solution() {
         let computer = Computer()

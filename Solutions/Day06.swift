@@ -8,7 +8,7 @@
 
 import XCTest
 
-class Day06: XCTestCase {
+final class Day06: XCTestCase {
     
     func test_solution() {
         var data = [Parent: Children]()

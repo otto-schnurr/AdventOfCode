@@ -9,7 +9,7 @@
 import XCTest
 import AdventOfCode
 
-class Day10: XCTestCase {
+final class Day10: XCTestCase {
     
     func test_coordinateArithmetic() {
         let unit = Coordinate(1, 1)

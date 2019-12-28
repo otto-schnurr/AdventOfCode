@@ -11,7 +11,7 @@ import AdventOfCode
 
 private let _automaticallyRenderGame = false
 
-class Day13: XCTestCase {
+final class Day13: XCTestCase {
     
     func test_solution() {
         let game = Game()

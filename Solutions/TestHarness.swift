@@ -19,17 +19,21 @@ extension URL {
     }
 }
 
-private struct Input: Sequence, IteratorProtocol {
+public struct TestHarnessInput: Sequence, IteratorProtocol {
     
-    init(testHarnessResource: String) throws {
-        let fileURL = URL(testHarnessResource: testHarnessResource)
+    init(_ resourceName: String) throws {
+        let fileURL = URL(testHarnessResource: resourceName)
         let data = try String(contentsOfFile: fileURL.path, encoding: .utf8)
         lines = data.components(separatedBy: .newlines)
         iterator = lines.makeIterator()
     }
     
-    mutating func next() -> String? { return iterator.next() }
+    public mutating func next() -> String? {
+        let result = iterator.next()
+        return result?.isEmpty == true ? nil : result
+    }
     
+    // MARK: Private
     private let lines: [String]
     private var iterator: IndexingIterator<[String]>
     

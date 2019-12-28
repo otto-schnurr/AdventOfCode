@@ -44,11 +44,8 @@ extension Array where Element == Word {
 
     init?(testHarnessResource: String) {
         guard
-            let lines = try? TestHarnessInput(testHarnessResource)
-        else { return nil }
-        
-        let program = lines.map { Element($0) }
-        guard
+            var lines = try? TestHarnessInput(testHarnessResource),
+            let program = lines.next()?.split(separator: ",").map({ Int($0) }),
             !program.contains(where: { $0 == nil })
         else { return nil }
         

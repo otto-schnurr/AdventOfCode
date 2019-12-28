@@ -58,7 +58,6 @@ class Day14: XCTestCase {
 
 // MARK: - Private Types
 private typealias Chemical = String
-private typealias Ingredient = Ingredients.Element
 private typealias Ingredients = [Chemical: Int]
 private typealias RecipeBook = [Chemical: Reaction]
 
@@ -120,7 +119,7 @@ extension Reaction: CustomStringConvertible {
 }
 
 private extension Int {
-    // reference https://stackoverflow.com/a/27178435/148076
+    // reference: https://stackoverflow.com/a/27178435/148076
     func roundedUp(by factor: Self) -> Self {
         let remainder = self % factor
         return remainder == 0 ? self : self + factor - remainder

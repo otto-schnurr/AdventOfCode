@@ -56,7 +56,7 @@ class Day14: XCTestCase {
 }
 
 
-// MARK: - Private
+// MARK: - Private Types
 private typealias Chemical = String
 private typealias Ingredient = Ingredients.Element
 private typealias Ingredients = [Chemical: Int]
@@ -93,6 +93,18 @@ private struct Reaction: Hashable {
             }
     }
     
+    static func *(_ factor: Int, _ reaction: Reaction) -> Reaction {
+        return Reaction(
+            chemical: reaction.chemical,
+            amount: factor * reaction.amount,
+            ingredients: reaction.ingredients.reduce(Ingredients()) {
+                var result = $0
+                result[$1.key] = factor * $1.value
+                return result
+            }
+        )
+    }
+    
 }
 
 extension Reaction: CustomStringConvertible {
@@ -104,6 +116,16 @@ extension Reaction: CustomStringConvertible {
     }
 }
 
+private extension Int {
+    // reference https://stackoverflow.com/a/27178435/148076
+    func roundedUp(by factor: Self) -> Self {
+        let remainder = self % factor
+        return remainder == 0 ? self : self + factor - remainder
+    }
+}
+
+
+// MARK: - Private Implementation
 private func parseRecipes(from reactions: [Reaction]) -> RecipeBook {
     return reactions.reduce(RecipeBook()) {
         var result = $0
@@ -113,33 +135,34 @@ private func parseRecipes(from reactions: [Reaction]) -> RecipeBook {
 }
 
 private func breakdown(
-    _ ingredients: Ingredients,
-    using recipes: RecipeBook,
-    useExactAmounts: Bool = true
+    _ ingredients: Ingredients, using recipes: RecipeBook
 ) -> Ingredients {
+    guard
+        ingredients.filter({ $0.key != "ORE" }).count != 0
+    else { return ingredients }
+    
     var newIngredients = ingredients
     
     for ingredient in ingredients {
         guard
-            let reaction = recipes[ingredient.key],
-            ingredient.value >= reaction.amount || !useExactAmounts
+            ingredient.value > 0,
+            let reaction = recipes[ingredient.key]
         else { continue }
         assert(reaction.chemical == ingredient.key)
+
+        let factor = ingredient.value.roundedUp(by: reaction.amount) / reaction.amount
+        let amount = factor * reaction.amount
+        guard amount > 0 else { continue }
         
-        if newIngredients[ingredient.key]! <= reaction.amount {
+        if newIngredients[ingredient.key]! == amount {
             newIngredients.removeValue(forKey: ingredient.key)
         } else {
-            newIngredients[ingredient.key]! -= reaction.amount
+            newIngredients[ingredient.key]! -= amount
         }
         
-        newIngredients.merge(reaction.ingredients) { $0 + $1 }
+        newIngredients.merge((factor * reaction).ingredients, uniquingKeysWith: +)
     }
     
-    if newIngredients != ingredients {
-        return breakdown(newIngredients, using: recipes)
-    } else if useExactAmounts {
-        return breakdown(ingredients, using: recipes, useExactAmounts: false)
-    } else {
-        return ingredients
-    }
+    return newIngredients == ingredients ?
+        ingredients : breakdown(newIngredients, using: recipes)
 }

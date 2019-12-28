@@ -32,15 +32,6 @@ private struct Droid {
         case west = 3
         case east = 4
         
-        static func nextDirections(afterMoving direction: Self) -> [Self] {
-            switch direction {
-            case .north: return [.west, .north, .east]
-            case .south: return [.east, .south, .west]
-            case .west:  return [.south, .west, .north]
-            case .east:  return [.north, .east, .south]
-            }
-        }
-
     }
     
     enum Status: Word {
@@ -67,13 +58,19 @@ private struct Droid {
 
 private extension Droid {
     
-    func distanceToTarget(directions: [Direction], distance: Int) -> Int {
-        return directions
-            .map { self.searchForTarget(heading: $0, distance: distance) }
-            .min() ?? 0
+    func distanceToTarget(
+        directions: [Direction], from position: Coordinate, distance: Int
+    ) -> Int {
+        return directions.map {
+            self.searchForTarget(heading: $0, from: position, distance: distance)
+        }.min() ?? Int.max
     }
     
-    func searchForTarget(heading direction: Direction, distance: Int) -> Int {
+    func searchForTarget(
+        heading direction: Direction, from position: Coordinate, distance: Int
+    ) -> Int {
+        let newPosition = position + direction.asOffset
+        
         switch move(direction) {
         case .wall:
             return Int.max
@@ -81,11 +78,34 @@ private extension Droid {
         case .moved:
             return distanceToTarget(
                 directions: Direction.nextDirections(afterMoving: direction),
+                from: newPosition,
                 distance: distance + 1
             )
             
         case .movedToOxygen:
             return distance + 1
+        }
+    }
+    
+}
+
+private extension Droid.Direction {
+    
+    static func nextDirections(afterMoving direction: Self) -> [Self] {
+        switch direction {
+        case .north: return [.west, .north, .east]
+        case .south: return [.east, .south, .west]
+        case .west:  return [.south, .west, .north]
+        case .east:  return [.north, .east, .south]
+        }
+    }
+
+    var asOffset: Coordinate {
+        switch self {
+        case .north: return Coordinate(0, -1)
+        case .south: return Coordinate(0, 1)
+        case .west:  return Coordinate(-1, 0)
+        case .east:  return Coordinate(1, 0)
         }
     }
     

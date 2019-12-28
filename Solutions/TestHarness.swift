@@ -1,5 +1,5 @@
 //
-//  Harness.swift
+//  TestHarness.swift
 //  AdventOfCode
 //
 //  Created by Otto Schnurr on 12/15/2019.
@@ -9,7 +9,6 @@
 import Foundation
 
 extension URL {
-    
     // reference: https://stackoverflow.com/a/58034307/148076
     init(testHarnessResource: String) {
         let thisSourceFile = URL(fileURLWithPath: #file)
@@ -18,5 +17,4 @@ extension URL {
             .appendingPathComponent("Resources")
             .appendingPathComponent(testHarnessResource)
     }
-    
 }

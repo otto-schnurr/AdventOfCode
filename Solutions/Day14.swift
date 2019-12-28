@@ -12,7 +12,7 @@ class Day14: XCTestCase {
     func test_reactionParsing() {
         XCTAssertEqual(
             Reaction(recipe: "10 ORE => 10 A"),
-            Reaction(chemical: "A", amount: 10, ingredients: ["ORE": 10])
+            Reaction(chemical: "A", amount: 10, ingredients: [_oreKey: 10])
         )
         
         XCTAssertEqual(
@@ -35,7 +35,7 @@ class Day14: XCTestCase {
         ].map { Reaction(recipe: $0) }
         var recipes = parseRecipes(from: reactions)
         XCTAssertEqual(
-            breakdown(["FUEL": 1], using: recipes)["ORE"]!, 31
+            breakdown([_fuelKey: 1], using: recipes)[_oreKey]!, 31
         )
 
         reactions = [
@@ -49,7 +49,7 @@ class Day14: XCTestCase {
         ].map { Reaction(recipe: $0) }
         recipes = parseRecipes(from: reactions)
         XCTAssertEqual(
-            breakdown(["FUEL": 1], using: recipes)["ORE"]!, 165
+            breakdown([_fuelKey: 1], using: recipes)[_oreKey]!, 165
         )
     }
     
@@ -61,6 +61,9 @@ private typealias Chemical = String
 private typealias Ingredient = Ingredients.Element
 private typealias Ingredients = [Chemical: Int]
 private typealias RecipeBook = [Chemical: Reaction]
+
+private let _fuelKey = "FUEL"
+private let _oreKey = "ORE"
 
 private struct Reaction: Hashable {
 
@@ -138,7 +141,7 @@ private func breakdown(
     _ ingredients: Ingredients, using recipes: RecipeBook
 ) -> Ingredients {
     guard
-        ingredients.filter({ $0.key != "ORE" }).count != 0
+        ingredients.filter({ $0.key != _oreKey }).count != 0
     else { return ingredients }
     
     var newIngredients = ingredients

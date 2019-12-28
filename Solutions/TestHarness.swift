@@ -46,7 +46,7 @@ extension Array where Element == Word {
         guard
             var lines = try? TestHarnessInput(testHarnessResource),
             let program = lines.next()?.split(separator: ",").map({ Int($0) }),
-            !program.contains(where: { $0 == nil })
+            program.allSatisfy({ $0 != nil })
         else { return nil }
         
         self = program.compactMap { $0 }

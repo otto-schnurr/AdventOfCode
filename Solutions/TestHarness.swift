@@ -18,3 +18,19 @@ extension URL {
             .appendingPathComponent(testHarnessResource)
     }
 }
+
+private struct Input: Sequence, IteratorProtocol {
+    
+    init(testHarnessResource: String) throws {
+        let fileURL = URL(testHarnessResource: testHarnessResource)
+        let data = try String(contentsOfFile: fileURL.path, encoding: .utf8)
+        lines = data.components(separatedBy: .newlines)
+        iterator = lines.makeIterator()
+    }
+    
+    mutating func next() -> String? { return iterator.next() }
+    
+    private let lines: [String]
+    private var iterator: IndexingIterator<[String]>
+    
+}

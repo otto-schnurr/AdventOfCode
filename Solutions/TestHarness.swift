@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AdventOfCode
 
 extension URL {
     // reference: https://stackoverflow.com/a/58034307/148076
@@ -23,7 +24,7 @@ public struct TestHarnessInput: Sequence, IteratorProtocol {
     
     init(_ resourceName: String) throws {
         let fileURL = URL(testHarnessResource: resourceName)
-        let data = try String(contentsOfFile: fileURL.path, encoding: .utf8)
+        let data = try String(contentsOf: fileURL, encoding: .utf8)
         lines = data.components(separatedBy: .newlines)
         iterator = lines.makeIterator()
     }
@@ -37,4 +38,21 @@ public struct TestHarnessInput: Sequence, IteratorProtocol {
     private let lines: [String]
     private var iterator: IndexingIterator<[String]>
     
+}
+
+extension Array where Element == Word {
+
+    init?(testHarnessResource: String) {
+        guard
+            let lines = try? TestHarnessInput(testHarnessResource)
+        else { return nil }
+        
+        let program = lines.map { Element($0) }
+        guard
+            !program.contains(where: { $0 == nil })
+        else { return nil }
+        
+        self = program.compactMap { $0 }
+    }
+
 }

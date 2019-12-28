@@ -93,6 +93,15 @@ class Day14: XCTestCase {
         )
     }
     
+    func test_solutions() {
+        let reactions =
+            try! TestHarnessInput("input14.txt").map { Reaction(recipe: $0 ) }
+        let recipes = parseRecipes(from: reactions)
+        XCTAssertEqual(
+            breakdown(["FUEL": 1], using: recipes)["ORE"]!, 443537
+        )
+    }
+    
 }
 
 

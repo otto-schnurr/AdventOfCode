@@ -12,7 +12,7 @@ private let _black        = Pixel("0")!
 private let _white        = Pixel("1")!
 private let _transparent  = Pixel("2")!
 
-class Day08: XCTestCase {
+final class Day08: XCTestCase {
     
     func test_example_1() {
         let pixels = Pixels(string: "123456789012")!

@@ -9,7 +9,7 @@
 import XCTest
 import AdventOfCode
 
-class Combinatorics_tests: XCTestCase {
+final class Combinatorics_tests: XCTestCase {
 
     func test_permutationsOfEmptyArray_isEmpty() {
         XCTAssertEqual([Int]().permutations, [[Int]]())

@@ -12,7 +12,7 @@ import AdventOfCode
 // Setting this to true will include tests that take a long time to run.
 private let _enableAllTests = false
 
-class Day12: XCTestCase {
+final class Day12: XCTestCase {
 
     func test_examples_part1() {
         var moons = [

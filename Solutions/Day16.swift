@@ -11,7 +11,7 @@ import XCTest
 // Setting this to true will include tests that take a long time to run.
 private let _enableAllTests = false
 
-class Day16: XCTestCase {
+final class Day16: XCTestCase {
     
     func test_pattern() {
         XCTAssertNil(Pattern(order: 0, count: 1))

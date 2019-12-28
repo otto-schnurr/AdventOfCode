@@ -8,7 +8,7 @@
 import XCTest
 @testable import AdventOfCode
 
-class ParameterMode_tests: XCTestCase {
+final class ParameterMode_tests: XCTestCase {
 
     func test_parsingInvalidInput_producesNoModes() {
         XCTAssertEqual(ParameterMode.parse(count: -1, from: 0), [])

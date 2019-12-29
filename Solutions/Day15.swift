@@ -19,7 +19,7 @@ final class Day15: XCTestCase {
                 directions: Droid.Direction.all, distance: 0,
                 from: Coordinate(20, 20), history: &display
             ),
-            9223372036854775807
+            nil
         )
         display.render()
     }
@@ -72,13 +72,13 @@ private extension Droid {
         distance: Int,
         from position: Coordinate,
         history: inout Display
-    ) -> Int {
+    ) -> Int? {
         return directions.map {
             self.searchForTarget(
                 heading: $0, distance: distance,
                 from: position, history: &history
             )
-        }.min() ?? Int.max
+        }.compactMap { $0 }.min()
     }
     
     func searchForTarget(
@@ -86,17 +86,17 @@ private extension Droid {
         distance: Int,
         from position: Coordinate,
         history: inout Display
-    ) -> Int {
+    ) -> Int? {
         let newPosition = position + direction.asOffset
         guard history[newPosition] != " " else {
             history[newPosition] = " "
-            return Int.max
+            return nil
         }
         
         switch move(direction) {
         case .wall:
             history[newPosition] = "#"
-            return Int.max
+            return nil
             
         case .moved:
             history[newPosition] = " "

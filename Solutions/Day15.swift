@@ -12,7 +12,16 @@ import AdventOfCode
 final class Day15: XCTestCase {
     
     func test_solutions() {
-        let _ = Droid()
+        var display = Display(backgroundColor: ".")
+        let droid = Droid()
+        XCTAssertEqual(
+            droid.distanceToTarget(
+                directions: Droid.Direction.all, distance: 0,
+                from: Coordinate(20, 20), history: &display
+            ),
+            9223372036854775807
+        )
+        display.render()
     }
     
 }
@@ -59,30 +68,47 @@ private struct Droid {
 private extension Droid {
     
     func distanceToTarget(
-        directions: [Direction], from position: Coordinate, distance: Int
+        directions: [Direction],
+        distance: Int,
+        from position: Coordinate,
+        history: inout Display
     ) -> Int {
         return directions.map {
-            self.searchForTarget(heading: $0, from: position, distance: distance)
+            self.searchForTarget(
+                heading: $0, distance: distance,
+                from: position, history: &history
+            )
         }.min() ?? Int.max
     }
     
     func searchForTarget(
-        heading direction: Direction, from position: Coordinate, distance: Int
+        heading direction: Direction,
+        distance: Int,
+        from position: Coordinate,
+        history: inout Display
     ) -> Int {
         let newPosition = position + direction.asOffset
+        guard history[newPosition] != " " else {
+            history[newPosition] = " "
+            return Int.max
+        }
         
         switch move(direction) {
         case .wall:
+            history[newPosition] = "#"
             return Int.max
             
         case .moved:
+            history[newPosition] = " "
             return distanceToTarget(
                 directions: Direction.nextDirections(afterMoving: direction),
+                distance: distance + 1,
                 from: newPosition,
-                distance: distance + 1
+                history: &history
             )
             
         case .movedToOxygen:
+            history[newPosition] = " "
             return distance + 1
         }
     }

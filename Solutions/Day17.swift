@@ -12,7 +12,11 @@ import AdventOfCode
 final class Day17: XCTestCase {
     
     func test_solutions() {
-        XCTAssertFalse(_program.isEmpty)
+        let computer = Computer()
+        computer.load(_program)
+        computer.run()
+        let output = computer.harvestOutput()
+        XCTAssertEqual(output.count, 2863)
     }
     
 }

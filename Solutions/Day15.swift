@@ -17,9 +17,9 @@ final class Day15: XCTestCase {
         XCTAssertEqual(
             droid.distanceToTarget(
                 directions: Droid.Direction.all, distance: 0,
-                from: Coordinate(20, 20), history: &display
+                from: Coordinate(24, 14), history: &display
             ),
-            nil
+            238
         )
         display.render()
     }
@@ -100,15 +100,22 @@ private extension Droid {
             
         case .moved:
             history[newPosition] = " "
-            return distanceToTarget(
+            let result = distanceToTarget(
                 directions: Direction.nextDirections(afterMoving: direction),
                 distance: distance + 1,
                 from: newPosition,
                 history: &history
             )
             
+            if result == nil {
+                // important: Unwind droid position.
+                let _ = move(direction.reversed)
+            }
+            
+            return result
+            
         case .movedToOxygen:
-            history[newPosition] = " "
+            history[newPosition] = "*"
             return distance + 1
         }
     }
@@ -126,6 +133,15 @@ private extension Droid.Direction {
         }
     }
 
+    var reversed: Self {
+        switch self {
+        case .north: return .south
+        case .south: return .north
+        case .west:  return .east
+        case .east:  return .west
+        }
+    }
+    
     var asOffset: Coordinate {
         switch self {
         case .north: return Coordinate(0, -1)

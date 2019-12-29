@@ -68,13 +68,21 @@ private final class Screen {
         set(newValue) { pixels[coordinate.y][coordinate.x] = newValue }
     }
 
-    init?(width: Int, height: Int, initialColor: Pixel) {
-        guard width > 0 && height > 0 else { return nil }
+    init?(pixels: [[Pixel]]) {
+        guard !pixels.isEmpty && pixels.first?.isEmpty == false else { return nil }
 
-        self.width = width
-        self.height = height
+        height = pixels.count
+        width = pixels[0].count
+        self.pixels = pixels
+        assert(width > 0)
+        assert(height > 0)
+    }
+    
+    convenience init?(width: Int, height: Int, initialColor: Pixel) {
+        guard width > 0 && height > 0 else { return nil }
         let row = Array(repeating: initialColor, count: width)
-        pixels = Array(repeating: row, count: height)
+        let pixels = Array(repeating: row, count: height)
+        self.init(pixels: pixels)
     }
     
     // MARK: Private

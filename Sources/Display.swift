@@ -58,15 +58,17 @@ public extension Display {
 // MARK: Private
 private final class Screen {
     
+    typealias Pixel = Character
+
     let width: Int
     let height: Int
     
-    subscript(coordinate: Coordinate) -> Display.Pixel {
+    subscript(coordinate: Coordinate) -> Pixel {
         get { pixels[coordinate.y][coordinate.x] }
         set(newValue) { pixels[coordinate.y][coordinate.x] = newValue }
     }
 
-    init?(width: Int, height: Int, initialColor: Display.Pixel) {
+    init?(width: Int, height: Int, initialColor: Pixel) {
         guard width > 0 && height > 0 else { return nil }
 
         self.width = width
@@ -76,13 +78,13 @@ private final class Screen {
     }
     
     // MARK: Private
-    private var pixels: [[Display.Pixel]]
+    private var pixels: [[Pixel]]
     
 }
 
 private extension Screen {
     
-    convenience init?(pixels: [Coordinate: Display.Pixel], backgroundColor: Character) {
+    convenience init?(pixels: [Coordinate: Screen.Pixel], backgroundColor: Character) {
         let width = pixels.reduce(0) { max($0, $1.key.x) } + 1
         let height = pixels.reduce(0) { max($0, $1.key.y) } + 1
         self.init(width: width, height: height, initialColor: backgroundColor)

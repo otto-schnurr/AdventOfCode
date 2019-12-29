@@ -109,8 +109,8 @@ private let _moons = [
 
 private protocol Quantity: Hashable {
     static var zero: Self  { get }
-    static func +(_ lhs: Self, _ rhs: Self) -> Self
-    static func -(_ lhs: Self, _ rhs: Self) -> Self
+    static func +(lhs: Self, rhs: Self) -> Self
+    static func -(lhs: Self, rhs: Self) -> Self
     func signum() -> Self
 }
 
@@ -132,11 +132,11 @@ private struct Vector: Quantity {
         self.z = z
     }
     
-    static func +(_ lhs: Vector, _ rhs: Vector) -> Vector {
+    static func +(lhs: Vector, rhs: Vector) -> Vector {
         return Vector(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z)
     }
     
-    static func -(_ lhs: Vector, _ rhs: Vector) -> Vector {
+    static func -(lhs: Vector, rhs: Vector) -> Vector {
         return Vector(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z)
     }
     

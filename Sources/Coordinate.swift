@@ -45,11 +45,11 @@ public extension Coordinate {
         return Coordinate(lhs.x - rhs.x, lhs.y - rhs.y)
     }
     
-    static func *(_ factor: Int, coordinate: Coordinate) -> Coordinate {
+    static func *(factor: Int, coordinate: Coordinate) -> Coordinate {
         return Coordinate(factor * coordinate.x, factor * coordinate.y)
     }
     
-    static func *(coordinate: Coordinate, _ factor: Int) -> Coordinate {
+    static func *(coordinate: Coordinate, factor: Int) -> Coordinate {
         return factor * coordinate
     }
     

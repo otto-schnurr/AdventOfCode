@@ -15,8 +15,13 @@ final class Day17: XCTestCase {
         let computer = Computer()
         computer.load(_program)
         computer.run()
-        let output = computer.harvestOutput()
-        XCTAssertEqual(output.count, 2863)
+        let output = computer.harvestOutput().map { Character(UnicodeScalar($0)!) }
+
+        let screen = Screen(pixels: output.split(separator: "\n").map { Array($0) })!
+        XCTAssertEqual(screen.width, 53)
+        XCTAssertEqual(screen.height, 53)
+        
+        screen.render()
     }
     
 }

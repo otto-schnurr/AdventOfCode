@@ -36,7 +36,7 @@ public final class Screen {
         self.init(pixels: pixels)
     }
     
-    func render() { pixels.forEach { print(String($0)) } }
+    public func render() { pixels.forEach { print(String($0)) } }
 
     // MARK: Private
     private var pixels: [[Pixel]]

@@ -18,10 +18,12 @@ final class Day17: XCTestCase {
         let output = computer.harvestOutput().map { Character(UnicodeScalar($0)!) }
 
         let screen = Screen(pixels: output.split(separator: "\n").map { Array($0) })!
-        XCTAssertEqual(screen.width, 53)
-        XCTAssertEqual(screen.height, 53)
-        
         screen.render()
+
+        XCTAssertEqual(
+            screen.intersections(of: "#").reduce(0) { $0 + $1.x * $1.y },
+            9876
+        )
     }
     
 }
@@ -29,3 +31,26 @@ final class Day17: XCTestCase {
 
 // MARK: - Private
 private let _program = Program(testHarnessResource: "input17.txt")!
+
+private extension Screen {
+    func intersections(of pixel: Pixel) -> [Coordinate] {
+        guard width >= 5 && height >= 5 else { return [ ] }
+
+        let offsets = [
+            Coordinate(-1, 0), Coordinate(1, 0),
+            Coordinate(0, 0),
+            Coordinate(0, -1), Coordinate(0, 1)
+        ]
+        var result = [Coordinate]()
+        
+        for x in 2 ..< width - 2 {
+            for y in 2 ..< height - 2 {
+                let center = Coordinate(x, y)
+                let pixelValues = offsets.map { self[center + $0] }
+                if pixelValues.allSatisfy({ $0 == "#" }) { result.append(center) }
+            }
+        }
+        
+        return result
+    }
+}

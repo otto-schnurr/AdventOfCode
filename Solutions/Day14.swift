@@ -33,10 +33,7 @@ class Day14: XCTestCase {
             "7 A, 1 D => 1 E",
             "7 A, 1 E => 1 FUEL"
         ].map { Reaction(recipe: $0) }
-        var recipes = parseRecipes(from: reactions)
-        XCTAssertEqual(
-            breakdown([_fuelKey: 1], using: recipes)[_oreKey]!, 31
-        )
+        XCTAssertEqual(oreNeeded(forFuel: 1, using: reactions)!, 31)
 
         reactions = [
             "9 ORE => 2 A",
@@ -47,10 +44,7 @@ class Day14: XCTestCase {
             "4 C, 1 A => 1 CA",
             "2 AB, 3 BC, 4 CA => 1 FUEL"
         ].map { Reaction(recipe: $0) }
-        recipes = parseRecipes(from: reactions)
-        XCTAssertEqual(
-            breakdown([_fuelKey: 1], using: recipes)[_oreKey]!, 165
-        )
+        XCTAssertEqual(oreNeeded(forFuel: 1, using: reactions)!, 165)
         
         reactions = [
             "157 ORE => 5 NZVS",
@@ -63,10 +57,7 @@ class Day14: XCTestCase {
             "165 ORE => 2 GPVTF",
             "3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT"
         ].map { Reaction(recipe: $0) }
-        recipes = parseRecipes(from: reactions)
-        XCTAssertEqual(
-            breakdown([_fuelKey: 1], using: recipes)[_oreKey]!, 13312
-        )
+        XCTAssertEqual(oreNeeded(forFuel: 1, using: reactions)!, 13_312)
         
         reactions = [
             "171 ORE => 8 CNZTR",
@@ -87,10 +78,7 @@ class Day14: XCTestCase {
             "7 XCVML => 6 RJRHP",
             "5 BHXH, 4 VRPVC => 5 LTCX"
         ].map { Reaction(recipe: $0) }
-        recipes = parseRecipes(from: reactions)
-        XCTAssertEqual(
-            breakdown([_fuelKey: 1], using: recipes)[_oreKey]!, 2210736
-        )
+        XCTAssertEqual(oreNeeded(forFuel: 1, using: reactions)!, 2_210_736)
     }
     
     func test_solutions() {
@@ -177,6 +165,11 @@ private extension Int {
 
 
 // MARK: - Private Implementation
+private func oreNeeded(forFuel fuelTarget: Int, using reactions: [Reaction]) -> Int? {
+    let recipes = parseRecipes(from: reactions)
+    return breakdown([_fuelKey: fuelTarget], using: recipes)[_oreKey]
+}
+
 private func parseRecipes(from reactions: [Reaction]) -> RecipeBook {
     return reactions.reduce(RecipeBook()) {
         var result = $0

@@ -73,7 +73,7 @@ private extension Droid {
         from position: Coordinate,
         history: inout Display
     ) -> Int? {
-        history[position] = "."
+        history[position] = Status.moved.characterValue
         return directions.map {
             self.searchForTarget(
                 heading: $0, distance: distance,
@@ -89,17 +89,18 @@ private extension Droid {
         history: inout Display
     ) -> Int? {
         let newPosition = position + direction.asOffset
-        guard history[newPosition] != "." else {
+        guard history[newPosition] != Status.moved.characterValue else {
             return nil
         }
         
-        switch move(direction) {
+        let newStatus = move(direction)
+        history[newPosition] = newStatus.characterValue
+        
+        switch newStatus {
         case .wall:
-            history[newPosition] = "#"
             return nil
             
         case .moved:
-            history[newPosition] = "."
             let result = distanceToTarget(
                 directions: Direction.nextDirections(afterMoving: direction),
                 distance: distance + 1,
@@ -115,7 +116,6 @@ private extension Droid {
             return result
             
         case .movedToOxygen:
-            history[newPosition] = "O"
             return distance + 1
         }
     }
@@ -151,4 +151,14 @@ private extension Droid.Direction {
         }
     }
     
+}
+
+private extension Droid.Status {
+    var characterValue: Character {
+        switch self {
+        case .wall:          return "#"
+        case .moved:         return "."
+        case .movedToOxygen: return "O"
+        }
+    }
 }

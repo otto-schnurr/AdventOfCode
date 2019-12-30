@@ -48,14 +48,14 @@ private let _program = Program(testHarnessResource: "input15.txt")!
 private enum Observation: Word {
     
     case wall = 0
-    case moved = 1
-    case movedToOxygen = 2
+    case path = 1
+    case oxygen = 2
 
     var pixelValue: Screen.Pixel {
         switch self {
-        case .wall:          return "#"
-        case .moved:         return "."
-        case .movedToOxygen: return "O"
+        case .wall:   return "#"
+        case .path:   return "."
+        case .oxygen: return "O"
         }
     }
 
@@ -98,7 +98,7 @@ private extension Droid {
         from position: Coordinate,
         history: inout Display
     ) -> Int? {
-        history[position] = Observation.moved.pixelValue
+        history[position] = Observation.path.pixelValue
         return directions.map {
             self.searchForTarget(
                 heading: $0, distance: distance,
@@ -114,7 +114,7 @@ private extension Droid {
         history: inout Display
     ) -> Int? {
         let newPosition = position + direction.asOffset
-        guard history[newPosition] != Observation.moved.pixelValue else {
+        guard history[newPosition] != Observation.path.pixelValue else {
             return nil
         }
         
@@ -125,7 +125,7 @@ private extension Droid {
         case .wall:
             return nil
             
-        case .moved:
+        case .path:
             let result = distanceToTarget(
                 directions: Direction.nextDirections(afterMoving: direction),
                 distance: distance + 1,
@@ -140,7 +140,7 @@ private extension Droid {
             
             return result
             
-        case .movedToOxygen:
+        case .oxygen:
             return distance + 1
         }
     }

@@ -47,9 +47,7 @@ public extension Display {
         return initialPixels.filter { $0.value == character }.count
     }
     
-    mutating func firstCoordinate(of pixel: Pixel) -> Coordinate? {
-        resolveScreen()?.firstCoordinate(of: pixel)
-    }
+    mutating func export() -> Screen? { return resolveScreen()?.copy() }
     
     /// - Note: Initial pixel counts become locked after calling this method.
     mutating func render() { resolveScreen()?.render() }

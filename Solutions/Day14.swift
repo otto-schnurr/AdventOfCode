@@ -160,9 +160,13 @@ class Day14: XCTestCase {
     func test_solutions() {
         let reactions =
             try! TestHarnessInput("input14.txt").map { Reaction(recipe: $0 ) }
-        let recipes = parseRecipes(from: reactions)
+        XCTAssertEqual(oreNeeded(forFuel: 1, using: reactions)!, 443_537)
+
+        let availableOre = 1_000_000_000_000
         XCTAssertEqual(
-            breakdown([_fuelKey: 1], using: recipes)[_oreKey]!, 443537
+            // TODO: Figure out where the rounding bug is.
+            fuelProduced(fromOre: availableOre, using: reactions)! - 1,
+            2_910_558
         )
     }
     

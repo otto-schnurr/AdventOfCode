@@ -45,6 +45,22 @@ final class Day15: XCTestCase {
 // MARK: - Private
 private let _program = Program(testHarnessResource: "input15.txt")!
 
+private enum Observation: Word {
+    
+    case wall = 0
+    case moved = 1
+    case movedToOxygen = 2
+
+    var characterValue: Character {
+        switch self {
+        case .wall:          return "#"
+        case .moved:         return "."
+        case .movedToOxygen: return "O"
+        }
+    }
+
+}
+
 private struct Droid {
     
     enum Direction: Word {
@@ -58,21 +74,15 @@ private struct Droid {
         
     }
     
-    enum Status: Word {
-        case wall = 0
-        case moved = 1
-        case movedToOxygen = 2
-    }
-    
     init() {
         computer = Computer(outputMode: .yield)
         computer.load(_program)
     }
     
-    func move(_ direction: Direction) -> Status {
+    func move(_ direction: Direction) -> Observation {
         computer.inputBuffer.append(direction.rawValue)
         computer.run()
-        return Status(rawValue: computer.harvestOutput().first!)!
+        return Observation(rawValue: computer.harvestOutput().first!)!
     }
     
     // MARK: Private
@@ -88,7 +98,7 @@ private extension Droid {
         from position: Coordinate,
         history: inout Display
     ) -> Int? {
-        history[position] = Status.moved.characterValue
+        history[position] = Observation.moved.characterValue
         return directions.map {
             self.searchForTarget(
                 heading: $0, distance: distance,
@@ -104,7 +114,7 @@ private extension Droid {
         history: inout Display
     ) -> Int? {
         let newPosition = position + direction.asOffset
-        guard history[newPosition] != Status.moved.characterValue else {
+        guard history[newPosition] != Observation.moved.characterValue else {
             return nil
         }
         
@@ -166,16 +176,6 @@ private extension Droid.Direction {
         }
     }
     
-}
-
-private extension Droid.Status {
-    var characterValue: Character {
-        switch self {
-        case .wall:          return "#"
-        case .moved:         return "."
-        case .movedToOxygen: return "O"
-        }
-    }
 }
 
 private extension Screen {

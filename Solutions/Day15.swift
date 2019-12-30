@@ -11,6 +11,21 @@ import AdventOfCode
 
 final class Day15: XCTestCase {
     
+    func test_example() {
+        let map = """
+        ######
+        #..###
+        #.#..#
+        #.O.##
+        ######
+        """
+        let screen = Screen(pixels: map.split(separator: "\n").map { Array($0) })!
+        let startingPoint = Coordinate(2, 3)
+        XCTAssertEqual(
+            screen.minimumDistanceToFill(from: startingPoint, across: "."), 4
+        )
+    }
+    
     func test_solutions() {
         var display = Display(backgroundColor: " ")
         let droid = Droid()
@@ -161,4 +176,35 @@ private extension Droid.Status {
         case .movedToOxygen: return "O"
         }
     }
+}
+
+private extension Screen {
+    
+    func validate(coordinate: Coordinate) -> Bool {
+        return
+            0 <= coordinate.x && coordinate.x < width &&
+            0 <= coordinate.y && coordinate.y < height
+    }
+    
+    func minimumDistanceToFill(
+        from startingPosition: Coordinate, across path: Pixel
+    ) -> Int {
+        var queue = [startingPosition]
+        var distanceTable = [startingPosition: 0]
+        
+        while
+            let position = queue.popLast(),
+            let distance = distanceTable[position] {
+            
+            let adjacentPositions = Droid.Direction.all
+                .map { position + $0.asOffset }
+                .filter { self.validate(coordinate: $0) && self[$0] == path }
+                .filter { !distanceTable.keys.contains($0) }
+            queue += adjacentPositions
+            adjacentPositions.forEach { distanceTable[$0] = distance + 1 }
+        }
+        
+        return distanceTable.max { $0.value < $1.value }?.value ?? 0
+    }
+    
 }

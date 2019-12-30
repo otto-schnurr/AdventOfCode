@@ -51,7 +51,7 @@ private enum Observation: Word {
     case moved = 1
     case movedToOxygen = 2
 
-    var characterValue: Character {
+    var pixelValue: Screen.Pixel {
         switch self {
         case .wall:          return "#"
         case .moved:         return "."
@@ -98,7 +98,7 @@ private extension Droid {
         from position: Coordinate,
         history: inout Display
     ) -> Int? {
-        history[position] = Observation.moved.characterValue
+        history[position] = Observation.moved.pixelValue
         return directions.map {
             self.searchForTarget(
                 heading: $0, distance: distance,
@@ -114,14 +114,14 @@ private extension Droid {
         history: inout Display
     ) -> Int? {
         let newPosition = position + direction.asOffset
-        guard history[newPosition] != Observation.moved.characterValue else {
+        guard history[newPosition] != Observation.moved.pixelValue else {
             return nil
         }
         
-        let newStatus = move(direction)
-        history[newPosition] = newStatus.characterValue
+        let observation = move(direction)
+        history[newPosition] = observation.pixelValue
         
-        switch newStatus {
+        switch observation {
         case .wall:
             return nil
             

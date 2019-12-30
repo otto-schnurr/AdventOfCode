@@ -89,7 +89,7 @@ class Day14: XCTestCase {
         ].map { Reaction(recipe: $0) }
         recipes = parseRecipes(from: reactions)
         XCTAssertEqual(
-            breakdown(["FUEL": 1], using: recipes)["ORE"]!, 2210736
+            breakdown([_fuelKey: 1], using: recipes)[_oreKey]!, 2210736
         )
     }
     
@@ -98,7 +98,7 @@ class Day14: XCTestCase {
             try! TestHarnessInput("input14.txt").map { Reaction(recipe: $0 ) }
         let recipes = parseRecipes(from: reactions)
         XCTAssertEqual(
-            breakdown(["FUEL": 1], using: recipes)["ORE"]!, 443537
+            breakdown([_fuelKey: 1], using: recipes)[_oreKey]!, 443537
         )
     }
     

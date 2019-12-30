@@ -12,7 +12,7 @@ import AdventOfCode
 final class Day15: XCTestCase {
     
     func test_solutions() {
-        var display = Display(backgroundColor: ".")
+        var display = Display(backgroundColor: " ")
         let droid = Droid()
         XCTAssertEqual(
             droid.distanceToTarget(
@@ -73,6 +73,7 @@ private extension Droid {
         from position: Coordinate,
         history: inout Display
     ) -> Int? {
+        history[position] = "."
         return directions.map {
             self.searchForTarget(
                 heading: $0, distance: distance,
@@ -88,8 +89,7 @@ private extension Droid {
         history: inout Display
     ) -> Int? {
         let newPosition = position + direction.asOffset
-        guard history[newPosition] != " " else {
-            history[newPosition] = " "
+        guard history[newPosition] != "." else {
             return nil
         }
         
@@ -99,7 +99,7 @@ private extension Droid {
             return nil
             
         case .moved:
-            history[newPosition] = " "
+            history[newPosition] = "."
             let result = distanceToTarget(
                 directions: Direction.nextDirections(afterMoving: direction),
                 distance: distance + 1,
@@ -115,7 +115,7 @@ private extension Droid {
             return result
             
         case .movedToOxygen:
-            history[newPosition] = "*"
+            history[newPosition] = "O"
             return distance + 1
         }
     }

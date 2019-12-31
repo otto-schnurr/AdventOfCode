@@ -15,6 +15,13 @@ final class Direction_tests: XCTestCase {
         XCTAssertEqual(Direction.all.count, 4)
     }
     
+    func test_reversedDirections () {
+        XCTAssertEqual(-Direction.north, .south)
+        XCTAssertEqual(-Direction.south, .north)
+        XCTAssertEqual(-Direction.west, .east)
+        XCTAssertEqual(-Direction.east, .west)
+    }
+    
     func test_turns() {
         XCTAssertEqual(Direction.north.turned(.left), .west)
         XCTAssertEqual(Direction.north.turned(.right), .east)

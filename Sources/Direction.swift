@@ -8,11 +8,6 @@
 
 public enum Direction: Word {
 
-    public enum Turn: Word {
-        case left = 0
-        case right = 1
-    }
-    
     public static var all: [Self] = [.north, .east, .south, .west]
 
     case north = 1
@@ -20,7 +15,25 @@ public enum Direction: Word {
     case west = 3
     case east = 4
 
-    public func turned(_ turn: Turn) -> Direction {
+    public enum Turn: Word {
+        case left = 0
+        case right = 1
+    }
+
+}
+    
+public extension Direction {
+
+    static prefix func - (direction: Direction) -> Direction {
+        switch direction {
+        case .north: return .south
+        case .south: return .north
+        case .west:  return .east
+        case .east:  return .west
+        }
+    }
+    
+    func turned(_ turn: Turn) -> Direction {
         switch turn {
         case .left:
             switch self {

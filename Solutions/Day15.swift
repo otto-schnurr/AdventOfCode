@@ -34,7 +34,7 @@ final class Day15: XCTestCase {
         let droid = Droid()
         XCTAssertEqual(
             droid.distanceToTarget(
-                directions: Droid.Direction.all, distance: 0,
+                directions: Direction.all, distance: 0,
                 from: Coordinate(21, 21), history: &display
             ),
             238
@@ -78,17 +78,6 @@ private enum Observation: Word {
 
 private struct Droid {
     
-    enum Direction: Word {
-        
-        static var all = [Self.north, Self.east, Self.south, Self.west]
-
-        case north = 1
-        case south = 2
-        case west = 3
-        case east = 4
-        
-    }
-    
     init() {
         computer = Computer(outputMode: .yield)
         computer.load(_program)
@@ -128,7 +117,7 @@ private extension Droid {
         from position: Coordinate,
         history: inout Display
     ) -> Int? {
-        let newPosition = position + direction.asOffset
+        let newPosition = position + direction
         guard history[newPosition] == " " else { return nil }
         
         let observation = move(direction)
@@ -147,19 +136,19 @@ private extension Droid {
             )
             
             // important: Unwind droid position as we pop the stack.
-            let _ = move(direction.reversed)
+            let _ = move(-direction)
             return result
             
         case .oxygen:
             // important: Unwind droid position as we pop the stack.
-            let _ = move(direction.reversed)
+            let _ = move(-direction)
             return distance + 1
         }
     }
     
 }
 
-private extension Droid.Direction {
+private extension Direction {
     
     static func nextDirections(afterMoving direction: Self) -> [Self] {
         switch direction {
@@ -167,24 +156,6 @@ private extension Droid.Direction {
         case .south: return [.east, .south, .west]
         case .west:  return [.south, .west, .north]
         case .east:  return [.north, .east, .south]
-        }
-    }
-
-    var reversed: Self {
-        switch self {
-        case .north: return .south
-        case .south: return .north
-        case .west:  return .east
-        case .east:  return .west
-        }
-    }
-    
-    var asOffset: Coordinate {
-        switch self {
-        case .north: return Coordinate(0, -1)
-        case .south: return Coordinate(0, 1)
-        case .west:  return Coordinate(-1, 0)
-        case .east:  return Coordinate(1, 0)
         }
     }
     
@@ -208,8 +179,8 @@ private extension Screen {
             let position = queue.popLast(),
             let distance = distanceTable[position] {
             
-            let adjacentPositions = Droid.Direction.all
-                .map { position + $0.asOffset }
+            let adjacentPositions = Direction.all
+                .map { position + $0 }
                 .filter { self.validate(coordinate: $0) && self[$0] == path }
                 .filter { !distanceTable.keys.contains($0) }
             queue = adjacentPositions + queue

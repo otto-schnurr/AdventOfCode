@@ -29,4 +29,11 @@ final class Direction_tests: XCTestCase {
         XCTAssertEqual(Direction.west.turned(.right), .north)
     }
 
+    func test_coordinateOffsets() {
+        XCTAssertEqual(Coordinate.zero + Direction.north, Coordinate(0, -1))
+        XCTAssertEqual(Coordinate.zero + Direction.south, Coordinate(0, +1))
+        XCTAssertEqual(Coordinate.zero + Direction.west, Coordinate(-1, 0))
+        XCTAssertEqual(Coordinate.zero + Direction.east, Coordinate(+1, 0))
+    }
+    
 }

@@ -47,17 +47,23 @@ public extension Display {
         return initialPixels.filter { $0.value == character }.count
     }
     
+    mutating func export() -> Screen? { return resolveScreen()?.copy() }
+    
     /// - Note: Initial pixel counts become locked after calling this method.
-    mutating func render() {
-        screen = screen ??
-            Screen(pixels: initialPixels, backgroundColor: backgroundColor)
-        screen?.render()
-    }
+    mutating func render() { resolveScreen()?.render() }
     
 }
 
 
 // MARK: - Private
+private extension Display {
+    mutating func resolveScreen() -> Screen? {
+        screen = screen ??
+            Screen(pixels: initialPixels, backgroundColor: backgroundColor)
+        return screen
+    }
+}
+
 private extension Screen {
     
     convenience init?(pixels: [Coordinate: Screen.Pixel], backgroundColor: Character) {

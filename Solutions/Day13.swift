@@ -17,7 +17,7 @@ final class Day13: XCTestCase {
         let game = Game()
         game.run(quarters: 1)
         XCTAssertEqual(
-            game.screen.initialPixelCount(for: Game.Tile.block.characterValue),
+            game.screen.initialPixelCount(for: Game.Tile.block.pixelValue),
             207
         )
         game.render()
@@ -107,7 +107,7 @@ private extension Game {
     }
     
     func handle(tile: Tile, at position: Coordinate) {
-        screen[position] = tile.characterValue
+        screen[position] = tile.pixelValue
         
         switch tile {
         case .ball:   ballPosition = position
@@ -119,7 +119,7 @@ private extension Game {
 }
 
 private extension Game.Tile {
-    var characterValue: Character {
+    var pixelValue: Display.Pixel {
         switch self {
         case .empty:  return " "
         case .wall:   return "X"

@@ -32,7 +32,7 @@ final class Day11: XCTestCase {
         XCTAssertEqual(panels.initialPixelCount, 2322)
         
         panels = Display(backgroundColor: "⬛️")
-        panels[.zero] = Color.white.characterValue
+        panels[.zero] = Color.white.pixelValue
         robot.run(on: &panels)
         panels.render()
     }
@@ -45,9 +45,9 @@ private enum Color: Word, CustomStringConvertible {
     case black = 0
     case white = 1
     
-    var description: String { String(self.characterValue) }
+    var description: String { String(self.pixelValue) }
     
-    var characterValue: Character {
+    var pixelValue: Display.Pixel {
         switch self {
         case .black: return "⬛️"
         case .white: return "⬜️"
@@ -56,7 +56,7 @@ private enum Color: Word, CustomStringConvertible {
     
 }
 
-private extension Character {
+private extension Display.Pixel {
     var colorValue: Color? {
         switch self {
         case "⬛️": return .black
@@ -152,7 +152,7 @@ private struct Robot {
                 continue
             }
             
-            panels[position] = Color(rawValue: output[0])!.characterValue
+            panels[position] = Color(rawValue: output[0])!.pixelValue
             direction = direction.turned(Turn(rawValue: output[1])!)
             position = position + direction.asCoordinate
         } while shouldKeepRunning

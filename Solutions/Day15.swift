@@ -11,17 +11,47 @@ import AdventOfCode
 
 final class Day15: XCTestCase {
     
+    func test_example() {
+        let map = """
+        ######
+        #..###
+        #.#..#
+        #.O.##
+        ######
+        """
+        let screen = Screen(pixels: map.split(separator: "\n").map { Array($0) })!
+        let startingPoint = Coordinate(2, 3)
+        XCTAssertEqual(
+            screen.minimumDistanceToFill(
+                from: startingPoint, across: Observation.path.pixelValue
+            ),
+            4
+        )
+    }
+    
     func test_solutions() {
-        var display = Display(backgroundColor: ".")
+        var display = Display(backgroundColor: " ")
         let droid = Droid()
         XCTAssertEqual(
             droid.distanceToTarget(
                 directions: Droid.Direction.all, distance: 0,
-                from: Coordinate(24, 14), history: &display
+                from: Coordinate(21, 21), history: &display
             ),
             238
         )
-        display.render()
+        
+        let screen = display.export()!
+        screen.render()
+        
+        let startingPoint = screen.firstCoordinate(
+            of: Observation.oxygen.pixelValue
+        )!
+        XCTAssertEqual(
+            screen.minimumDistanceToFill(
+                from: startingPoint, across: Observation.path.pixelValue
+            ),
+            392
+        )
     }
     
 }
@@ -29,6 +59,22 @@ final class Day15: XCTestCase {
 
 // MARK: - Private
 private let _program = Program(testHarnessResource: "input15.txt")!
+
+private enum Observation: Word {
+    
+    case wall = 0
+    case path = 1
+    case oxygen = 2
+
+    var pixelValue: Screen.Pixel {
+        switch self {
+        case .wall:   return "#"
+        case .path:   return "."
+        case .oxygen: return "O"
+        }
+    }
+
+}
 
 private struct Droid {
     
@@ -43,21 +89,15 @@ private struct Droid {
         
     }
     
-    enum Status: Word {
-        case wall = 0
-        case moved = 1
-        case movedToOxygen = 2
-    }
-    
     init() {
         computer = Computer(outputMode: .yield)
         computer.load(_program)
     }
     
-    func move(_ direction: Direction) -> Status {
+    func move(_ direction: Direction) -> Observation {
         computer.inputBuffer.append(direction.rawValue)
         computer.run()
-        return Status(rawValue: computer.harvestOutput().first!)!
+        return Observation(rawValue: computer.harvestOutput().first!)!
     }
     
     // MARK: Private
@@ -73,6 +113,7 @@ private extension Droid {
         from position: Coordinate,
         history: inout Display
     ) -> Int? {
+        history[position] = Observation.path.pixelValue
         return directions.map {
             self.searchForTarget(
                 heading: $0, distance: distance,
@@ -88,18 +129,16 @@ private extension Droid {
         history: inout Display
     ) -> Int? {
         let newPosition = position + direction.asOffset
-        guard history[newPosition] != " " else {
-            history[newPosition] = " "
-            return nil
-        }
+        guard history[newPosition] == " " else { return nil }
         
-        switch move(direction) {
+        let observation = move(direction)
+        history[newPosition] = observation.pixelValue
+        
+        switch observation {
         case .wall:
-            history[newPosition] = "#"
             return nil
             
-        case .moved:
-            history[newPosition] = " "
+        case .path:
             let result = distanceToTarget(
                 directions: Direction.nextDirections(afterMoving: direction),
                 distance: distance + 1,
@@ -107,15 +146,13 @@ private extension Droid {
                 history: &history
             )
             
-            if result == nil {
-                // important: Unwind droid position.
-                let _ = move(direction.reversed)
-            }
-            
+            // important: Unwind droid position as we pop the stack.
+            let _ = move(direction.reversed)
             return result
             
-        case .movedToOxygen:
-            history[newPosition] = "*"
+        case .oxygen:
+            // important: Unwind droid position as we pop the stack.
+            let _ = move(direction.reversed)
             return distance + 1
         }
     }
@@ -149,6 +186,37 @@ private extension Droid.Direction {
         case .west:  return Coordinate(-1, 0)
         case .east:  return Coordinate(1, 0)
         }
+    }
+    
+}
+
+private extension Screen {
+    
+    func validate(coordinate: Coordinate) -> Bool {
+        return
+            0 <= coordinate.x && coordinate.x < width &&
+            0 <= coordinate.y && coordinate.y < height
+    }
+    
+    func minimumDistanceToFill(
+        from startingPosition: Coordinate, across path: Pixel
+    ) -> Int {
+        var queue = [startingPosition]
+        var distanceTable = [startingPosition: 0]
+        
+        while
+            let position = queue.popLast(),
+            let distance = distanceTable[position] {
+            
+            let adjacentPositions = Droid.Direction.all
+                .map { position + $0.asOffset }
+                .filter { self.validate(coordinate: $0) && self[$0] == path }
+                .filter { !distanceTable.keys.contains($0) }
+            queue = adjacentPositions + queue
+            adjacentPositions.forEach { distanceTable[$0] = distance + 1 }
+        }
+        
+        return distanceTable.max { $0.value < $1.value }?.value ?? 0
     }
     
 }

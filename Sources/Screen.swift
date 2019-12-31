@@ -36,6 +36,23 @@ public final class Screen {
         self.init(pixels: pixels)
     }
     
+    public func copy() -> Screen {
+        assert(!pixels.isEmpty)
+        assert(pixels.first?.isEmpty == false)
+        return Screen(pixels: pixels)!
+    }
+    
+    public func firstCoordinate(of pixel: Pixel) -> Coordinate? {
+        let search = pixels.map { $0.firstIndex { $0 == pixel } }
+        guard
+            let y = search.firstIndex(where: { $0 != nil }),
+            let _x = search.first(where: { $0 != nil }),
+            let x = _x
+        else { return nil }
+        
+        return Coordinate(x, y)
+    }
+    
     public func render() { pixels.forEach { print(String($0)) } }
 
     // MARK: Private

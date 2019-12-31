@@ -22,7 +22,10 @@ final class Day15: XCTestCase {
         let screen = Screen(pixels: map.split(separator: "\n").map { Array($0) })!
         let startingPoint = Coordinate(2, 3)
         XCTAssertEqual(
-            screen.minimumDistanceToFill(from: startingPoint, across: "."), 4
+            screen.minimumDistanceToFill(
+                from: startingPoint, across: Observation.path.pixelValue
+            ),
+            4
         )
     }
     
@@ -32,11 +35,23 @@ final class Day15: XCTestCase {
         XCTAssertEqual(
             droid.distanceToTarget(
                 directions: Droid.Direction.all, distance: 0,
-                from: Coordinate(23, 39), history: &display
+                from: Coordinate(21, 21), history: &display
             ),
             238
         )
-        display.render()
+        
+        let screen = display.export()!
+        screen.render()
+        
+        let startingPoint = screen.firstCoordinate(
+            of: Observation.oxygen.pixelValue
+        )!
+        XCTAssertEqual(
+            screen.minimumDistanceToFill(
+                from: startingPoint, across: Observation.path.pixelValue
+            ),
+            392
+        )
     }
     
 }
@@ -131,14 +146,13 @@ private extension Droid {
                 history: &history
             )
             
-            if result == nil {
-                // important: Unwind droid position.
-                let _ = move(direction.reversed)
-            }
-            
+            // important: Unwind droid position as we pop the stack.
+            let _ = move(direction.reversed)
             return result
             
         case .oxygen:
+            // important: Unwind droid position as we pop the stack.
+            let _ = move(direction.reversed)
             return distance + 1
         }
     }
@@ -198,7 +212,7 @@ private extension Screen {
                 .map { position + $0.asOffset }
                 .filter { self.validate(coordinate: $0) && self[$0] == path }
                 .filter { !distanceTable.keys.contains($0) }
-            queue += adjacentPositions
+            queue = adjacentPositions + queue
             adjacentPositions.forEach { distanceTable[$0] = distance + 1 }
         }
         

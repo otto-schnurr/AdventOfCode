@@ -15,8 +15,8 @@ final class Day17: XCTestCase {
         let computer = Computer()
         computer.load(_program)
         computer.run()
-        let output = computer.harvestOutput().map { Character(UnicodeScalar($0)!) }
 
+        let output = computer.harvestOutputString()
         let screen = Screen(pixels: output.split(separator: "\n").map { Array($0) })!
         screen.render()
 

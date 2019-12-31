@@ -51,8 +51,10 @@ public final class Computer {
         return outputBuffer
     }
     
+    // MARK: Internal
+    internal let outputMode: OutputMode
+
     // MARK: Private
-    private let outputMode: OutputMode
     private var programCounter = Opcode.ProgramCounter()
     private var relativeBase = Opcode.ProgramCounter()
     private var program = Program()

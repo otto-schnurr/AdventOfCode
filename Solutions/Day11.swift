@@ -11,20 +11,6 @@ import AdventOfCode
 
 final class Day11: XCTestCase {
     
-    func test_directions() {
-        XCTAssertEqual(Direction.up.turned(.left), .left)
-        XCTAssertEqual(Direction.up.turned(.right), .right)
-        
-        XCTAssertEqual(Direction.right.turned(.left), .up)
-        XCTAssertEqual(Direction.right.turned(.right), .down)
-        
-        XCTAssertEqual(Direction.down.turned(.left), .right)
-        XCTAssertEqual(Direction.down.turned(.right), .left)
-        
-        XCTAssertEqual(Direction.left.turned(.left), .down)
-        XCTAssertEqual(Direction.left.turned(.right), .up)
-    }
-    
     func test_solution() {
         var panels = Display(backgroundColor: "⬛️")
         var robot = Robot()
@@ -66,64 +52,6 @@ private extension Display.Pixel {
     }
 }
 
-private enum Turn: Word {
-    case left = 0
-    case right = 1
-}
-
-private enum Direction {
-    
-    case up, down, left, right
-    
-    var asCoordinate: Coordinate {
-        switch self {
-        case .up:    return Coordinate(0, -1)
-        case .down:  return Coordinate(0, +1)
-        case .left:  return Coordinate(-1, 0)
-        case .right: return Coordinate(1, 0)
-        }
-    }
-    
-    func turned(_ turn: Turn) -> Self {
-        switch turn {
-        case .left:
-            switch self {
-            case .up: return .left
-            case .down: return .right
-            case .left: return .down
-            case .right: return .up
-            }
-
-        case .right:
-            switch self {
-            case .up: return .right
-            case .down: return .left
-            case .left: return .up
-            case .right: return .down
-            }
-        }
-    }
-    
-    func turnedLeft() -> Self {
-        switch self {
-        case .up: return .left
-        case .down: return .right
-        case .left: return .down
-        case .right: return .up
-        }
-    }
-    
-    func turnedRight() -> Self {
-        switch self {
-        case .up: return .right
-        case .down: return .left
-        case .left: return .up
-        case .right: return .down
-        }
-    }
-    
-}
-
 private struct Robot {
     
     private(set) var position = Coordinate.zero
@@ -134,7 +62,7 @@ private struct Robot {
     
     mutating func run(on panels: inout Display) {
         position = .zero
-        direction = .up
+        direction = .north
         
         computer.load(_program)
         var shouldKeepRunning = true
@@ -153,14 +81,14 @@ private struct Robot {
             }
             
             panels[position] = Color(rawValue: output[0])!.pixelValue
-            direction = direction.turned(Turn(rawValue: output[1])!)
-            position = position + direction.asCoordinate
+            direction = direction.turned(Direction.Turn(rawValue: output[1])!)
+            position = position + direction
         } while shouldKeepRunning
     }
     
     // MARK: Private
     private let computer: Computer
-    private var direction = Direction.up
+    private var direction = Direction.north
     
 }
 

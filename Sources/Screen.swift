@@ -42,6 +42,12 @@ public final class Screen {
         return Screen(pixels: pixels)!
     }
     
+    public func validate(coordinate: Coordinate) -> Bool {
+        return
+            0 <= coordinate.x && coordinate.x < width &&
+            0 <= coordinate.y && coordinate.y < height
+    }
+    
     public func firstCoordinate(of pixel: Pixel) -> Coordinate? {
         let search = pixels.map { $0.firstIndex { $0 == pixel } }
         guard

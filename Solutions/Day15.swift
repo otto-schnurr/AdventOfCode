@@ -32,7 +32,7 @@ final class Day15: XCTestCase {
         XCTAssertEqual(
             droid.distanceToTarget(
                 directions: Droid.Direction.all, distance: 0,
-                from: Coordinate(24, 14), history: &display
+                from: Coordinate(23, 39), history: &display
             ),
             238
         )
@@ -114,9 +114,7 @@ private extension Droid {
         history: inout Display
     ) -> Int? {
         let newPosition = position + direction.asOffset
-        guard history[newPosition] != Observation.path.pixelValue else {
-            return nil
-        }
+        guard history[newPosition] == " " else { return nil }
         
         let observation = move(direction)
         history[newPosition] = observation.pixelValue

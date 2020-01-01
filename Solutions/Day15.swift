@@ -163,12 +163,6 @@ private extension Direction {
 
 private extension Screen {
     
-    func validate(coordinate: Coordinate) -> Bool {
-        return
-            0 <= coordinate.x && coordinate.x < width &&
-            0 <= coordinate.y && coordinate.y < height
-    }
-    
     func minimumDistanceToFill(
         from startingPosition: Coordinate, across path: Pixel
     ) -> Int {

@@ -16,8 +16,12 @@ public enum Direction: Word {
     case east = 4
 
     public enum Turn: Word {
+        
+        public static var all: [Self] = [.left, .right]
+        
         case left = 0
         case right = 1
+    
     }
 
 }

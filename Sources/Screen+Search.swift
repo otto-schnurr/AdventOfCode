@@ -8,6 +8,16 @@
 
 public extension Screen {
     
+    /// - Parameter pixel:
+    ///   The value of the pixel in question.
+    ///
+    /// - Parameter distance:
+    ///   How far away the pixel in question is from the starting position.
+    ///
+    /// - Returns:True if the specified pixel is considered to be part
+    ///   of the current path.
+    typealias PathHandler = (_ pixel: Pixel, _ distance: Int) -> Bool
+
     func firstCoordinate(where predicate: (Pixel) -> Bool) -> Coordinate? {
         let search = pixels.map { $0.firstIndex { predicate($0) } }
         guard
@@ -36,7 +46,7 @@ public extension Screen {
     ///   that are connected on the pathway.
     func spanPath(
         from startingPosition: Coordinate,
-        pixelIsPartOfPath: (Pixel) -> Bool
+        pathHandler: PathHandler
     ) -> Int {
         var visitedCoordinates = Set<Coordinate>()
         var queue = [startingPosition]
@@ -53,7 +63,9 @@ public extension Screen {
             }
                 
             visitedCoordinates = visitedCoordinates.union(adjacentPositions)
-            let adjacentPaths = adjacentPositions.filter { pixelIsPartOfPath(self[$0]) }
+            let adjacentPaths = adjacentPositions.filter {
+                pathHandler(self[$0], distance + 1)
+            }
             queue = adjacentPaths + queue
             adjacentPaths.forEach { distanceTable[$0] = distance + 1 }
         }

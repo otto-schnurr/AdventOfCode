@@ -22,8 +22,8 @@ final class Day15: XCTestCase {
         let screen = Screen(pixels: map.split(separator: "\n").map { Array($0) })!
         let startingPoint = Coordinate(2, 3)
         XCTAssertEqual(
-            screen.minimumDistanceToFill(
-                from: startingPoint, across: Observation.path.pixelValue
+            screen.distanceRequired(
+                from: startingPoint, toCover: Observation.path.pixelValue
             ),
             4
         )
@@ -47,8 +47,8 @@ final class Day15: XCTestCase {
             $0 == Observation.oxygen.pixelValue
         }!
         XCTAssertEqual(
-            screen.minimumDistanceToFill(
-                from: startingPoint, across: Observation.path.pixelValue
+            screen.distanceRequired(
+                from: startingPoint, toCover: Observation.path.pixelValue
             ),
             392
         )
@@ -157,31 +157,6 @@ private extension Direction {
         case .west:  return [.south, .west, .north]
         case .east:  return [.north, .east, .south]
         }
-    }
-    
-}
-
-private extension Screen {
-    
-    func minimumDistanceToFill(
-        from startingPosition: Coordinate, across path: Pixel
-    ) -> Int {
-        var queue = [startingPosition]
-        var distanceTable = [startingPosition: 0]
-        
-        while
-            let position = queue.popLast(),
-            let distance = distanceTable[position] {
-            
-            let adjacentPositions = Direction.all
-                .map { position + $0 }
-                .filter { self.validate(coordinate: $0) && self[$0] == path }
-                .filter { !distanceTable.keys.contains($0) }
-            queue = adjacentPositions + queue
-            adjacentPositions.forEach { distanceTable[$0] = distance + 1 }
-        }
-        
-        return distanceTable.max { $0.value < $1.value }?.value ?? 0
     }
     
 }

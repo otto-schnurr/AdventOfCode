@@ -25,7 +25,7 @@ final class Day17: XCTestCase {
             9876
         )
         
-        let startingPosition = screen.firstCoordinate(of: "^")!
+        let startingPosition = screen.firstCoordinate { $0 == "^" }!
         let commands = screen.trace(
             "#", from: startingPosition, startingDirection: .north
         )

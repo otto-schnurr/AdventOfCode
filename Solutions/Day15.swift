@@ -21,7 +21,9 @@ final class Day15: XCTestCase {
         """)!
         let startingPoint = Coordinate(2, 3)
         XCTAssertEqual(
-            screen.spanPath(Observation.path.pixelValue, from: startingPoint),
+            screen.spanPath(from: startingPoint) {
+                $0 == Observation.path.pixelValue
+            },
             4
         )
     }
@@ -44,7 +46,9 @@ final class Day15: XCTestCase {
             $0 == Observation.oxygen.pixelValue
         }!
         XCTAssertEqual(
-            screen.spanPath(Observation.path.pixelValue, from: startingPoint),
+            screen.spanPath(from: startingPoint) {
+                $0 == Observation.path.pixelValue
+            },
             392
         )
     }

@@ -42,13 +42,13 @@ final class Day17: XCTestCase {
             computer.run()
             prompt = computer.harvestOutputLine()
         } while prompt != "Main:"
-        print(prompt, terminator: "")
+        print(prompt, terminator: " ")
 
         func enter(_ input: String) {
             computer.appendInput(string: input + "\n")
             print(input)
             computer.run()
-            print(computer.harvestOutputLine(), terminator: "")
+            print(computer.harvestOutputLine(), terminator: " ")
         }
         
         enter("A,B,A,C,B,C,B,A,C,B")

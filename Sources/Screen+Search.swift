@@ -21,27 +21,27 @@ public extension Screen {
         return Coordinate(x, y)
     }
     
-    /// Calculates the smallest distance needed to cover connected pixels.
+    /// Calculates the smallest distance needed to cover a path of pixels.
     ///
     /// Only orthogonal pixels are considered adjacent.
     /// Diagonal pixels are not.
-    ///
-    /// - Parameter startingPosition:
-    ///   The position to measure distances from.
     ///
     /// - Parameter path:
     ///   The pixel value to traverse. Adjacent pixels of this value are
     ///   considered connected.
     ///
-    ///   - Parameter offPathHandler:
+    /// - Parameter startingPosition:
+    ///   The position to measure distances from.
+    ///
+    /// - Parameter offPathHandler:
     ///   Called for every adjacent pixel that is encountered that is not
     ///   part of the path.
     ///
-    /// - Returns: How far the search had to travel to cover all
-    ///   connected pixels.
-    func distanceRequired(
+    /// - Returns: How far the span had to travel to cover all pixels
+    ///   that are connected on the pathway.
+    func spanPath(
+        _ path: Pixel,
         from startingPosition: Coordinate,
-        toCover path: Pixel,
         offPathHandler: CoordinateHandler? = nil
     ) -> Int {
         var offPathVisited = Set<Coordinate>()

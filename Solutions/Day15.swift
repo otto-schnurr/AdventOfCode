@@ -22,9 +22,7 @@ final class Day15: XCTestCase {
         let screen = Screen(pixels: map.split(separator: "\n").map { Array($0) })!
         let startingPoint = Coordinate(2, 3)
         XCTAssertEqual(
-            screen.distanceRequired(
-                from: startingPoint, toCover: Observation.path.pixelValue
-            ),
+            screen.spanPath(Observation.path.pixelValue, from: startingPoint),
             4
         )
     }
@@ -47,9 +45,7 @@ final class Day15: XCTestCase {
             $0 == Observation.oxygen.pixelValue
         }!
         XCTAssertEqual(
-            screen.distanceRequired(
-                from: startingPoint, toCover: Observation.path.pixelValue
-            ),
+            screen.spanPath(Observation.path.pixelValue, from: startingPoint),
             392
         )
     }

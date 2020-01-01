@@ -8,6 +8,8 @@
 
 public extension Screen {
     
+    typealias CoordinateHandler = (_ coordinate: Coordinate, _ distance: Int) -> Void
+    
     func firstCoordinate(where predicate: (Pixel) -> Bool) -> Coordinate? {
         let search = pixels.map { $0.firstIndex { predicate($0) } }
         guard
@@ -28,15 +30,21 @@ public extension Screen {
     ///   The position to measure distances from.
     ///
     /// - Parameter path:
-    ///   The pixel value to traverse. Adjacent pixels of this color are
+    ///   The pixel value to traverse. Adjacent pixels of this value are
     ///   considered connected.
+    ///
+    ///   - Parameter offPathHandler:
+    ///   Called for every adjacent pixel that is encountered that is not
+    ///   part of the path.
     ///
     /// - Returns: How far the search had to travel to cover all
     ///   connected pixels.
     func distanceRequired(
         from startingPosition: Coordinate,
-        toCover path: Pixel
+        toCover path: Pixel,
+        offPathHandler: CoordinateHandler? = nil
     ) -> Int {
+        var offPathVisited = Set<Coordinate>()
         var queue = [startingPosition]
         var distanceTable = [startingPosition: 0]
         
@@ -46,10 +54,23 @@ public extension Screen {
             
             let adjacentPositions = Direction.all
                 .map { position + $0 }
-                .filter { self.validate(coordinate: $0) && self[$0] == path }
+                .filter { self.validate(coordinate: $0) }
+            
+            if let handler = offPathHandler {
+                adjacentPositions
+                    .filter { self[$0] != path }
+                    .filter { !offPathVisited.contains($0) }
+                    .forEach {
+                        handler($0, distance + 1)
+                        offPathVisited.insert($0)
+                    }
+            }
+                
+            let adjacentPaths = adjacentPositions
+                .filter { self[$0] == path }
                 .filter { !distanceTable.keys.contains($0) }
-            queue = adjacentPositions + queue
-            adjacentPositions.forEach { distanceTable[$0] = distance + 1 }
+            queue = adjacentPaths + queue
+            adjacentPaths.forEach { distanceTable[$0] = distance + 1 }
         }
         
         return distanceTable.max { $0.value < $1.value }?.value ?? 0

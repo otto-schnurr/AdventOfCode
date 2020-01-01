@@ -35,13 +35,16 @@ private var _map: Screen = {
     return Screen(pixels: pixels)!
 }()
 
+private typealias KeyValue = Screen.Pixel
+private typealias DoorValue = Screen.Pixel
+
 private enum Terrain {
     
     case start
     case wall
     case path
-    case key(Screen.Pixel)
-    case door(Screen.Pixel)
+    case key(KeyValue)
+    case door(DoorValue)
     
     init?(pixelValue: Screen.Pixel) {
         switch pixelValue {
@@ -57,6 +60,7 @@ private enum Terrain {
 }
 
 private extension Terrain {
+    
     var pixelValue: Screen.Pixel {
         switch self {
         case .start:
@@ -71,4 +75,19 @@ private extension Terrain {
             return pixelValue
         }
     }
+    
+    var keyValue: KeyValue? {
+        switch self {
+        case .key(let value): return value
+        default:              return nil
+        }
+    }
+    
+    var doorValue: DoorValue? {
+        switch self {
+        case .door(let value): return value
+        default:               return nil
+        }
+    }
+    
 }

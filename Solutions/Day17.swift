@@ -11,7 +11,7 @@ import AdventOfCode
 
 final class Day17: XCTestCase {
     
-    func test_solutions() {
+    func test_solution_part1() {
         let computer = Computer()
         computer.load(_program)
         computer.run()
@@ -32,11 +32,53 @@ final class Day17: XCTestCase {
         print(commands)
     }
     
+    func test_solution_part2() {
+        let computer = Computer(outputMode: .yield)
+        computer.load(_asciiProgram)
+        
+        // Skip over the map that we've already parsed in part 1.
+        var prompt: String
+        repeat {
+            computer.run()
+            prompt = computer.harvestOutputLine()
+        } while prompt != "Main:"
+        print(prompt, terminator: "")
+
+        func enter(_ input: String) {
+            computer.appendInput(string: input + "\n")
+            print(input)
+            computer.run()
+            print(computer.harvestOutputLine(), terminator: "")
+        }
+        
+        enter("A,B,A,C,B,C,B,A,C,B")
+        enter("L,10,L,6,R,10")
+        enter("R,6,R,8,R,8,L,6,R,8")
+        enter("L,10,R,8,R,8,L,10")
+        enter("n")
+        
+        var dustAmount = 0
+        computer.run()
+        
+        // Skip over diagnostic map
+        while let output = computer.harvestOutput().last {
+            dustAmount = output
+            computer.run()
+        }
+        
+        XCTAssertEqual(dustAmount, 1234055)
+    }
+    
 }
 
 
 // MARK: - Private
 private let _program = Program(testHarnessResource: "input17.txt")!
+private let _asciiProgram: Program = {
+    var program = _program
+    program[0] = 2
+    return program
+}()
 
 private struct Command {
     

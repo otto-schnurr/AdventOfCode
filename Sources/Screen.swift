@@ -14,11 +14,6 @@ public final class Screen {
     public let width: Int
     public let height: Int
     
-    public subscript(coordinate: Coordinate) -> Pixel {
-        get { pixels[coordinate.y][coordinate.x] }
-        set(newValue) { pixels[coordinate.y][coordinate.x] = newValue }
-    }
-
     public init?(pixels: [[Pixel]]) {
         guard !pixels.isEmpty && pixels.first?.isEmpty == false else { return nil }
 
@@ -29,26 +24,38 @@ public final class Screen {
         assert(height > 0)
     }
     
-    public convenience init?(width: Int, height: Int, initialColor: Pixel) {
+    // MARK: Private
+    private var pixels: [[Pixel]]
+
+}
+
+public extension Screen {
+    
+    subscript(coordinate: Coordinate) -> Pixel {
+        get { pixels[coordinate.y][coordinate.x] }
+        set(newValue) { pixels[coordinate.y][coordinate.x] = newValue }
+    }
+
+    convenience init?(width: Int, height: Int, initialColor: Pixel) {
         guard width > 0 && height > 0 else { return nil }
         let row = Array(repeating: initialColor, count: width)
         let pixels = Array(repeating: row, count: height)
         self.init(pixels: pixels)
     }
     
-    public func copy() -> Screen {
+    func copy() -> Screen {
         assert(!pixels.isEmpty)
         assert(pixels.first?.isEmpty == false)
         return Screen(pixels: pixels)!
     }
     
-    public func validate(coordinate: Coordinate) -> Bool {
+    func validate(coordinate: Coordinate) -> Bool {
         return
             0 <= coordinate.x && coordinate.x < width &&
             0 <= coordinate.y && coordinate.y < height
     }
     
-    public func firstCoordinate(of pixel: Pixel) -> Coordinate? {
+    func firstCoordinate(of pixel: Pixel) -> Coordinate? {
         let search = pixels.map { $0.firstIndex { $0 == pixel } }
         guard
             let y = search.firstIndex(where: { $0 != nil }),
@@ -59,9 +66,6 @@ public final class Screen {
         return Coordinate(x, y)
     }
     
-    public func render() { pixels.forEach { print(String($0)) } }
-
-    // MARK: Private
-    private var pixels: [[Pixel]]
+    func render() { pixels.forEach { print(String($0)) } }
     
 }

@@ -43,6 +43,13 @@ public extension Screen {
         self.init(pixels: pixels)
     }
     
+    /// - Parameter lines:
+    ///   Pixel packed into rows that are delimited by newlines.
+    convenience init?(lines: String) {
+        let pixels = lines.split(separator: "\n").map { Array($0) }
+        self.init(pixels: pixels)
+    }
+    
     func copy() -> Screen {
         assert(!pixels.isEmpty)
         assert(pixels.first?.isEmpty == false)

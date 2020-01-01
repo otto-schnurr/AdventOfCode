@@ -11,6 +11,16 @@ import AdventOfCode
 
 final class Day18: XCTestCase {
     
+    func test_examples() {
+        let map = Screen(lines: """
+        #########
+        #b.A.@.a#
+        #########
+        """)!
+        let startingPoint = map.firstCoordinate { $0 == Terrain.start.pixelValue }!
+        XCTAssertEqual(startingPoint, Coordinate(5, 1))
+    }
+
     func test_solutions() {
         XCTAssertEqual(_map.width, 81)
         XCTAssertEqual(_map.height, 81)

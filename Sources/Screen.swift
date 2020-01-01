@@ -24,8 +24,8 @@ public final class Screen {
         assert(height > 0)
     }
     
-    // MARK: Private
-    private var pixels: [[Pixel]]
+    // MARK: Internal
+    internal var pixels: [[Pixel]]
 
 }
 
@@ -53,17 +53,6 @@ public extension Screen {
         return
             0 <= coordinate.x && coordinate.x < width &&
             0 <= coordinate.y && coordinate.y < height
-    }
-    
-    func firstCoordinate(of pixel: Pixel) -> Coordinate? {
-        let search = pixels.map { $0.firstIndex { $0 == pixel } }
-        guard
-            let y = search.firstIndex(where: { $0 != nil }),
-            let _x = search.first(where: { $0 != nil }),
-            let x = _x
-        else { return nil }
-        
-        return Coordinate(x, y)
     }
     
     func render() { pixels.forEach { print(String($0)) } }

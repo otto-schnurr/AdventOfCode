@@ -43,9 +43,9 @@ final class Day15: XCTestCase {
         let screen = display.export()!
         screen.render()
         
-        let startingPoint = screen.firstCoordinate(
-            of: Observation.oxygen.pixelValue
-        )!
+        let startingPoint = screen.firstCoordinate {
+            $0 == Observation.oxygen.pixelValue
+        }!
         XCTAssertEqual(
             screen.minimumDistanceToFill(
                 from: startingPoint, across: Observation.path.pixelValue

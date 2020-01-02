@@ -61,7 +61,7 @@ public extension Screen {
         from startingPosition: Coordinate,
         pathHandler: PathHandler
     ) -> Int {
-        var visitedCoordinates = Set<Coordinate>()
+        var visitedCoordinates = Set<Coordinate>([startingPosition])
         var queue = [startingPosition]
         var distanceTable = [startingPosition: 0]
         

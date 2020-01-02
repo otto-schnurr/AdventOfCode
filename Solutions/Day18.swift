@@ -17,8 +17,8 @@ final class Day18: XCTestCase {
         #b.A.@.a#
         #########
         """)!
-        let startingPoint = map.firstCoordinate { $0 == Terrain.start.pixelValue }!
-        XCTAssertEqual(startingPoint, Coordinate(5, 1))
+        let graph = Graph(from: map)
+        print(graph)
     }
 
     func test_solutions() {
@@ -35,6 +35,7 @@ private var _map: Screen = {
     return Screen(pixels: pixels)!
 }()
 
+private typealias Graph = [Screen.Pixel: [Edge]]
 private typealias KeyValue = Screen.Pixel
 private typealias DoorValue = Screen.Pixel
 
@@ -76,18 +77,76 @@ private extension Terrain {
         }
     }
     
-    var keyValue: KeyValue? {
-        switch self {
-        case .key(let value): return value
-        default:              return nil
+}
+
+private struct Edge {
+    let destination: Screen.Pixel
+    let distance: Int
+}
+
+extension Edge: CustomStringConvertible {
+    var description: String { return "(\"\(destination)\", distance: \(distance))" }
+}
+
+private extension Graph {
+    
+    init(from map: Screen) {
+        let rootLocation = map.firstCoordinate { $0 == Terrain.start.pixelValue }!
+        let keyAndDoorLocations = map.allCoordinates { pixel in
+            switch Terrain(pixelValue: pixel)! {
+            case .start, .key: return true
+            default:           return false
+            }
         }
+        
+        let nodeLocations = [rootLocation] + keyAndDoorLocations
+        var result = Graph()
+
+        for sourceLocation in nodeLocations {
+            let sourceIsRoot = sourceLocation == rootLocation
+            let source = sourceIsRoot ? Terrain.start.pixelValue : map[sourceLocation]
+            
+            let _ = map.spanPath(from: sourceLocation) { pixelValue, distance in
+                switch Terrain(pixelValue: pixelValue)! {
+                case .start, .path:
+                    return true
+                case .wall:
+                    return false
+                case .key, .door:
+                    if !result.containsEdge(from: source, to: pixelValue) {
+                        if sourceIsRoot {
+                            result.addDirectedEdge(from: source, to: pixelValue, distance: distance)
+                        } else {
+                            result.addEdge(from: source, to: pixelValue, distance: distance)
+                        }
+                    }
+                    return false
+                }
+            }
+        }
+
+        self = result
+    }
+
+    func containsEdge(
+        from source: Screen.Pixel, to destination: Screen.Pixel
+    ) -> Bool {
+        guard let edges = self[source] else { return false }
+        return edges.contains { edge in edge.destination == destination }
     }
     
-    var doorValue: DoorValue? {
-        switch self {
-        case .door(let value): return value
-        default:               return nil
-        }
+    mutating func addEdge(
+        from source: Screen.Pixel, to destination: Screen.Pixel, distance: Int
+    ) {
+        addDirectedEdge(from: source, to: destination, distance: distance)
+        addDirectedEdge(from: destination, to: source, distance: distance)
+    }
+
+    mutating func addDirectedEdge(
+        from source: Screen.Pixel, to destination: Screen.Pixel, distance: Int
+    ) {
+        if self[source] == nil { self[source] = [Edge]() }
+        self[source]?.append(Edge(destination: destination, distance: distance))
     }
     
 }

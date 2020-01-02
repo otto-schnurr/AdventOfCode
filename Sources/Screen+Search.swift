@@ -29,6 +29,19 @@ public extension Screen {
         return Coordinate(x, y)
     }
     
+    func allCoordinates(where predicate: (Pixel) -> Bool) -> [Coordinate] {
+        var result = [Coordinate]()
+        
+        let search = pixels.map {
+            $0.enumerated().filter { predicate($0.element) }.map { $0.offset }
+        }
+        for (y, xIndices) in search.enumerated() {
+            for x in xIndices { result.append(Coordinate(x, y)) }
+        }
+        
+        return result
+    }
+
     /// Calculates the smallest distance needed to cover a path of pixels.
     ///
     /// Only orthogonal pixels are considered adjacent.

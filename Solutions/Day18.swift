@@ -79,13 +79,12 @@ final class Day18: XCTestCase {
 }
 
 
-// MARK: - Private
+// MARK: - Private Terrain Implementation
 private var _map: Screen = {
     let pixels = try! TestHarnessInput("input18.txt").map({ Array($0) })
     return Screen(pixels: pixels)!
 }()
 
-private typealias Graph = [Screen.Pixel: [Edge]]
 private typealias KeyValue = Screen.Pixel
 private typealias DoorValue = Screen.Pixel
 
@@ -129,8 +128,12 @@ private extension Terrain {
     
 }
 
+// MARK: - Private Graph Implementation
+private typealias NodeLabel = Screen.Pixel
+private typealias Graph = [NodeLabel: [Edge]]
+
 private struct Edge {
-    let destination: Screen.Pixel
+    let destination: NodeLabel
     let distance: Int
 }
 
@@ -179,21 +182,21 @@ private extension Graph {
     }
 
     func containsEdge(
-        from source: Screen.Pixel, to destination: Screen.Pixel
+        from source: NodeLabel, to destination: NodeLabel
     ) -> Bool {
         guard let edges = self[source] else { return false }
         return edges.contains { edge in edge.destination == destination }
     }
     
     mutating func addEdge(
-        from source: Screen.Pixel, to destination: Screen.Pixel, distance: Int
+        from source: NodeLabel, to destination: NodeLabel, distance: Int
     ) {
         addDirectedEdge(from: source, to: destination, distance: distance)
         addDirectedEdge(from: destination, to: source, distance: distance)
     }
 
     mutating func addDirectedEdge(
-        from source: Screen.Pixel, to destination: Screen.Pixel, distance: Int
+        from source: NodeLabel, to destination: NodeLabel, distance: Int
     ) {
         if self[source] == nil { self[source] = [Edge]() }
         self[source]?.append(Edge(destination: destination, distance: distance))

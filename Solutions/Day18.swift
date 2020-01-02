@@ -12,12 +12,62 @@ import AdventOfCode
 final class Day18: XCTestCase {
     
     func test_examples() {
-        let map = Screen(lines: """
+        var map = Screen(lines: """
         #########
         #b.A.@.a#
         #########
         """)!
-        let graph = Graph(from: map)
+        map.render()
+        var graph = Graph(from: map)
+        print(graph)
+        
+        map = Screen(lines: """
+        ########################
+        #f.D.E.e.C.b.A.@.a.B.c.#
+        ######################.#
+        #d.....................#
+        ########################
+        """)!
+        map.render()
+        graph = Graph(from: map)
+        print(graph)
+
+        map = Screen(lines: """
+        ########################
+        #...............b.C.D.f#
+        #.######################
+        #.....@.a.B.c.d.A.e.F.g#
+        ########################
+        """)!
+        map.render()
+        graph = Graph(from: map)
+        print(graph)
+
+        map = Screen(lines: """
+        #################
+        #i.G..c...e..H.p#
+        ########.########
+        #j.A..b...f..D.o#
+        ########@########
+        #k.E..a...g..B.n#
+        ########.########
+        #l.F..d...h..C.m#
+        #################
+        """)!
+        map.render()
+        graph = Graph(from: map)
+        print(graph)
+
+        map = Screen(lines: """
+        ########################
+        #@..............ac.GI.b#
+        ###d#e#f################
+        ###A#B#C################
+        ###g#h#i################
+        ########################
+        """)!
+        map.render()
+        graph = Graph(from: map)
         print(graph)
     }
 

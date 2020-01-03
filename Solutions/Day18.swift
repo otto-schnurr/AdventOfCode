@@ -135,10 +135,16 @@ private typealias Graph = [NodeLabel: [Edge]]
 private struct Edge {
     let destination: NodeLabel
     let distance: Int
+    let requiredKeys = Set<KeyValue>()
 }
 
 extension Edge: CustomStringConvertible {
-    var description: String { return "(\"\(destination)\", distance: \(distance))" }
+    var description: String {
+        let prefix = "(\"\(destination)\", distance: \(distance)"
+        return requiredKeys.isEmpty ?
+            prefix + ")" :
+            prefix + "required keys: \(requiredKeys))"
+    }
 }
 
 private extension Graph {

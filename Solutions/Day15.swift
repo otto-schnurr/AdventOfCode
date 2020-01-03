@@ -12,17 +12,18 @@ import AdventOfCode
 final class Day15: XCTestCase {
     
     func test_example() {
-        let map = """
+        let screen = Screen(lines: """
         ######
         #..###
         #.#..#
         #.O.##
         ######
-        """
-        let screen = Screen(pixels: map.split(separator: "\n").map { Array($0) })!
+        """)!
         let startingPoint = Coordinate(2, 3)
         XCTAssertEqual(
-            screen.spanPath(Observation.path.pixelValue, from: startingPoint),
+            screen.spanPath(from: startingPoint) { pixel, _ in
+                pixel == Observation.path.pixelValue
+            },
             4
         )
     }
@@ -45,7 +46,9 @@ final class Day15: XCTestCase {
             $0 == Observation.oxygen.pixelValue
         }!
         XCTAssertEqual(
-            screen.spanPath(Observation.path.pixelValue, from: startingPoint),
+            screen.spanPath(from: startingPoint) { pixel, _ in
+                pixel == Observation.path.pixelValue
+            },
             392
         )
     }

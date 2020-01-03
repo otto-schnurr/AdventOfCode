@@ -16,8 +16,7 @@ final class Day17: XCTestCase {
         computer.load(_program)
         computer.run()
 
-        let output = computer.harvestOutputString()
-        let screen = Screen(pixels: output.split(separator: "\n").map { Array($0) })!
+        let screen = Screen(lines: computer.harvestOutputString())!
         screen.render()
 
         XCTAssertEqual(

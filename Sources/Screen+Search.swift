@@ -8,8 +8,16 @@
 
 public extension Screen {
     
-    typealias CoordinateHandler = (_ coordinate: Coordinate, _ distance: Int) -> Void
-    
+    /// - Parameter pixel:
+    ///   The value of the pixel in question.
+    ///
+    /// - Parameter distance:
+    ///   How far away the pixel in question is from the starting position.
+    ///
+    /// - Returns:True if the specified pixel is considered to be part
+    ///   of the current path.
+    typealias PathHandler = (_ pixel: Pixel, _ distance: Int) -> Bool
+
     func firstCoordinate(where predicate: (Pixel) -> Bool) -> Coordinate? {
         let search = pixels.map { $0.firstIndex { predicate($0) } }
         guard
@@ -21,30 +29,39 @@ public extension Screen {
         return Coordinate(x, y)
     }
     
+    func allCoordinates(where predicate: (Pixel) -> Bool) -> [Coordinate] {
+        var result = [Coordinate]()
+        
+        let search = pixels.map {
+            $0.enumerated().filter { predicate($0.element) }.map { $0.offset }
+        }
+        for (y, xIndices) in search.enumerated() {
+            for x in xIndices { result.append(Coordinate(x, y)) }
+        }
+        
+        return result
+    }
+
     /// Calculates the smallest distance needed to cover a path of pixels.
     ///
     /// Only orthogonal pixels are considered adjacent.
     /// Diagonal pixels are not.
     ///
-    /// - Parameter path:
-    ///   The pixel value to traverse. Adjacent pixels of this value are
-    ///   considered connected.
-    ///
     /// - Parameter startingPosition:
     ///   The position to measure distances from.
     ///
-    /// - Parameter offPathHandler:
-    ///   Called for every adjacent pixel that is encountered that is not
-    ///   part of the path.
+    /// - Parameter pixelIsPartOfPath:
+    ///   A closure that decides if a pixel value is part of the path
+    ///   or not. Adjacent pixels that a designated as path pixels by this
+    ///   closure are considered connected.
     ///
     /// - Returns: How far the span had to travel to cover all pixels
     ///   that are connected on the pathway.
     func spanPath(
-        _ path: Pixel,
         from startingPosition: Coordinate,
-        offPathHandler: CoordinateHandler? = nil
+        pathHandler: PathHandler
     ) -> Int {
-        var offPathVisited = Set<Coordinate>()
+        var visitedCoordinates = Set<Coordinate>([startingPosition])
         var queue = [startingPosition]
         var distanceTable = [startingPosition: 0]
         
@@ -52,23 +69,16 @@ public extension Screen {
             let position = queue.popLast(),
             let distance = distanceTable[position] {
             
-            let adjacentPositions = Direction.all
-                .map { position + $0 }
-                .filter { self.validate(coordinate: $0) }
-            
-            if let handler = offPathHandler {
-                adjacentPositions
-                    .filter { self[$0] != path }
-                    .filter { !offPathVisited.contains($0) }
-                    .forEach {
-                        handler($0, distance + 1)
-                        offPathVisited.insert($0)
-                    }
+            let adjacentPositions = Direction.all.map {
+                position + $0
+            }.filter {
+                self.validate(coordinate: $0) && !visitedCoordinates.contains($0)
             }
                 
-            let adjacentPaths = adjacentPositions
-                .filter { self[$0] == path }
-                .filter { !distanceTable.keys.contains($0) }
+            visitedCoordinates = visitedCoordinates.union(adjacentPositions)
+            let adjacentPaths = adjacentPositions.filter {
+                pathHandler(self[$0], distance + 1)
+            }
             queue = adjacentPaths + queue
             adjacentPaths.forEach { distanceTable[$0] = distance + 1 }
         }

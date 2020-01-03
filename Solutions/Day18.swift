@@ -194,6 +194,10 @@ private extension Graph {
         return edges.contains { edge in edge.destination == destination }
     }
     
+    func destinations(for source: NodeLabel) -> Set<NodeLabel> {
+        return Set(self[source]?.map { $0.destination } ?? [ ])
+    }
+    
     mutating func addEdge(
         from source: NodeLabel, to destination: NodeLabel, distance: Int
     ) {

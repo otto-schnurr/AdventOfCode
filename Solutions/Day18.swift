@@ -20,6 +20,7 @@ final class Day18: XCTestCase {
         map.render()
         var graph = Graph(from: map)
         print(graph)
+        print(graph.coelescedWithoutDoors())
         
         map = Screen(lines: """
         ########################
@@ -133,9 +134,17 @@ private typealias NodeLabel = Screen.Pixel
 private typealias Graph = [NodeLabel: [Edge]]
 
 private struct Edge {
+    
     let destination: NodeLabel
     let distance: Int
-    let requiredKeys = Set<KeyValue>()
+    let requiredKeys: Set<KeyValue>
+    
+    init(destination: NodeLabel, distance: Int, requiredKeys: Set<KeyValue> = [ ]) {
+        self.destination = destination
+        self.distance = distance
+        self.requiredKeys = requiredKeys
+    }
+    
 }
 
 extension Edge: CustomStringConvertible {
@@ -144,6 +153,16 @@ extension Edge: CustomStringConvertible {
         return requiredKeys.isEmpty ?
             prefix + ")" :
             prefix + "required keys: \(requiredKeys))"
+    }
+}
+
+private extension NodeLabel {
+    var isDoor: Bool {
+        guard let terrain = Terrain(pixelValue: self) else { return false }
+        switch terrain {
+        case .door: return true
+        default: return false
+        }
     }
 }
 
@@ -197,6 +216,24 @@ private extension Graph {
     func destinations(for source: NodeLabel) -> Set<NodeLabel> {
         return Set(self[source]?.map { $0.destination } ?? [ ])
     }
+
+    func coelescedWithoutDoors() -> Graph {
+        var result = filter { !$0.key.isDoor }
+
+        for door in filter({ $0.key.isDoor }).map({ $0.key }) {
+            let nodesAdjacentToDoor = destinations(for: door)
+            
+            for adjacentNode in destinations(for: door) {
+                let existingNeighbors = result.destinations(for: adjacentNode)
+
+                for newNeighbor in nodesAdjacentToDoor.subtracting(existingNeighbors) {
+                    result.combineEdgesDirected(from: adjacentNode, and: newNeighbor, to: door)
+                }
+            }
+        }
+        
+        return result
+    }
     
     mutating func addEdge(
         from source: NodeLabel, to destination: NodeLabel, distance: Int
@@ -212,4 +249,30 @@ private extension Graph {
         self[source]?.append(Edge(destination: destination, distance: distance))
     }
     
+    mutating func combineEdgesDirected(
+        from a: NodeLabel, and b: NodeLabel, to door: NodeLabel
+    ) {
+        guard
+            let edges_a = self[a],
+            let index_a = edges_a.firstIndex(where: { $0.destination == door }),
+            let edges_b = self[b],
+            let index_b = edges_b.firstIndex(where: { $0.destination == door })
+        else { return }
+
+        let combinedDistance =
+            edges_a[index_a].distance + edges_b[index_b].distance
+        let combinedRequirements =
+            edges_a[index_a].requiredKeys.union(edges_b[index_b].requiredKeys)
+        
+        self[a]?[index_a] = Edge(
+            destination: b,
+            distance: combinedDistance,
+            requiredKeys: combinedRequirements
+        )
+        self[b]?[index_b] = Edge(
+            destination: a,
+            distance: combinedDistance,
+            requiredKeys: combinedRequirements
+        )
+    }
 }

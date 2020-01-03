@@ -225,8 +225,11 @@ private extension Graph {
             
             for adjacentNode in destinations(for: door) {
                 let existingNeighbors = result.destinations(for: adjacentNode)
+                let newNeighbors = nodesAdjacentToDoor
+                    .subtracting(existingNeighbors)
+                    .subtracting([adjacentNode])
 
-                for newNeighbor in nodesAdjacentToDoor.subtracting(existingNeighbors) {
+                for newNeighbor in newNeighbors {
                     result.combineEdgesDirected(from: adjacentNode, and: newNeighbor, to: door)
                 }
             }
@@ -252,6 +255,7 @@ private extension Graph {
     mutating func combineEdgesDirected(
         from a: NodeLabel, and b: NodeLabel, to door: NodeLabel
     ) {
+        assert(a != b)
         guard
             let edges_a = self[a],
             let index_a = edges_a.firstIndex(where: { $0.destination == door }),

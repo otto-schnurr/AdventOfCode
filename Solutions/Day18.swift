@@ -152,7 +152,7 @@ extension Edge: CustomStringConvertible {
         let prefix = "(\"\(destination)\", distance: \(distance)"
         return requiredKeys.isEmpty ?
             prefix + ")" :
-            prefix + "required keys: \(requiredKeys))"
+            prefix + ", required keys: \(requiredKeys))"
     }
 }
 
@@ -219,23 +219,28 @@ private extension Graph {
 
     func coelescedWithoutDoors() -> Graph {
         var result = filter { !$0.key.isDoor }
+        let nodesAdjacentToDoors = result.filter {
+            $0.value.contains { $0.destination.isDoor }
+        }
+        guard !nodesAdjacentToDoors.isEmpty else { return result }
 
-        for door in filter({ $0.key.isDoor }).map({ $0.key }) {
-            let nodesAdjacentToDoor = destinations(for: door)
-            
-            for adjacentNode in destinations(for: door) {
-                let existingNeighbors = result.destinations(for: adjacentNode)
-                let newNeighbors = nodesAdjacentToDoor
-                    .subtracting(existingNeighbors)
-                    .subtracting([adjacentNode])
+        result = self
 
-                for newNeighbor in newNeighbors {
-                    result.combineEdgesDirected(from: adjacentNode, and: newNeighbor, to: door)
+        for (node, _) in nodesAdjacentToDoors {
+            let existingNeighbors = result.destinations(for: node)
+
+            for door in existingNeighbors.filter({ $0.isDoor }) {
+                let newNeighbors = destinations(for: door)
+                let stuffToRemove = existingNeighbors
+                    .filter { !$0.isDoor }.union([node])
+                
+                for newNeighbor in newNeighbors.subtracting(stuffToRemove) {
+                    result.open(door: door, from: node, to: newNeighbor)
                 }
             }
         }
         
-        return result
+        return result.coelescedWithoutDoors()
     }
     
     mutating func addEdge(
@@ -252,31 +257,23 @@ private extension Graph {
         self[source]?.append(Edge(destination: destination, distance: distance))
     }
     
-    mutating func combineEdgesDirected(
-        from a: NodeLabel, and b: NodeLabel, to door: NodeLabel
-    ) {
-        assert(a != b)
+    mutating func open(door: NodeLabel, from a: NodeLabel, to b: NodeLabel) {
         guard
+            a != b,
             let edges_a = self[a],
             let index_a = edges_a.firstIndex(where: { $0.destination == door }),
-            let edges_b = self[b],
-            let index_b = edges_b.firstIndex(where: { $0.destination == door })
+            let edges_door = self[door],
+            let index_door = edges_door.firstIndex(where: { $0.destination == b })
         else { return }
-
-        let combinedDistance =
-            edges_a[index_a].distance + edges_b[index_b].distance
-        let combinedRequirements =
-            edges_a[index_a].requiredKeys.union(edges_b[index_b].requiredKeys)
         
         self[a]?[index_a] = Edge(
             destination: b,
-            distance: combinedDistance,
-            requiredKeys: combinedRequirements
-        )
-        self[b]?[index_b] = Edge(
-            destination: a,
-            distance: combinedDistance,
-            requiredKeys: combinedRequirements
+            distance: edges_a[index_a].distance + edges_door[index_door].distance,
+            requiredKeys: edges_a[index_a].requiredKeys
+                .union(edges_door[index_door].requiredKeys)
+                .union([Character(door.lowercased())])
+                .subtracting([a])
         )
     }
+    
 }

@@ -32,6 +32,7 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
+        print(graph.coelescedWithoutDoors())
 
         map = Screen(lines: """
         ########################
@@ -43,6 +44,7 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
+        print(graph.coelescedWithoutDoors())
 
         map = Screen(lines: """
         #################
@@ -58,6 +60,7 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
+        print(graph.coelescedWithoutDoors())
 
         map = Screen(lines: """
         ########################
@@ -70,6 +73,7 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
+        print(graph.coelescedWithoutDoors())
     }
 
     func test_solutions() {
@@ -172,8 +176,10 @@ private extension Graph {
         let rootLocation = map.firstCoordinate { $0 == Terrain.start.pixelValue }!
         let keyAndDoorLocations = map.allCoordinates { pixel in
             switch Terrain(pixelValue: pixel)! {
-            case .start, .key: return true
-            default:           return false
+            case .start, .key, .door:
+                return true
+            default:
+                return false
             }
         }
         

@@ -132,14 +132,15 @@ private extension Terrain {
 
 // MARK: - Private Graph Implementation
 private typealias Graph = [Label: [Edge]]
+private typealias Nodes = Set<Label>
 
 private struct Edge {
     
     let destination: Label
     let distance: Int
-    let requiredKeys: Set<Label>
+    let requiredKeys: Nodes
     
-    init(destination: Label, distance: Int, requiredKeys: Set<Label> = [ ]) {
+    init(destination: Label, distance: Int, requiredKeys: Nodes = [ ]) {
         self.destination = destination
         self.distance = distance
         self.requiredKeys = requiredKeys
@@ -168,7 +169,7 @@ private extension Label {
 
 private extension Graph {
     
-    var keyNodes: Set<Label> { Set(keys.filter { !$0.isDoor }) }
+    var keyNodes: Nodes { Set(keys.filter { !$0.isDoor }) }
     
     init(from map: Screen) {
         let nodeLocations = map.allCoordinates { pixel in
@@ -209,7 +210,7 @@ private extension Graph {
         return edges.contains { edge in edge.destination == destination }
     }
     
-    func adjacentNodes(from source: Label) -> Set<Label> {
+    func adjacentNodes(from source: Label) -> Nodes {
         return Set(self[source]?.compactMap { $0.destination } ?? [ ])
     }
     
@@ -241,12 +242,12 @@ private extension Graph {
         return distanceTable[end]
     }
 
-    func availableKeys(from remainingKeys: Set<Label>) -> Set<Label> {
+    func availableKeys(from remainingKeys: Nodes) -> Nodes {
         let acquiredKeys = keyNodes.subtracting(remainingKeys)
         let openDoors = Set(acquiredKeys.map { Character($0.uppercased()) })
         guard let firstKey = acquiredKeys.first else { return [ ] }
 
-        var span = Set<Label>()
+        var span = Nodes()
         func traverse(from node: Label) {
             span.insert(node)
             adjacentNodes(from: node)
@@ -259,7 +260,7 @@ private extension Graph {
         return remainingKeys.intersection(span)
     }
 
-    func distanceToCollect(_ remainingKeys: Set<Label>, from key: Label) -> Int? {
+    func distanceToCollect(_ remainingKeys: Nodes, from key: Label) -> Int? {
         guard !remainingKeys.isEmpty else { return 0 }
 
         return availableKeys(from: remainingKeys).compactMap { nextKey in

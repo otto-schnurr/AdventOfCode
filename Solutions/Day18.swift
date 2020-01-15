@@ -198,11 +198,57 @@ private extension Graph {
         self = result
     }
 
+    // MARK: Query
     func containsEdge(from source: Label, to destination: Label) -> Bool {
         guard let edges = self[source] else { return false }
         return edges.contains { edge in edge.destination == destination }
     }
     
+    // reference: https://www.reddit.com/r/adventofcode/comments/ec8090/2019_day_18_solutions/fbd8y0b/
+    func traverseAll(from start: Label) -> Int? {
+        let remainingKeys = Set(keys).filter { !$0.isDoor }.subtracting([start])
+        return distanceToCollect(remainingKeys, from: start)
+    }
+    
+    func distance(from start: Label, to end: Label) -> Int? {
+        var visitedNodes = Set([start])
+        var queue = [start]
+        var distanceTable = [start: 0]
+         
+        while let node = queue.popLast(), let distance = distanceTable[node] {
+            let edges = self[node]?.filter {
+                !visitedNodes.contains($0.destination)
+            } ?? [ ]
+            let adjacentNodes = edges.map { $0.destination }
+             
+            visitedNodes = visitedNodes.union(adjacentNodes)
+            queue = adjacentNodes + queue
+            edges.forEach {
+                let previousDistance = distanceTable[$0.destination] ?? Int.max
+                distanceTable[$0.destination] = Swift.min(previousDistance, distance + $0.distance)
+            }
+        }
+         
+        return distanceTable[end]
+    }
+
+    func availableKeys(from remainingKeys: Set<Label>) -> [Label] {
+        // !!!: implement me
+        return [ ]
+    }
+
+    func distanceToCollect(_ remainingKeys: Set<Label>, from key: Label) -> Int {
+        guard !remainingKeys.isEmpty else { return 0 }
+
+        return availableKeys(from: remainingKeys).map { nextKey in
+            guard let nextDistance = self.distance(from: key, to: nextKey) else {
+                return Int.max
+            }
+            return nextDistance + distanceToCollect(remainingKeys.subtracting([nextKey]), from: nextKey)
+        }.min(by: <) ?? Int.max
+    }
+
+    // MARK: Edit
     mutating func addEdge(
         from source: Label, to destination: Label, distance: Int
     ) {

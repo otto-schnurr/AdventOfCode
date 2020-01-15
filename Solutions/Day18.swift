@@ -44,6 +44,7 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
+        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 132)
 
         map = Screen(lines: """
         #################
@@ -208,6 +209,10 @@ private extension Graph {
         return edges.contains { edge in edge.destination == destination }
     }
     
+    func adjacentNodes(from source: Label) -> Set<Label> {
+        return Set(self[source]?.compactMap { $0.destination } ?? [ ])
+    }
+    
     // reference: https://www.reddit.com/r/adventofcode/comments/ec8090/2019_day_18_solutions/fbd8y0b/
     func traverseAll(from start: Label) -> Int? {
         let remainingKeys = keyNodes.subtracting([start])
@@ -238,25 +243,32 @@ private extension Graph {
 
     func availableKeys(from remainingKeys: Set<Label>) -> Set<Label> {
         let acquiredKeys = keyNodes.subtracting(remainingKeys)
-        let openDoors = acquiredKeys.map { Character($0.uppercased()) }
-        let availableKeys = filter {
-            acquiredKeys.contains($0.key) || openDoors.contains($0.key)
-        }.map { $0.value }.flatMap { $0 }.map { $0.destination }.filter {
-            remainingKeys.contains($0)
+        let openDoors = Set(acquiredKeys.map { Character($0.uppercased()) })
+        guard let firstKey = acquiredKeys.first else { return [ ] }
+
+        var span = Set<Label>()
+        func traverse(from node: Label) {
+            span.insert(node)
+            adjacentNodes(from: node)
+                .filter { !span.contains($0) }
+                .filter { !$0.isDoor || openDoors.contains($0) }
+                .forEach(traverse)
         }
-        
-        return Set(availableKeys)
+        traverse(from: firstKey)
+
+        return remainingKeys.intersection(span)
     }
 
-    func distanceToCollect(_ remainingKeys: Set<Label>, from key: Label) -> Int {
+    func distanceToCollect(_ remainingKeys: Set<Label>, from key: Label) -> Int? {
         guard !remainingKeys.isEmpty else { return 0 }
 
-        return availableKeys(from: remainingKeys).map { nextKey in
-            guard let nextDistance = self.distance(from: key, to: nextKey) else {
-                return Int.max
-            }
-            return nextDistance + distanceToCollect(remainingKeys.subtracting([nextKey]), from: nextKey)
-        }.min(by: <) ?? Int.max
+        return availableKeys(from: remainingKeys).compactMap { nextKey in
+            guard
+                let nextDistance = self.distance(from: key, to: nextKey),
+                let remainingDistance = distanceToCollect(remainingKeys.subtracting([nextKey]), from: nextKey)
+            else { return nil }
+            return nextDistance + remainingDistance
+        }.min(by: <)
     }
 
     // MARK: Edit

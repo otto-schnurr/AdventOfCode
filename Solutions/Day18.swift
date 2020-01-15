@@ -20,7 +20,6 @@ final class Day18: XCTestCase {
         map.render()
         var graph = Graph(from: map)
         print(graph)
-        print(graph.coelescedWithoutDoors())
         
         map = Screen(lines: """
         ########################
@@ -32,7 +31,6 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
-        print(graph.coelescedWithoutDoors())
 
         map = Screen(lines: """
         ########################
@@ -44,7 +42,6 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
-        print(graph.coelescedWithoutDoors())
 
         map = Screen(lines: """
         #################
@@ -60,7 +57,6 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
-        print(graph.coelescedWithoutDoors())
 
         map = Screen(lines: """
         ########################
@@ -73,7 +69,6 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
-        print(graph.coelescedWithoutDoors())
     }
 
     func test_solutions() {
@@ -173,8 +168,7 @@ private extension NodeLabel {
 private extension Graph {
     
     init(from map: Screen) {
-        let rootLocation = map.firstCoordinate { $0 == Terrain.start.pixelValue }!
-        let keyAndDoorLocations = map.allCoordinates { pixel in
+        let nodeLocations = map.allCoordinates { pixel in
             switch Terrain(pixelValue: pixel)! {
             case .start, .key, .door:
                 return true
@@ -183,26 +177,20 @@ private extension Graph {
             }
         }
         
-        let nodeLocations = [rootLocation] + keyAndDoorLocations
         var result = Graph()
 
         for sourceLocation in nodeLocations {
-            let sourceIsRoot = sourceLocation == rootLocation
-            let source = sourceIsRoot ? Terrain.start.pixelValue : map[sourceLocation]
+            let source = map[sourceLocation]
             
             let _ = map.spanPath(from: sourceLocation) { pixelValue, distance in
                 switch Terrain(pixelValue: pixelValue)! {
-                case .start, .path:
+                case .path:
                     return true
                 case .wall:
                     return false
-                case .key, .door:
+                case .start, .key, .door:
                     if !result.containsEdge(from: source, to: pixelValue) {
-                        if sourceIsRoot {
-                            result.addDirectedEdge(from: source, to: pixelValue, distance: distance)
-                        } else {
-                            result.addEdge(from: source, to: pixelValue, distance: distance)
-                        }
+                        result.addEdge(from: source, to: pixelValue, distance: distance)
                     }
                     return false
                 }
@@ -219,67 +207,14 @@ private extension Graph {
         return edges.contains { edge in edge.destination == destination }
     }
     
-    func destinations(for source: NodeLabel) -> Set<NodeLabel> {
-        return Set(self[source]?.map { $0.destination } ?? [ ])
-    }
-
-    func coelescedWithoutDoors() -> Graph {
-        var result = filter { !$0.key.isDoor }
-        let nodesAdjacentToDoors = result.filter {
-            $0.value.contains { $0.destination.isDoor }
-        }
-        guard !nodesAdjacentToDoors.isEmpty else { return result }
-
-        result = self
-
-        for (node, _) in nodesAdjacentToDoors {
-            let existingNeighbors = result.destinations(for: node)
-
-            for door in existingNeighbors.filter({ $0.isDoor }) {
-                let newNeighbors = destinations(for: door)
-                let stuffToRemove = existingNeighbors
-                    .filter { !$0.isDoor }.union([node])
-                
-                for newNeighbor in newNeighbors.subtracting(stuffToRemove) {
-                    result.open(door: door, from: node, to: newNeighbor)
-                }
-            }
-        }
-        
-        return result.coelescedWithoutDoors()
-    }
-    
     mutating func addEdge(
-        from source: NodeLabel, to destination: NodeLabel, distance: Int
-    ) {
-        addDirectedEdge(from: source, to: destination, distance: distance)
-        addDirectedEdge(from: destination, to: source, distance: distance)
-    }
-
-    mutating func addDirectedEdge(
         from source: NodeLabel, to destination: NodeLabel, distance: Int
     ) {
         if self[source] == nil { self[source] = [Edge]() }
         self[source]?.append(Edge(destination: destination, distance: distance))
-    }
-    
-    mutating func open(door: NodeLabel, from a: NodeLabel, to b: NodeLabel) {
-        guard
-            a != b,
-            let edges_a = self[a],
-            let index_a = edges_a.firstIndex(where: { $0.destination == door }),
-            let edges_door = self[door],
-            let index_door = edges_door.firstIndex(where: { $0.destination == b })
-        else { return }
-        
-        self[a]?[index_a] = Edge(
-            destination: b,
-            distance: edges_a[index_a].distance + edges_door[index_door].distance,
-            requiredKeys: edges_a[index_a].requiredKeys
-                .union(edges_door[index_door].requiredKeys)
-                .union([Character(door.lowercased())])
-                .subtracting([a])
-        )
+
+        if self[destination] == nil { self[destination] = [Edge]() }
+        self[destination]?.append(Edge(destination: source, distance: distance))
     }
     
 }

@@ -85,24 +85,23 @@ private var _map: Screen = {
     return Screen(pixels: pixels)!
 }()
 
-private typealias KeyValue = Screen.Pixel
-private typealias DoorValue = Screen.Pixel
+private typealias Label = Screen.Pixel
 
 private enum Terrain {
     
     case start
     case wall
     case path
-    case key(KeyValue)
-    case door(DoorValue)
+    case key(Label)
+    case door(Label)
     
-    init?(pixelValue: Screen.Pixel) {
-        switch pixelValue {
+    init?(label: Label) {
+        switch label {
         case "@": self = .start
         case "#": self = .wall
         case ".": self = .path
-        case "a"..."z": self = .key(pixelValue)
-        case "A"..."Z": self = .door(pixelValue)
+        case "a"..."z": self = .key(label)
+        case "A"..."Z": self = .door(label)
         default: return nil
         }
     }
@@ -111,7 +110,7 @@ private enum Terrain {
 
 private extension Terrain {
     
-    var pixelValue: Screen.Pixel {
+    var label: Label {
         switch self {
         case .start:
             return "@"
@@ -119,26 +118,25 @@ private extension Terrain {
             return "#"
         case .path:
             return "."
-        case .key(let pixelValue):
-            return pixelValue
-        case .door(let pixelValue):
-            return pixelValue
+        case .key(let label):
+            return label
+        case .door(let label):
+            return label
         }
     }
     
 }
 
 // MARK: - Private Graph Implementation
-private typealias NodeLabel = Screen.Pixel
-private typealias Graph = [NodeLabel: [Edge]]
+private typealias Graph = [Label: [Edge]]
 
 private struct Edge {
     
-    let destination: NodeLabel
+    let destination: Label
     let distance: Int
-    let requiredKeys: Set<KeyValue>
+    let requiredKeys: Set<Label>
     
-    init(destination: NodeLabel, distance: Int, requiredKeys: Set<KeyValue> = [ ]) {
+    init(destination: Label, distance: Int, requiredKeys: Set<Label> = [ ]) {
         self.destination = destination
         self.distance = distance
         self.requiredKeys = requiredKeys
@@ -155,9 +153,9 @@ extension Edge: CustomStringConvertible {
     }
 }
 
-private extension NodeLabel {
+private extension Label {
     var isDoor: Bool {
-        guard let terrain = Terrain(pixelValue: self) else { return false }
+        guard let terrain = Terrain(label: self) else { return false }
         switch terrain {
         case .door: return true
         default: return false
@@ -169,7 +167,7 @@ private extension Graph {
     
     init(from map: Screen) {
         let nodeLocations = map.allCoordinates { pixel in
-            switch Terrain(pixelValue: pixel)! {
+            switch Terrain(label: pixel)! {
             case .start, .key, .door:
                 return true
             default:
@@ -183,7 +181,7 @@ private extension Graph {
             let source = map[sourceLocation]
             
             let _ = map.spanPath(from: sourceLocation) { pixelValue, distance in
-                switch Terrain(pixelValue: pixelValue)! {
+                switch Terrain(label: pixelValue)! {
                 case .path:
                     return true
                 case .wall:
@@ -200,15 +198,13 @@ private extension Graph {
         self = result
     }
 
-    func containsEdge(
-        from source: NodeLabel, to destination: NodeLabel
-    ) -> Bool {
+    func containsEdge(from source: Label, to destination: Label) -> Bool {
         guard let edges = self[source] else { return false }
         return edges.contains { edge in edge.destination == destination }
     }
     
     mutating func addEdge(
-        from source: NodeLabel, to destination: NodeLabel, distance: Int
+        from source: Label, to destination: Label, distance: Int
     ) {
         if self[source] == nil { self[source] = [Edge]() }
         self[source]?.append(Edge(destination: destination, distance: distance))

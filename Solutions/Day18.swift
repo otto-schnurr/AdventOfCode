@@ -20,6 +20,7 @@ final class Day18: XCTestCase {
         map.render()
         var graph = Graph(from: map)
         print(graph)
+        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 8)
         
         map = Screen(lines: """
         ########################
@@ -31,6 +32,7 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
+        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 86)
 
         map = Screen(lines: """
         ########################
@@ -165,6 +167,8 @@ private extension Label {
 
 private extension Graph {
     
+    var keyNodes: Set<Label> { Set(keys.filter { !$0.isDoor }) }
+    
     init(from map: Screen) {
         let nodeLocations = map.allCoordinates { pixel in
             switch Terrain(label: pixel)! {
@@ -206,7 +210,7 @@ private extension Graph {
     
     // reference: https://www.reddit.com/r/adventofcode/comments/ec8090/2019_day_18_solutions/fbd8y0b/
     func traverseAll(from start: Label) -> Int? {
-        let remainingKeys = Set(keys).filter { !$0.isDoor }.subtracting([start])
+        let remainingKeys = keyNodes.subtracting([start])
         return distanceToCollect(remainingKeys, from: start)
     }
     
@@ -232,9 +236,16 @@ private extension Graph {
         return distanceTable[end]
     }
 
-    func availableKeys(from remainingKeys: Set<Label>) -> [Label] {
-        // !!!: implement me
-        return [ ]
+    func availableKeys(from remainingKeys: Set<Label>) -> Set<Label> {
+        let acquiredKeys = keyNodes.subtracting(remainingKeys)
+        let openDoors = acquiredKeys.map { Character($0.uppercased()) }
+        let availableKeys = filter {
+            acquiredKeys.contains($0.key) || openDoors.contains($0.key)
+        }.map { $0.value }.flatMap { $0 }.map { $0.destination }.filter {
+            remainingKeys.contains($0)
+        }
+        
+        return Set(availableKeys)
     }
 
     func distanceToCollect(_ remainingKeys: Set<Label>, from key: Label) -> Int {

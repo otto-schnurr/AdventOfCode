@@ -22,8 +22,9 @@ final class Day18: XCTestCase {
         """)!
         map.render()
         var graph = Graph(from: map)
-        print(graph)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 8)
+        
+        print()
         
         map = Screen(lines: """
         ########################
@@ -34,8 +35,9 @@ final class Day18: XCTestCase {
         """)!
         map.render()
         graph = Graph(from: map)
-        print(graph)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 86)
+
+        print()
 
         map = Screen(lines: """
         ########################
@@ -46,8 +48,9 @@ final class Day18: XCTestCase {
         """)!
         map.render()
         graph = Graph(from: map)
-        print(graph)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 132)
+
+        print()
 
         map = Screen(lines: """
         #################
@@ -62,11 +65,12 @@ final class Day18: XCTestCase {
         """)!
         map.render()
         graph = Graph(from: map)
-        print(graph)
 
         if _enableAllTests {
             XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 136)
         }
+
+        print()
 
         map = Screen(lines: """
         ########################
@@ -78,13 +82,15 @@ final class Day18: XCTestCase {
         """)!
         map.render()
         graph = Graph(from: map)
-        print(graph)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 81)
     }
 
     func test_solutions() {
-        XCTAssertEqual(_map.width, 81)
-        XCTAssertEqual(_map.height, 81)
+        _map.render()
+        let graph = Graph(from: _map)
+        if _enableAllTests {
+            XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 4620)
+        }
     }
     
 }

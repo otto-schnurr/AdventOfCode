@@ -9,6 +9,9 @@
 import XCTest
 import AdventOfCode
 
+// Setting this to true will include tests that take a long time to run.
+private let _enableAllTests = false
+
 final class Day18: XCTestCase {
     
     func test_examples() {
@@ -60,7 +63,10 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
-        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 136)
+
+        if _enableAllTests {
+            XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 136)
+        }
 
         map = Screen(lines: """
         ########################

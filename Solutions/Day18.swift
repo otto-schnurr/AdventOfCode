@@ -60,6 +60,7 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
+        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 136)
 
         map = Screen(lines: """
         ########################
@@ -72,6 +73,7 @@ final class Day18: XCTestCase {
         map.render()
         graph = Graph(from: map)
         print(graph)
+        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 81)
     }
 
     func test_solutions() {
@@ -167,6 +169,11 @@ private extension Label {
     }
 }
 
+private struct CacheKey: Hashable {
+    let remainingKeys: Nodes
+    let fromKey: Label
+}
+
 private extension Graph {
     
     var keyNodes: Nodes { Set(keys.filter { !$0.isDoor }) }
@@ -217,7 +224,8 @@ private extension Graph {
     // reference: https://www.reddit.com/r/adventofcode/comments/ec8090/2019_day_18_solutions/fbd8y0b/
     func traverseAll(from start: Label) -> Int? {
         let remainingKeys = keyNodes.subtracting([start])
-        return distanceToCollect(remainingKeys, from: start)
+        var cache = [CacheKey: Int?]()
+        return distanceToCollect(remainingKeys, from: start, cache: &cache)
     }
     
     func distance(from start: Label, to end: Label) -> Int? {
@@ -260,16 +268,26 @@ private extension Graph {
         return remainingKeys.intersection(span)
     }
 
-    func distanceToCollect(_ remainingKeys: Nodes, from key: Label) -> Int? {
+    func distanceToCollect(
+        _ remainingKeys: Nodes, from key: Label, cache: inout [CacheKey: Int?]
+    ) -> Int? {
         guard !remainingKeys.isEmpty else { return 0 }
 
-        return availableKeys(from: remainingKeys).compactMap { nextKey in
+        let cacheKey = CacheKey(remainingKeys: remainingKeys, fromKey: key)
+        if let cachedResult = cache[cacheKey] { return cachedResult }
+
+        let result: Int? = availableKeys(from: remainingKeys).compactMap { nextKey in
             guard
                 let nextDistance = self.distance(from: key, to: nextKey),
-                let remainingDistance = distanceToCollect(remainingKeys.subtracting([nextKey]), from: nextKey)
+                let remainingDistance = distanceToCollect(
+                    remainingKeys.subtracting([nextKey]), from: nextKey, cache: &cache
+                )
             else { return nil }
             return nextDistance + remainingDistance
         }.min(by: <)
+        
+        cache[cacheKey] = result
+        return result
     }
 
     // MARK: Edit

@@ -293,7 +293,7 @@ private extension Graph {
 
     func availableKeys(from remainingKeys: Nodes) -> Nodes {
         let acquiredKeys = keyNodes.subtracting(remainingKeys)
-        let openDoors = Set(acquiredKeys.map { Character($0.uppercased()) })
+        let closedDoors = Set(remainingKeys.map { Character($0.uppercased()) })
         guard let firstKey = acquiredKeys.first else { return [ ] }
 
         var span = Nodes()
@@ -301,7 +301,7 @@ private extension Graph {
             span.insert(node)
             adjacentNodes(from: node)
                 .filter { !span.contains($0) }
-                .filter { !$0.isDoor || openDoors.contains($0) }
+                .filter { !$0.isDoor || !closedDoors.contains($0) }
                 .forEach(traverse)
         }
         traverse(from: firstKey)

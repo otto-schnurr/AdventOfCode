@@ -24,6 +24,18 @@ public final class Screen {
         assert(height > 0)
     }
     
+    public init?(xRange: Range<Int>, yRange: Range<Int>, copiedFrom source: Screen) {
+        guard
+            !xRange.isEmpty && !yRange.isEmpty &&
+            xRange.clamped(to: 0 ..< source.width) == xRange &&
+            yRange.clamped(to: 0 ..< source.height) == yRange
+        else { return nil }
+        
+        width = xRange.count
+        height = yRange.count
+        pixels = Array(source.pixels[yRange]).map { Array($0[xRange]) }
+    }
+    
     // MARK: Internal
     internal var pixels: [[Pixel]]
 

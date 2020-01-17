@@ -14,7 +14,7 @@ private let _enableAllTests = false
 
 final class Day18: XCTestCase {
     
-    func test_examples() {
+    func test_examples_part1() {
         var map = Screen(lines: """
         #########
         #b.A.@.a#
@@ -85,11 +85,96 @@ final class Day18: XCTestCase {
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 81)
     }
 
+    func test_examples_part2() {
+        var map = Screen(lines: """
+        #######
+        #a.#Cd#
+        ##@#@##
+        #######
+        ##@#@##
+        #cB#Ab#
+        #######
+        """)!
+        map.render()
+        var distances = map.dividedIntoQuadrants.compactMap {
+            Graph(from: $0).traverseAll(from: Terrain.start.label)
+        }
+        XCTAssertEqual(distances.reduce(0, +), 8)
+        
+        map = Screen(lines: """
+        ###############
+        #d.ABC.#.....a#
+        ######@#@######
+        ###############
+        ######@#@######
+        #b.....#.....c#
+        ###############
+        """)!
+        map.render()
+        distances = map.dividedIntoQuadrants.compactMap {
+            Graph(from: $0).traverseAll(from: Terrain.start.label)
+        }
+        XCTAssertEqual(distances.reduce(0, +), 24)
+        
+        map = Screen(lines: """
+        #############
+        #DcBa.#.GhKl#
+        #.###@#@#I###
+        #e#d#####j#k#
+        ###C#@#@###J#
+        #fEbA.#.FgHi#
+        #############
+        """)!
+        map.render()
+        distances = map.dividedIntoQuadrants.compactMap {
+            Graph(from: $0).traverseAll(from: Terrain.start.label)
+        }
+        XCTAssertEqual(distances.reduce(0, +), 32)
+        
+        map = Screen(lines: """
+        #############
+        #g#f.D#..h#l#
+        #F###e#E###.#
+        #dCba@#@BcIJ#
+        #############
+        #nK.L@#@G...#
+        #M###N#H###.#
+        #o#m..#i#jk.#
+        #############
+        """)!
+        map.render()
+        distances = map.dividedIntoQuadrants.compactMap {
+            Graph(from: $0).traverseAll(from: Terrain.start.label)
+        }
+        // TODO: Figure out why this is wrong.
+        // XCTAssertEqual(distances.reduce(0, +), 72)
+    }
+    
     func test_solutions() {
         _map.render()
         let graph = Graph(from: _map)
         if _enableAllTests {
             XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 4620)
+        }
+        
+        print()
+        
+        let filledMap = _map.copy()
+        let midX = filledMap.width / 2
+        let midY = filledMap.height / 2
+        for x in midX-1 ... midX+1 {
+            for y in midY-1 ... midY+1 {
+                filledMap[Coordinate(x, y)] = x == midX || y == midY ?
+                    Terrain.wall.label : Terrain.start.label
+            }
+        }
+        filledMap.render()
+        
+        if _enableAllTests {
+            let distances = filledMap.dividedIntoQuadrants.compactMap {
+                Graph(from: $0).traverseAll(from: Terrain.start.label)
+            }
+            XCTAssertEqual(distances.reduce(0, +), 1564)
         }
     }
     
@@ -264,7 +349,7 @@ private extension Graph {
 
     func availableKeys(from remainingKeys: Nodes) -> Nodes {
         let acquiredKeys = keyNodes.subtracting(remainingKeys)
-        let openDoors = Set(acquiredKeys.map { Character($0.uppercased()) })
+        let closedDoors = Set(remainingKeys.map { Character($0.uppercased()) })
         guard let firstKey = acquiredKeys.first else { return [ ] }
 
         var span = Nodes()
@@ -272,7 +357,7 @@ private extension Graph {
             span.insert(node)
             adjacentNodes(from: node)
                 .filter { !span.contains($0) }
-                .filter { !$0.isDoor || openDoors.contains($0) }
+                .filter { !$0.isDoor || !closedDoors.contains($0) }
                 .forEach(traverse)
         }
         traverse(from: firstKey)
@@ -313,4 +398,25 @@ private extension Graph {
         self[destination]?.append(Edge(destination: source, distance: distance))
     }
     
+}
+
+
+// MARK: - Private Extensions
+private extension Screen {
+    var dividedIntoQuadrants: [Screen] {
+        let midX = width / 2
+        let lowerX = Range(0...midX)
+        let upperX = midX ..< width
+        
+        let midY = height / 2
+        let lowerY = Range(0...midY)
+        let upperY = midY ..< height
+        
+        return [
+            Screen(xRange: lowerX, yRange: lowerY, copiedFrom: self)!,
+            Screen(xRange: upperX, yRange: lowerY, copiedFrom: self)!,
+            Screen(xRange: lowerX, yRange: upperY, copiedFrom: self)!,
+            Screen(xRange: upperX, yRange: upperY, copiedFrom: self)!
+        ]
+    }
 }

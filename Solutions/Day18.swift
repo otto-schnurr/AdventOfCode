@@ -14,7 +14,7 @@ private let _enableAllTests = false
 
 final class Day18: XCTestCase {
     
-    func test_examples() {
+    func test_examples_part1() {
         var map = Screen(lines: """
         #########
         #b.A.@.a#
@@ -85,6 +85,35 @@ final class Day18: XCTestCase {
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 81)
     }
 
+    func test_examples_part2() {
+        let map = Screen(lines: """
+        #######
+        #a.#Cd#
+        ##@#@##
+        #######
+        ##@#@##
+        #cB#Ab#
+        #######
+        """)!
+        map.render()
+        print()
+
+        let midX = map.width / 2
+        let midY = map.height / 2
+        
+        Screen(xRange: Range(0...midX), yRange: Range(0...midY), copiedFrom: map)?.render()
+        print()
+        
+        Screen(xRange: midX ..< map.width, yRange: Range(0...midY), copiedFrom: map)?.render()
+        print()
+        
+        Screen(xRange: Range(0...midX), yRange: midY ..< map.height, copiedFrom: map)?.render()
+        print()
+        
+        Screen(xRange: midX ..< map.width, yRange: midY ..< map.height, copiedFrom: map)?.render()
+        print()
+    }
+    
     func test_solutions() {
         _map.render()
         let graph = Graph(from: _map)

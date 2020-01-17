@@ -17,10 +17,7 @@ final class Day19: XCTestCase {
         
         for x in 0 ..< 50 {
             for y in 0 ..< 50 {
-                computer.load(_program)
-                computer.inputBuffer = [x, y]
-                computer.run()
-                if computer.harvestOutput()[0] != 0 { count += 1 }
+                if computer.valueAt(x, y) { count += 1 }
             }
         }
         
@@ -32,3 +29,14 @@ final class Day19: XCTestCase {
 
 // MARK: - Private
 private let _program = Program(testHarnessResource: "input19.txt")!
+
+private extension Computer {
+    
+    func valueAt(_ x: Int, _ y: Int) -> Bool {
+        load(_program)
+        inputBuffer = [x, y]
+        run()
+        return harvestOutput()[0] != 0
+    }
+    
+}

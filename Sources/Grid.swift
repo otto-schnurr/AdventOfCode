@@ -45,7 +45,7 @@ public extension Grid {
     
     func render(backgroundValue: Pixel.Value = " ") {
         for y in gridOrigin.y ..< gridOrigin.y + Int32(gridHeight) {
-            var row = [Pixel.Value](repeating: backgroundValue, count: gridHeight)
+            var row = [Pixel.Value](repeating: backgroundValue, count: gridWidth)
 
             for x in gridOrigin.x ..< gridOrigin.x + Int32(gridWidth) {
                 if let pixel = node(atGridPosition: Grid.Position(x, y)) {

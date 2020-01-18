@@ -8,9 +8,11 @@
 
 import GameplayKit
 
+public typealias Grid = GKGridGraph<Pixel>
+
 public final class Pixel: GKGridGraphNode {
     
-    let value: Character
+    public let value: Character
     
     public init(gridPosition: vector_int2, value: Character) {
         self.value = value

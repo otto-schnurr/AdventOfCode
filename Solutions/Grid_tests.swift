@@ -31,4 +31,16 @@ class Grid_tests: XCTestCase {
         XCTAssertEqual(emptyGrid.nodes, [ ])
     }
     
+    func test_minimalGrid_hasExpectedProperies() {
+        let grid = Grid(
+            fromGridStartingAt: .zero, width: 1, height: 1,
+            diagonalsAllowed: false, nodeClass: Pixel.self
+        )
+        XCTAssertEqual(grid.gridOrigin, .zero)
+        XCTAssertEqual(grid.gridWidth, 1)
+        XCTAssertEqual(grid.gridHeight, 1)
+        XCTAssertFalse(grid.diagonalsAllowed)
+        XCTAssertEqual(grid.pixels?.map { $0.value }, [" "])
+    }
+
 }

@@ -43,4 +43,11 @@ final class Direction_tests: XCTestCase {
         XCTAssertEqual(Coordinate.zero + Direction.east, Coordinate(+1, 0))
     }
     
+    func test_positionOffsets() {
+        XCTAssertEqual(Grid.Position.zero + Direction.north, Grid.Position(0, -1))
+        XCTAssertEqual(Grid.Position.zero + Direction.south, Grid.Position(0, +1))
+        XCTAssertEqual(Grid.Position.zero + Direction.west, Grid.Position(-1, 0))
+        XCTAssertEqual(Grid.Position.zero + Direction.east, Grid.Position(+1, 0))
+    }
+    
 }

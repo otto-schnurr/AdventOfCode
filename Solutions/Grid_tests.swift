@@ -49,7 +49,7 @@ class Grid_tests: XCTestCase {
             Pixel(gridPosition: Grid.Position(2, 0), value: "#"),
             Pixel(gridPosition: Grid.Position(3, 0), value: "O"),
             
-            Pixel(gridPosition: Grid.Position(1, 2), value: "X"),
+            Pixel(gridPosition: Grid.Position(1, 2), value: "O"),
             Pixel(gridPosition: Grid.Position(2, 2), value: "#"),
             Pixel(gridPosition: Grid.Position(3, 2), value: "X"),
         ]
@@ -59,7 +59,9 @@ class Grid_tests: XCTestCase {
         XCTAssertEqual(grid.gridWidth, 3)
         XCTAssertEqual(grid.gridHeight, 3)
         XCTAssertFalse(grid.diagonalsAllowed)
-        XCTAssertEqual(grid.pixels?.count, 9)
+        XCTAssertEqual(grid.pixels?.count, 6)
+        
+        grid.render(backgroundValue: "#")
     }
     
 }

@@ -10,26 +10,6 @@ import GameplayKit
 
 public typealias Grid = GKGridGraph<Pixel>
 
-public final class Pixel: GKGridGraphNode {
-    
-    public typealias Value = Character
-    public var value: Value
-    
-    public override convenience init(gridPosition: Grid.Position) {
-        self.init(gridPosition: gridPosition, value: " ")
-    }
-    
-    public init(gridPosition: Grid.Position, value: Value) {
-        self.value = value
-        super.init(gridPosition: gridPosition)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-}
-
 public extension Grid {
     
     typealias Position = vector_int2
@@ -47,6 +27,54 @@ public extension Grid {
             width: Int32(xRange.count), height: Int32(yRange.count),
             diagonalsAllowed: false, nodeClass: Pixel.self
         )
+        
+        var positionsToKeep = Set<Grid.Position>()
+        
+        for pixel in pixels {
+            node(atGridPosition: pixel.gridPosition)?.value = pixel.value
+            positionsToKeep.insert(pixel.gridPosition)
+        }
+        
+        if let allPixels = self.pixels {
+            let pixelsToRemove = allPixels.filter {
+                !positionsToKeep.contains($0.gridPosition)
+            }
+            remove(pixelsToRemove)
+        }
+    }
+    
+    func render(backgroundValue: Pixel.Value = " ") {
+        for y in gridOrigin.y ..< gridOrigin.y + Int32(gridHeight) {
+            var row = [Pixel.Value](repeating: backgroundValue, count: gridHeight)
+
+            for x in gridOrigin.x ..< gridOrigin.x + Int32(gridWidth) {
+                if let pixel = node(atGridPosition: Grid.Position(x, y)) {
+                    row[Int(x - gridOrigin.x)] = pixel.value
+                }
+            }
+            
+            print(String(row))
+        }
+    }
+    
+}
+
+public final class Pixel: GKGridGraphNode {
+    
+    public typealias Value = Character
+    public var value: Value
+    
+    public override convenience init(gridPosition: Grid.Position) {
+        self.init(gridPosition: gridPosition, value: " ")
+    }
+    
+    public init(gridPosition: Grid.Position, value: Value) {
+        self.value = value
+        super.init(gridPosition: gridPosition)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
 }

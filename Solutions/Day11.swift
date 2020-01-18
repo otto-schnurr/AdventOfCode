@@ -12,28 +12,30 @@ import AdventOfCode
 final class Day11: XCTestCase {
     
     func test_solution() {
-        var panels = Display(backgroundColor: "⬛️")
+        var panels = Panels()
         var robot = Robot()
         robot.run(on: &panels)
-        XCTAssertEqual(panels.initialPixelCount, 2322)
+        XCTAssertEqual(panels.count, 2322)
         
-        panels = Display(backgroundColor: "⬛️")
-        panels[.zero] = Color.white.pixelValue
+        panels = [Grid.Position.zero: Color.white.pixelValue]
         robot.run(on: &panels)
-        panels.render()
+        let pixels = panels.map { Pixel(gridPosition: $0.key, value: $0.value) }
+        Grid(pixels: pixels).render(backgroundValue: Color.black.pixelValue)
     }
     
 }
 
 
 // MARK: - Private
+private typealias Panels = [Grid.Position: Pixel.Value]
+
 private enum Color: Word, CustomStringConvertible {
     case black = 0
     case white = 1
     
     var description: String { String(self.pixelValue) }
     
-    var pixelValue: Display.Pixel {
+    var pixelValue: Pixel.Value {
         switch self {
         case .black: return "⬛️"
         case .white: return "⬜️"
@@ -42,7 +44,7 @@ private enum Color: Word, CustomStringConvertible {
     
 }
 
-private extension Display.Pixel {
+private extension Pixel.Value {
     var colorValue: Color? {
         switch self {
         case "⬛️": return .black
@@ -54,13 +56,13 @@ private extension Display.Pixel {
 
 private struct Robot {
     
-    private(set) var position = Coordinate.zero
+    private(set) var position = Grid.Position.zero
     
     init() {
         computer = Computer(outputMode: .yield)
     }
     
-    mutating func run(on panels: inout Display) {
+    mutating func run(on panels: inout Panels) {
         position = .zero
         direction = .north
         
@@ -68,7 +70,7 @@ private struct Robot {
         var shouldKeepRunning = true
 
         repeat {
-            let input = panels[position].colorValue ?? .black
+            let input = panels[position]?.colorValue ?? .black
             computer.inputBuffer.append(input.rawValue)
             
             computer.run()

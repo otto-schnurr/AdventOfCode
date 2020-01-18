@@ -7,3 +7,18 @@
 //
 
 import GameplayKit
+
+public final class Pixel: GKGridGraphNode {
+    
+    let value: Character
+    
+    public init(gridPosition: vector_int2, value: Character) {
+        self.value = value
+        super.init(gridPosition: gridPosition)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+}

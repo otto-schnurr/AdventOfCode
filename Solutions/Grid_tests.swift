@@ -11,6 +11,17 @@ import AdventOfCode
 
 class Grid_tests: XCTestCase {
     
+    func test_differentPixels_areNotEqual() {
+        let pixelA = Pixel(gridPosition: .zero, value: ".")
+        let pixelB = Pixel(gridPosition: .zero, value: "#")
+        let pixelC = Pixel(gridPosition: .zero, value: ".")
+
+        XCTAssertEqual(pixelA, pixelA)
+        XCTAssertNotEqual(pixelA, pixelB)
+        XCTAssertNotEqual(pixelA, pixelC)
+        XCTAssertNotEqual(pixelB, pixelC)
+    }
+    
     func test_emptyGrid_hasExpectedProperties() {
         let emptyGrid = Grid()
         XCTAssertEqual(emptyGrid.gridOrigin, .zero)

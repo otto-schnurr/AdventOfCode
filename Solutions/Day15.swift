@@ -12,20 +12,16 @@ import AdventOfCode
 final class Day15: XCTestCase {
     
     func test_example() {
-        let screen = Screen(lines: """
+        let grid = Grid(lines: """
         ######
         #..###
         #.#..#
         #.O.##
         ######
-        """)!
-        let startingPoint = Coordinate(2, 3)
-        XCTAssertEqual(
-            screen.spanPath(from: startingPoint) { pixel, _ in
-                pixel == Observation.path.pixelValue
-            },
-            4
+        """, backgroundValue: "#"
         )
+        let startingPoint = Position(2, 3)
+        XCTAssertEqual(grid.span(from: startingPoint), 4)
     }
     
     func test_solutions() {

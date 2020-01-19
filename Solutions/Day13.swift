@@ -17,7 +17,7 @@ final class Day13: XCTestCase {
         let game = Game()
         game.run(quarters: 1)
         XCTAssertEqual(
-            game.screen.initialPixelCount(for: Game.Tile.block.pixelValue),
+            game.pixels.filter { $0.value == Game.Tile.block.pixelValue }.count,
             207
         )
         game.render()
@@ -30,7 +30,7 @@ final class Day13: XCTestCase {
 
 
 // MARK: - Private
-private let _segmentDisplayCoordinate = Coordinate(-1, 0)
+private let _segmentDisplayPosition = Position(-1, 0)
 
 private final class Game {
     
@@ -43,7 +43,7 @@ private final class Game {
     }
     
     private(set) public var score = Word()
-    private(set) var screen = Display(backgroundColor: " ")
+    private(set) var pixels = [Position: Pixel.Value]()
     
     init() {
         computer = Computer(outputMode: .yield)
@@ -69,9 +69,9 @@ private final class Game {
                 continue
             }
             
-            let position = Coordinate(output[0], output[1])
+            let position = Position(output[0], output[1])
 
-            if position == _segmentDisplayCoordinate {
+            if position == _segmentDisplayPosition {
                 score = output[2]
             } else {
                 handle(tile: Tile(rawValue: output[2])!, at: position)
@@ -82,13 +82,15 @@ private final class Game {
     func render() {
         print()
         print("SCORE: \(score)")
-        screen.render()
+        Grid(
+            pixels: pixels.map { Pixel(gridPosition: $0.key, value: $0.value) }
+        ).render()
     }
     
     // MARK: Private
     private let computer: Computer
-    private var ballPosition: Coordinate?
-    private var paddlePosition: Coordinate?
+    private var ballPosition: Position?
+    private var paddlePosition: Position?
     
 }
 
@@ -103,11 +105,11 @@ private extension Game {
             let paddlePosition = paddlePosition
         else { return 0 }
         
-        return (ballPosition.x - paddlePosition.x).signum()
+        return Word(ballPosition.x - paddlePosition.x).signum()
     }
     
-    func handle(tile: Tile, at position: Coordinate) {
-        screen[position] = tile.pixelValue
+    func handle(tile: Tile, at position: Position) {
+        pixels[position] = tile.pixelValue
         
         switch tile {
         case .ball:   ballPosition = position

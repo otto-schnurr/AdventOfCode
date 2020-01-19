@@ -42,10 +42,10 @@ public extension Grid {
     }
     
     func render(backgroundValue: Pixel.Value = " ") {
-        for y in gridOrigin.y ..< gridOrigin.y + Int32(gridHeight) {
+        for y in gridOrigin.y ..< gridOrigin.y + Position.Scalar(gridHeight) {
             var row = [Pixel.Value](repeating: backgroundValue, count: gridWidth)
 
-            for x in gridOrigin.x ..< gridOrigin.x + Int32(gridWidth) {
+            for x in gridOrigin.x ..< gridOrigin.x + Position.Scalar(gridWidth) {
                 if let pixel = node(atGridPosition: Position(x, y)) {
                     row[Int(x - gridOrigin.x)] = pixel.value
                 }

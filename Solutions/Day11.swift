@@ -17,7 +17,7 @@ final class Day11: XCTestCase {
         robot.run(on: &panels)
         XCTAssertEqual(panels.count, 2322)
         
-        panels = [Grid.Position.zero: Color.white.pixelValue]
+        panels = [Position.zero: Color.white.pixelValue]
         robot.run(on: &panels)
         let pixels = panels.map { Pixel(gridPosition: $0.key, value: $0.value) }
         Grid(pixels: pixels).render(backgroundValue: Color.black.pixelValue)
@@ -27,7 +27,7 @@ final class Day11: XCTestCase {
 
 
 // MARK: - Private
-private typealias Panels = [Grid.Position: Pixel.Value]
+private typealias Panels = [Position: Pixel.Value]
 
 private enum Color: Word, CustomStringConvertible {
     case black = 0
@@ -56,7 +56,7 @@ private extension Pixel.Value {
 
 private struct Robot {
     
-    private(set) var position = Grid.Position.zero
+    private(set) var position = Position.zero
     
     init() {
         computer = Computer(outputMode: .yield)

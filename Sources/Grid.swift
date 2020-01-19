@@ -12,8 +12,6 @@ public typealias Grid = GKGridGraph<Pixel>
 
 public extension Grid {
     
-    typealias Position = vector_int2
-    
     var pixels: [Pixel]? {
         guard let nodes = self.nodes else { return nil }
         return nodes.compactMap { $0 as? Pixel }
@@ -28,7 +26,7 @@ public extension Grid {
             diagonalsAllowed: false, nodeClass: Pixel.self
         )
         
-        var positionsToKeep = Set<Grid.Position>()
+        var positionsToKeep = Set<Position>()
         
         for pixel in pixels {
             node(atGridPosition: pixel.gridPosition)?.value = pixel.value
@@ -48,7 +46,7 @@ public extension Grid {
             var row = [Pixel.Value](repeating: backgroundValue, count: gridWidth)
 
             for x in gridOrigin.x ..< gridOrigin.x + Int32(gridWidth) {
-                if let pixel = node(atGridPosition: Grid.Position(x, y)) {
+                if let pixel = node(atGridPosition: Position(x, y)) {
                     row[Int(x - gridOrigin.x)] = pixel.value
                 }
             }
@@ -64,11 +62,11 @@ public final class Pixel: GKGridGraphNode {
     public typealias Value = Character
     public var value: Value
     
-    public override convenience init(gridPosition: Grid.Position) {
+    public override convenience init(gridPosition: Position) {
         self.init(gridPosition: gridPosition, value: " ")
     }
     
-    public init(gridPosition: Grid.Position, value: Value) {
+    public init(gridPosition: Position, value: Value) {
         self.value = value
         super.init(gridPosition: gridPosition)
     }
@@ -81,10 +79,10 @@ public final class Pixel: GKGridGraphNode {
 
 
 // MARK: - Private
-private typealias PositionRange = Range<Grid.Position.Scalar>
+private typealias PositionRange = Range<Position.Scalar>
 
 private func _ranges(
-    for positions: [Grid.Position]
+    for positions: [Position]
 ) -> (xRange: PositionRange, yRange: PositionRange) {
     let xValues = positions.map { $0.x }
     let yValues = positions.map { $0.y }

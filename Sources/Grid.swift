@@ -13,8 +13,10 @@ public typealias Grid = GKGridGraph<Pixel>
 // MARK: Factory
 public extension Grid {
     
-    convenience init(pixels: [Pixel]) {
-        let (xRange, yRange) = _ranges(for: pixels.map { $0.gridPosition })
+    typealias PixelData = [Position: Pixel.Value]
+    
+    convenience init(data: PixelData) {
+        let (xRange, yRange) = _ranges(for: data.map { $0.key })
         
         self.init(
             fromGridStartingAt: Position(xRange.lowerBound, yRange.lowerBound),
@@ -24,9 +26,9 @@ public extension Grid {
         
         var positionsToKeep = Set<Position>()
         
-        for pixel in pixels {
-            node(atGridPosition: pixel.gridPosition)?.value = pixel.value
-            positionsToKeep.insert(pixel.gridPosition)
+        for (location, value) in data {
+            node(atGridPosition: location)?.value = value
+            positionsToKeep.insert(location)
         }
         
         if let allPixels = self.pixels {

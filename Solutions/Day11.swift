@@ -12,23 +12,20 @@ import AdventOfCode
 final class Day11: XCTestCase {
     
     func test_solution() {
-        var panels = Panels()
+        var panels = Grid.PixelData()
         var robot = Robot()
         robot.run(on: &panels)
         XCTAssertEqual(panels.count, 2322)
         
-        panels = [Position.zero: Color.white.pixelValue]
+        panels = [.zero: Color.white.pixelValue]
         robot.run(on: &panels)
-        let pixels = panels.map { Pixel(gridPosition: $0.key, value: $0.value) }
-        Grid(pixels: pixels).render(backgroundValue: Color.black.pixelValue)
+        Grid(data: panels).render(backgroundValue: Color.black.pixelValue)
     }
     
 }
 
 
 // MARK: - Private
-private typealias Panels = [Position: Pixel.Value]
-
 private enum Color: Word, CustomStringConvertible {
     case black = 0
     case white = 1
@@ -62,7 +59,7 @@ private struct Robot {
         computer = Computer(outputMode: .yield)
     }
     
-    mutating func run(on panels: inout Panels) {
+    mutating func run(on panels: inout Grid.PixelData) {
         position = .zero
         direction = .north
         

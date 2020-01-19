@@ -44,16 +44,16 @@ class Grid_tests: XCTestCase {
     }
 
     func test_typicalGrid_hasExpectedProperties() {
-        let pixels = [
-            Pixel(gridPosition: Position(1, 0), value: "X"),
-            Pixel(gridPosition: Position(2, 0), value: "#"),
-            Pixel(gridPosition: Position(3, 0), value: "O"),
+        let data: Grid.PixelData = [
+            Position(1, 0): "X",
+            Position(2, 0): "#",
+            Position(3, 0): "O",
             
-            Pixel(gridPosition: Position(1, 2), value: "O"),
-            Pixel(gridPosition: Position(2, 2), value: "#"),
-            Pixel(gridPosition: Position(3, 2), value: "X"),
+            Position(1, 2): "O",
+            Position(2, 2): "#",
+            Position(3, 2): "X"
         ]
-        let grid = Grid(pixels: pixels)
+        let grid = Grid(data: data)
         
         XCTAssertEqual(grid.gridOrigin, Position(1, 0))
         XCTAssertEqual(grid.gridWidth, 3)

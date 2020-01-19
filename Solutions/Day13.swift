@@ -17,7 +17,7 @@ final class Day13: XCTestCase {
         let game = Game()
         game.run(quarters: 1)
         XCTAssertEqual(
-            game.pixels.filter { $0.value == Game.Tile.block.pixelValue }.count,
+            game.pixelData.filter { $0.value == Game.Tile.block.pixelValue }.count,
             207
         )
         game.render()
@@ -43,7 +43,7 @@ private final class Game {
     }
     
     private(set) public var score = Word()
-    private(set) var pixels = [Position: Pixel.Value]()
+    private(set) var pixelData = Grid.PixelData()
     
     init() {
         computer = Computer(outputMode: .yield)
@@ -82,9 +82,7 @@ private final class Game {
     func render() {
         print()
         print("SCORE: \(score)")
-        Grid(
-            pixels: pixels.map { Pixel(gridPosition: $0.key, value: $0.value) }
-        ).render()
+        Grid(data: pixelData).render()
     }
     
     // MARK: Private
@@ -109,7 +107,7 @@ private extension Game {
     }
     
     func handle(tile: Tile, at position: Position) {
-        pixels[position] = tile.pixelValue
+        pixelData[position] = tile.pixelValue
         
         switch tile {
         case .ball:   ballPosition = position

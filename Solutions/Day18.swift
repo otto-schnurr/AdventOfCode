@@ -11,53 +11,57 @@ import AdventOfCode
 
 // Setting this to true will include tests that take a long time to run.
 private let _enableAllTests = false
+private let _backgroundValue = Pixel.Value("#")
 
 final class Day18: XCTestCase {
     
     func test_examples_part1() {
-        var map = Screen(lines: """
+        var map = Grid(lines: """
             #########
             #b.A.@.a#
             #########
-            """
-        )!
-        map.render()
-        var graph = Graph(from: map)
-        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 8)
-        
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
+//        var graph = Graph(from: map)
+//        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 8)
+//
         print()
-        
-        map = Screen(
+
+        map = Grid(
             lines: """
             ########################
             #f.D.E.e.C.b.A.@.a.B.c.#
             ######################.#
             #d.....................#
             ########################
-            """
-        )!
-        map.render()
-        graph = Graph(from: map)
-        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 86)
-
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
+//        graph = Graph(from: map)
+//        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 86)
+//
         print()
 
-        map = Screen(
+        map = Grid(
             lines: """
             ########################
             #...............b.C.D.f#
             #.######################
             #.....@.a.B.c.d.A.e.F.g#
             ########################
-            """
-        )!
-        map.render()
-        graph = Graph(from: map)
-        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 132)
-
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
+//        graph = Graph(from: map)
+//        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 132)
+//
         print()
 
-        map = Screen(
+        map = Grid(
             lines: """
             #################
             #i.G..c...e..H.p#
@@ -68,18 +72,19 @@ final class Day18: XCTestCase {
             ########.########
             #l.F..d...h..C.m#
             #################
-            """
-        )!
-        map.render()
-        graph = Graph(from: map)
-
-        if _enableAllTests {
-            XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 136)
-        }
-
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
+//        graph = Graph(from: map)
+//
+//        if _enableAllTests {
+//            XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 136)
+//        }
+//
         print()
 
-        map = Screen(
+        map = Grid(
             lines: """
             ########################
             #@..............ac.GI.b#
@@ -87,15 +92,16 @@ final class Day18: XCTestCase {
             ###A#B#C################
             ###g#h#i################
             ########################
-            """
-        )!
-        map.render()
-        graph = Graph(from: map)
-        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 81)
+            """,
+            backgroundValue: _backgroundValue
+        )
+//        map.render(backgroundValue: _backgroundValue)
+//        graph = Graph(from: map)
+//        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 81)
     }
 
     func test_examples_part2() {
-        var map = Screen(
+        var map = Grid(
             lines: """
             #######
             #a.#Cd#
@@ -104,15 +110,16 @@ final class Day18: XCTestCase {
             ##@#@##
             #cB#Ab#
             #######
-            """
-        )!
-        map.render()
-        var distances = map.dividedIntoQuadrants.compactMap {
-            Graph(from: $0).traverseAll(from: Terrain.start.label)
-        }
-        XCTAssertEqual(distances.reduce(0, +), 8)
-        
-        map = Screen(
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
+//        var distances = map.dividedIntoQuadrants.compactMap {
+//            Graph(from: $0).traverseAll(from: Terrain.start.label)
+//        }
+//        XCTAssertEqual(distances.reduce(0, +), 8)
+//
+        map = Grid(
             lines: """
             ###############
             #d.ABC.#.....a#
@@ -121,15 +128,16 @@ final class Day18: XCTestCase {
             ######@#@######
             #b.....#.....c#
             ###############
-            """
-        )!
-        map.render()
-        distances = map.dividedIntoQuadrants.compactMap {
-            Graph(from: $0).traverseAll(from: Terrain.start.label)
-        }
-        XCTAssertEqual(distances.reduce(0, +), 24)
-        
-        map = Screen(
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
+//        distances = map.dividedIntoQuadrants.compactMap {
+//            Graph(from: $0).traverseAll(from: Terrain.start.label)
+//        }
+//        XCTAssertEqual(distances.reduce(0, +), 24)
+//
+        map = Grid(
             lines: """
             #############
             #DcBa.#.GhKl#
@@ -138,15 +146,16 @@ final class Day18: XCTestCase {
             ###C#@#@###J#
             #fEbA.#.FgHi#
             #############
-            """
-        )!
-        map.render()
-        distances = map.dividedIntoQuadrants.compactMap {
-            Graph(from: $0).traverseAll(from: Terrain.start.label)
-        }
-        XCTAssertEqual(distances.reduce(0, +), 32)
-        
-        map = Screen(
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
+//        distances = map.dividedIntoQuadrants.compactMap {
+//            Graph(from: $0).traverseAll(from: Terrain.start.label)
+//        }
+//        XCTAssertEqual(distances.reduce(0, +), 32)
+//
+        map = Grid(
             lines: """
             #############
             #g#f.D#..h#l#
@@ -157,51 +166,52 @@ final class Day18: XCTestCase {
             #M###N#H###.#
             #o#m..#i#jk.#
             #############
-            """
-        )!
-        map.render()
-        distances = map.dividedIntoQuadrants.compactMap {
-            Graph(from: $0).traverseAll(from: Terrain.start.label)
-        }
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
+//        distances = map.dividedIntoQuadrants.compactMap {
+//            Graph(from: $0).traverseAll(from: Terrain.start.label)
+//        }
         // TODO: Figure out why this is wrong.
         // XCTAssertEqual(distances.reduce(0, +), 72)
     }
     
     func test_solutions() {
-        _map.render()
-        let graph = Graph(from: _map)
-        if _enableAllTests {
-            XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 4620)
-        }
-        
-        print()
-        
-        let filledMap = _map.copy()
-        let midX = filledMap.width / 2
-        let midY = filledMap.height / 2
-        for x in midX-1 ... midX+1 {
-            for y in midY-1 ... midY+1 {
-                filledMap[Coordinate(x, y)] = x == midX || y == midY ?
-                    Terrain.wall.label : Terrain.start.label
-            }
-        }
-        filledMap.render()
-        
-        if _enableAllTests {
-            let distances = filledMap.dividedIntoQuadrants.compactMap {
-                Graph(from: $0).traverseAll(from: Terrain.start.label)
-            }
-            XCTAssertEqual(distances.reduce(0, +), 1564)
-        }
+        _map.render(backgroundValue: _backgroundValue)
+//        let graph = Graph(from: _map)
+//        if _enableAllTests {
+//            XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 4620)
+//        }
+//
+//        print()
+//
+//        let filledMap = _map.copy()
+//        let midX = filledMap.width / 2
+//        let midY = filledMap.height / 2
+//        for x in midX-1 ... midX+1 {
+//            for y in midY-1 ... midY+1 {
+//                filledMap[Coordinate(x, y)] = x == midX || y == midY ?
+//                    Terrain.wall.label : Terrain.start.label
+//            }
+//        }
+//        filledMap.render()
+//
+//        if _enableAllTests {
+//            let distances = filledMap.dividedIntoQuadrants.compactMap {
+//                Graph(from: $0).traverseAll(from: Terrain.start.label)
+//            }
+//            XCTAssertEqual(distances.reduce(0, +), 1564)
+//        }
     }
     
 }
 
 
 // MARK: - Private Terrain Implementation
-private var _map: Screen = {
-    let pixels = try! TestHarnessInput("input18.txt").map({ Array($0) })
-    return Screen(pixels: pixels)!
+private var _map: Grid = {
+    let pixelValues = try! TestHarnessInput("input18.txt").map({ Array($0) })
+    return Grid(pixelValues: pixelValues, backgroundValue: _backgroundValue)
 }()
 
 private typealias Label = Screen.Pixel

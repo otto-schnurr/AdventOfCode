@@ -8,6 +8,7 @@
 
 import XCTest
 import AdventOfCode
+import GameplayKit
 
 final class Day17: XCTestCase {
     
@@ -16,18 +17,22 @@ final class Day17: XCTestCase {
         computer.load(_program)
         computer.run()
 
-        let screen = Screen(lines: computer.harvestOutputString())!
-        screen.render()
-
-        XCTAssertEqual(
-            screen.intersections(of: "#").reduce(0) { $0 + $1.x * $1.y },
-            9876
+        let grid = Grid(
+            lines: computer.harvestOutputString(),
+            backgroundValue: "."
         )
+        grid.render()
         
-        let startingPosition = screen.firstCoordinate { $0 == "^" }!
-        let commands = screen.trace(
-            "#", from: startingPosition, startingDirection: .north
+        let intersections = grid.pixels!
+            .filter { $0.connectedNodes.count == 4 }
+            .compactMap { $0.gridPosition }
+        XCTAssertEqual(
+            intersections.reduce(0) { $0 + $1.x * $1.y }, 9876
         )
+
+        let startingPosition =
+            grid.pixels!.filter { $0.value == "^" }.first!.gridPosition
+        let commands = grid.trace(from: startingPosition, startingDirection: .north)
         print(commands)
     }
     
@@ -103,74 +108,33 @@ extension Command: CustomStringConvertible {
     }
 }
 
-private extension Screen {
-    
-    func intersections(of pixel: Pixel) -> [Coordinate] {
-        guard width >= 5 && height >= 5 else { return [ ] }
+private extension Grid {
 
-        let offsets = [
-            Coordinate(-1, 0), Coordinate(1, 0),
-            Coordinate(0, 0),
-            Coordinate(0, -1), Coordinate(0, 1)
-        ]
-        var result = [Coordinate]()
-        
-        for x in 2 ..< width - 2 {
-            for y in 2 ..< height - 2 {
-                let center = Coordinate(x, y)
-                let pixelValues = offsets.map { self[center + $0] }
-                if pixelValues.allSatisfy({ $0 == "#" }) { result.append(center) }
-            }
-        }
-        
-        return result
-    }
-    
-    func trace(
-        _ path: Pixel, from startingPosition: Coordinate, startingDirection: Direction
-    ) -> [Command] {
+    func trace(from startingPosition: Position, startingDirection: Direction) -> [Command] {
         var position = startingPosition
         var direction = startingDirection
         var result = [Command]()
-        
-        while let nextTurn = nextTurn(
-            along: path, at: position, heading: direction
-        ) {
+
+        while let nextTurn = nextTurn(at: position, heading: direction) {
             direction = direction.turned(nextTurn)
             var command = Command(turn: nextTurn, distance: 0)
 
-            while
-                validate(coordinate: position + direction) &&
-                self[position + direction] == path {
-                    
+            while node(atGridPosition: position + direction) != nil {
                 position = position + direction
                 command = command + 1
             }
-            
+
             if command.distance > 0 { result.append(command) }
         }
-        
+
         return result
     }
-    
-    func nextTurn(
-        along path: Pixel, at position: Coordinate, heading direction: Direction
-    ) -> Direction.Turn? {
-        return Direction.Turn.all.first { turn in
-            let newPosition = position + direction.turned(turn)
-            return validate(coordinate: newPosition) && self[newPosition] == path
-        }
-    }
-    
-}
 
-private extension Direction {
-    static func nextDirections(afterStopping direction: Self) -> [Self] {
-        switch direction {
-        case .north: return [.west, .east]
-        case .south: return [.east, .west]
-        case .west:  return [.south, .north]
-        case .east:  return [.north, .south]
-        }
+    func nextTurn(at position: Position, heading direction: Direction) -> Direction.Turn? {
+        // Weird generics compile error when trying to map { } across Direction.Turn.all
+        if let _ = node(atGridPosition: position + direction.turned(.left)) { return .left }
+        if let _ = node(atGridPosition: position + direction.turned(.right)) { return .right }
+        return nil
     }
+    
 }

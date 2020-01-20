@@ -16,53 +16,60 @@ final class Day18: XCTestCase {
     
     func test_examples_part1() {
         var map = Screen(lines: """
-        #########
-        #b.A.@.a#
-        #########
-        """)!
+            #########
+            #b.A.@.a#
+            #########
+            """
+        )!
         map.render()
         var graph = Graph(from: map)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 8)
         
         print()
         
-        map = Screen(lines: """
-        ########################
-        #f.D.E.e.C.b.A.@.a.B.c.#
-        ######################.#
-        #d.....................#
-        ########################
-        """)!
+        map = Screen(
+            lines: """
+            ########################
+            #f.D.E.e.C.b.A.@.a.B.c.#
+            ######################.#
+            #d.....................#
+            ########################
+            """
+        )!
         map.render()
         graph = Graph(from: map)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 86)
 
         print()
 
-        map = Screen(lines: """
-        ########################
-        #...............b.C.D.f#
-        #.######################
-        #.....@.a.B.c.d.A.e.F.g#
-        ########################
-        """)!
+        map = Screen(
+            lines: """
+            ########################
+            #...............b.C.D.f#
+            #.######################
+            #.....@.a.B.c.d.A.e.F.g#
+            ########################
+            """
+        )!
         map.render()
         graph = Graph(from: map)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 132)
 
         print()
 
-        map = Screen(lines: """
-        #################
-        #i.G..c...e..H.p#
-        ########.########
-        #j.A..b...f..D.o#
-        ########@########
-        #k.E..a...g..B.n#
-        ########.########
-        #l.F..d...h..C.m#
-        #################
-        """)!
+        map = Screen(
+            lines: """
+            #################
+            #i.G..c...e..H.p#
+            ########.########
+            #j.A..b...f..D.o#
+            ########@########
+            #k.E..a...g..B.n#
+            ########.########
+            #l.F..d...h..C.m#
+            #################
+            """
+        )!
         map.render()
         graph = Graph(from: map)
 
@@ -72,76 +79,86 @@ final class Day18: XCTestCase {
 
         print()
 
-        map = Screen(lines: """
-        ########################
-        #@..............ac.GI.b#
-        ###d#e#f################
-        ###A#B#C################
-        ###g#h#i################
-        ########################
-        """)!
+        map = Screen(
+            lines: """
+            ########################
+            #@..............ac.GI.b#
+            ###d#e#f################
+            ###A#B#C################
+            ###g#h#i################
+            ########################
+            """
+        )!
         map.render()
         graph = Graph(from: map)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 81)
     }
 
     func test_examples_part2() {
-        var map = Screen(lines: """
-        #######
-        #a.#Cd#
-        ##@#@##
-        #######
-        ##@#@##
-        #cB#Ab#
-        #######
-        """)!
+        var map = Screen(
+            lines: """
+            #######
+            #a.#Cd#
+            ##@#@##
+            #######
+            ##@#@##
+            #cB#Ab#
+            #######
+            """
+        )!
         map.render()
         var distances = map.dividedIntoQuadrants.compactMap {
             Graph(from: $0).traverseAll(from: Terrain.start.label)
         }
         XCTAssertEqual(distances.reduce(0, +), 8)
         
-        map = Screen(lines: """
-        ###############
-        #d.ABC.#.....a#
-        ######@#@######
-        ###############
-        ######@#@######
-        #b.....#.....c#
-        ###############
-        """)!
+        map = Screen(
+            lines: """
+            ###############
+            #d.ABC.#.....a#
+            ######@#@######
+            ###############
+            ######@#@######
+            #b.....#.....c#
+            ###############
+            """
+        )!
         map.render()
         distances = map.dividedIntoQuadrants.compactMap {
             Graph(from: $0).traverseAll(from: Terrain.start.label)
         }
         XCTAssertEqual(distances.reduce(0, +), 24)
         
-        map = Screen(lines: """
-        #############
-        #DcBa.#.GhKl#
-        #.###@#@#I###
-        #e#d#####j#k#
-        ###C#@#@###J#
-        #fEbA.#.FgHi#
-        #############
-        """)!
+        map = Screen(
+            lines: """
+            #############
+            #DcBa.#.GhKl#
+            #.###@#@#I###
+            #e#d#####j#k#
+            ###C#@#@###J#
+            #fEbA.#.FgHi#
+            #############
+            """
+        )!
         map.render()
         distances = map.dividedIntoQuadrants.compactMap {
             Graph(from: $0).traverseAll(from: Terrain.start.label)
         }
         XCTAssertEqual(distances.reduce(0, +), 32)
         
-        map = Screen(lines: """
-        #############
-        #g#f.D#..h#l#
-        #F###e#E###.#
-        #dCba@#@BcIJ#
-        #############
-        #nK.L@#@G...#
-        #M###N#H###.#
-        #o#m..#i#jk.#
-        #############
-        """)!
+        map = Screen(
+            lines: """
+            #############
+            #g#f.D#..h#l#
+            #F###e#E###.#
+            #dCba@#@BcIJ#
+            #############
+            #nK.L@#@G...#
+            #M###N#H###.#
+            #o#m..#i#jk.#
+            #############
+            """
+        )!
         map.render()
         distances = map.dividedIntoQuadrants.compactMap {
             Graph(from: $0).traverseAll(from: Terrain.start.label)

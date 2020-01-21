@@ -8,6 +8,7 @@
 
 import XCTest
 import AdventOfCode
+import GameplayKit
 
 // Setting this to true will include tests that take a long time to run.
 private let _enableAllTests = false
@@ -24,9 +25,9 @@ final class Day18: XCTestCase {
             backgroundValue: _backgroundValue
         )
         map.render(backgroundValue: _backgroundValue)
-//        var graph = Graph(from: map)
-//        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 8)
-//
+        var graph = Graph(from: map)
+        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 8)
+
         print()
 
         map = Grid(
@@ -40,9 +41,9 @@ final class Day18: XCTestCase {
             backgroundValue: _backgroundValue
         )
         map.render(backgroundValue: _backgroundValue)
-//        graph = Graph(from: map)
-//        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 86)
-//
+        graph = Graph(from: map)
+        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 86)
+
         print()
 
         map = Grid(
@@ -56,9 +57,9 @@ final class Day18: XCTestCase {
             backgroundValue: _backgroundValue
         )
         map.render(backgroundValue: _backgroundValue)
-//        graph = Graph(from: map)
-//        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 132)
-//
+        graph = Graph(from: map)
+        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 132)
+
         print()
 
         map = Grid(
@@ -76,12 +77,12 @@ final class Day18: XCTestCase {
             backgroundValue: _backgroundValue
         )
         map.render(backgroundValue: _backgroundValue)
-//        graph = Graph(from: map)
-//
-//        if _enableAllTests {
-//            XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 136)
-//        }
-//
+        graph = Graph(from: map)
+
+        if _enableAllTests {
+            XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 136)
+        }
+
         print()
 
         map = Grid(
@@ -95,9 +96,9 @@ final class Day18: XCTestCase {
             """,
             backgroundValue: _backgroundValue
         )
-//        map.render(backgroundValue: _backgroundValue)
-//        graph = Graph(from: map)
-//        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 81)
+        map.render(backgroundValue: _backgroundValue)
+        graph = Graph(from: map)
+        XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 81)
     }
 
     func test_examples_part2() {
@@ -179,10 +180,10 @@ final class Day18: XCTestCase {
     
     func test_solutions() {
         _map.render(backgroundValue: _backgroundValue)
-//        let graph = Graph(from: _map)
-//        if _enableAllTests {
-//            XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 4620)
-//        }
+        let graph = Graph(from: _map)
+        if _enableAllTests {
+            XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 4620)
+        }
 //
 //        print()
 //
@@ -214,7 +215,7 @@ private var _map: Grid = {
     return Grid(pixelValues: pixelValues, backgroundValue: _backgroundValue)
 }()
 
-private typealias Label = Screen.Pixel
+private typealias Label = Pixel.Value
 
 private enum Terrain {
     
@@ -302,30 +303,33 @@ private extension Graph {
     
     var keyNodes: Nodes { Set(keys.filter { !$0.isDoor }) }
     
-    init(from map: Screen) {
-        let nodeLocations = map.allCoordinates { pixel in
-            switch Terrain(label: pixel)! {
+    init(from map: Grid) {
+        let nodeLocations = map.pixels?.filter { pixel in
+            switch Terrain(label: pixel.value)! {
             case .start, .key, .door:
                 return true
             default:
                 return false
             }
-        }
+        }.map { $0.gridPosition } ?? [ ]
         
         var result = Graph()
 
         for sourceLocation in nodeLocations {
-            let source = map[sourceLocation]
+            guard
+                let source = map.node(atGridPosition: sourceLocation)
+            else { continue }
             
-            let _ = map.spanPath(from: sourceLocation) { pixelValue, distance in
-                switch Terrain(label: pixelValue)! {
+            let _ = map.span(from: sourceLocation) { destination in
+                switch Terrain(label: destination.value)! {
                 case .path:
                     return true
                 case .wall:
                     return false
                 case .start, .key, .door:
-                    if !result.containsEdge(from: source, to: pixelValue) {
-                        result.addEdge(from: source, to: pixelValue, distance: distance)
+                    if !result.containsEdge(from: source.value, to: destination.value) {
+                        let distance = map.findPath(from: source, to: destination).count - 1
+                        result.addEdge(from: source.value, to: destination.value, distance: distance)
                     }
                     return false
                 }

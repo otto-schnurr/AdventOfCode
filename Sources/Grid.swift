@@ -74,6 +74,14 @@ public extension Grid {
 
 // MARK: Path Finding
 public extension Grid {
+    
+    /// - Parameter node:
+    ///   A node encountered by `span()`.
+    ///
+    /// - Returns: True if the node is considered to be part
+    ///   of the spanned path.
+    typealias PathFilter = (_ node: NodeType) -> Bool
+
     /// Calculates the smallest distance needed to traverse the graph.
     ///
     /// More details about [Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
@@ -82,14 +90,21 @@ public extension Grid {
     /// - Parameter startingPosition:
     ///   The position to measure distances from.
     ///
+    /// - Parameter pathFilter:
+    ///   A closure that decides if a node is part of the path or not.
+    ///   The span will not include or travel past nodes that are not
+    ///   part of the path.
+    ///
     /// - Returns: How far the span had to travel to cover all nodes
-    ///   in the graph.
-    func span(from startingPosition: Position) -> Int {
+    ///   _that could be reached_ from the `startingPosition`.
+    func span(
+        from startingPosition: Position,
+        pathFilter: PathFilter = { _ in true }
+    ) -> Int {
         guard
-            let _start = node(atGridPosition: startingPosition)
+            let start = node(atGridPosition: startingPosition)
         else { return 0 }
         
-        let start = _start as GKGraphNode
         var visited = Set([start])
         var queue = [start]
         var distanceTable = [start: 0]
@@ -98,16 +113,20 @@ public extension Grid {
             let node = queue.popLast(),
             let distance = distanceTable[node] {
 
-            let adjacentNodes = node.connectedNodes.filter {
-                !visited.contains($0)
-            }
+            let adjacentNodes = node.connectedNodes
+                .compactMap { $0 as? NodeType }
+                .filter { !visited.contains($0) }
+
+            // important: Mark both filtered and unfiltered as visited.
             visited = visited.union(adjacentNodes)
-            queue = adjacentNodes + queue
+
+            queue = adjacentNodes.filter(pathFilter) + queue
             adjacentNodes.forEach { distanceTable[$0] = distance + 1 }
         }
         
         return distanceTable.max { $0.value < $1.value }?.value ?? 0
     }
+    
 }
 
 // MARK: Render

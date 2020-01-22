@@ -70,6 +70,29 @@ public extension Grid {
         self.init(pixelValues: pixelValues, backgroundValue: backgroundValue)
     }
     
+    convenience init(
+        xRange: Range<Position.Scalar>,
+        yRange: Range<Position.Scalar>,
+        copiedFrom source: Grid
+    ) {
+        self.init(
+            fromGridStartingAt: Position(xRange.lowerBound, yRange.lowerBound),
+            width: xRange.upperBound - xRange.lowerBound,
+            height: yRange.upperBound - yRange.lowerBound,
+            diagonalsAllowed: false, nodeClass: Pixel.self
+        )
+        
+        let sourcePixels = source.pixels?.filter {
+            xRange.contains($0.gridPosition.x) &&
+            yRange.contains($0.gridPosition.y)
+        } ?? [ ]
+        
+        // Weird compile error when attempting forEach { }.
+        for sourcePixel in sourcePixels {
+            node(atGridPosition: sourcePixel.gridPosition)?.value = sourcePixel.value
+        }
+    }
+    
 }
 
 // MARK: Path Finding

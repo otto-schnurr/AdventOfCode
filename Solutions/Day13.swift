@@ -119,7 +119,7 @@ private extension Game {
 }
 
 private extension Game.Tile {
-    var pixelValue: Display.Pixel {
+    var pixelValue: Pixel.Value {
         switch self {
         case .empty:  return " "
         case .wall:   return "X"

@@ -55,7 +55,7 @@ private enum Observation: Word {
     case path = 1
     case oxygen = 2
 
-    var pixelValue: Screen.Pixel {
+    var pixelValue: Pixel.Value {
         switch self {
         case .wall:   return "#"
         case .path:   return "."

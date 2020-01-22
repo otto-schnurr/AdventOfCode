@@ -115,11 +115,13 @@ final class Day18: XCTestCase {
             backgroundValue: _backgroundValue
         )
         map.render(backgroundValue: _backgroundValue)
-//        var distances = map.dividedIntoQuadrants.compactMap {
-//            Graph(from: $0).traverseAll(from: Terrain.start.label)
-//        }
-//        XCTAssertEqual(distances.reduce(0, +), 8)
-//
+        var distances = map.dividedIntoQuadrants.compactMap {
+            Graph(from: $0).traverseAll(from: Terrain.start.label)
+        }
+        XCTAssertEqual(distances.reduce(0, +), 8)
+
+        print()
+        
         map = Grid(
             lines: """
             ###############
@@ -133,11 +135,9 @@ final class Day18: XCTestCase {
             backgroundValue: _backgroundValue
         )
         map.render(backgroundValue: _backgroundValue)
-//        distances = map.dividedIntoQuadrants.compactMap {
-//            Graph(from: $0).traverseAll(from: Terrain.start.label)
-//        }
-//        XCTAssertEqual(distances.reduce(0, +), 24)
-//
+
+        print()
+        
         map = Grid(
             lines: """
             #############
@@ -151,11 +151,13 @@ final class Day18: XCTestCase {
             backgroundValue: _backgroundValue
         )
         map.render(backgroundValue: _backgroundValue)
-//        distances = map.dividedIntoQuadrants.compactMap {
-//            Graph(from: $0).traverseAll(from: Terrain.start.label)
-//        }
-//        XCTAssertEqual(distances.reduce(0, +), 32)
-//
+        distances = map.dividedIntoQuadrants.compactMap {
+            Graph(from: $0).traverseAll(from: Terrain.start.label)
+        }
+        XCTAssertEqual(distances.reduce(0, +), 32)
+
+        print()
+
         map = Grid(
             lines: """
             #############
@@ -171,49 +173,50 @@ final class Day18: XCTestCase {
             backgroundValue: _backgroundValue
         )
         map.render(backgroundValue: _backgroundValue)
-//        distances = map.dividedIntoQuadrants.compactMap {
-//            Graph(from: $0).traverseAll(from: Terrain.start.label)
-//        }
+        distances = map.dividedIntoQuadrants.compactMap {
+            Graph(from: $0).traverseAll(from: Terrain.start.label)
+        }
         // TODO: Figure out why this is wrong.
         // XCTAssertEqual(distances.reduce(0, +), 72)
     }
     
     func test_solutions() {
-        _map.render(backgroundValue: _backgroundValue)
-        let graph = Graph(from: _map)
+        let map = _makeMap()
+        map.render(backgroundValue: _backgroundValue)
+        let graph = Graph(from: map)
         if _enableAllTests {
             XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 4620)
         }
-//
-//        print()
-//
-//        let filledMap = _map.copy()
-//        let midX = filledMap.width / 2
-//        let midY = filledMap.height / 2
-//        for x in midX-1 ... midX+1 {
-//            for y in midY-1 ... midY+1 {
-//                filledMap[Coordinate(x, y)] = x == midX || y == midY ?
-//                    Terrain.wall.label : Terrain.start.label
-//            }
-//        }
-//        filledMap.render()
-//
-//        if _enableAllTests {
-//            let distances = filledMap.dividedIntoQuadrants.compactMap {
-//                Graph(from: $0).traverseAll(from: Terrain.start.label)
-//            }
-//            XCTAssertEqual(distances.reduce(0, +), 1564)
-//        }
+
+        print()
+
+        let filledMap = _makeMap()
+        let midX = filledMap.gridWidth / 2
+        let midY = filledMap.gridHeight / 2
+        for x in midX-1 ... midX+1 {
+            for y in midY-1 ... midY+1 {
+                filledMap.node(atGridPosition: Position(x, y))?.value =
+                    x == midX || y == midY ? Terrain.wall.label : Terrain.start.label
+            }
+        }
+        filledMap.render(backgroundValue: _backgroundValue)
+
+        if _enableAllTests {
+            let distances = filledMap.dividedIntoQuadrants.compactMap {
+                Graph(from: $0).traverseAll(from: Terrain.start.label)
+            }
+            XCTAssertEqual(distances.reduce(0, +), 1564)
+        }
     }
     
 }
 
 
 // MARK: - Private Terrain Implementation
-private var _map: Grid = {
+private func _makeMap() -> Grid {
     let pixelValues = try! TestHarnessInput("input18.txt").map({ Array($0) })
     return Grid(pixelValues: pixelValues, backgroundValue: _backgroundValue)
-}()
+}
 
 private typealias Label = Pixel.Value
 
@@ -433,21 +436,23 @@ private extension Graph {
 
 
 // MARK: - Private Extensions
-private extension Screen {
-    var dividedIntoQuadrants: [Screen] {
-        let midX = width / 2
-        let lowerX = Range(0...midX)
-        let upperX = midX ..< width
+private extension Grid {
+    var dividedIntoQuadrants: [Grid] {
+        let minX = gridOrigin.x
+        let midX = minX + Position.Scalar(gridWidth) / 2
+        let lowerX = Range(minX...midX)
+        let upperX = midX ..< (minX + Position.Scalar(gridWidth))
         
-        let midY = height / 2
-        let lowerY = Range(0...midY)
-        let upperY = midY ..< height
+        let minY = gridOrigin.y
+        let midY = minY + Position.Scalar(gridHeight) / 2
+        let lowerY = Range(minY...midY)
+        let upperY = midY ..< (minY + Position.Scalar(gridHeight))
         
         return [
-            Screen(xRange: lowerX, yRange: lowerY, copiedFrom: self)!,
-            Screen(xRange: upperX, yRange: lowerY, copiedFrom: self)!,
-            Screen(xRange: lowerX, yRange: upperY, copiedFrom: self)!,
-            Screen(xRange: upperX, yRange: upperY, copiedFrom: self)!
+            Grid(xRange: lowerX, yRange: lowerY, copiedFrom: self),
+            Grid(xRange: upperX, yRange: lowerY, copiedFrom: self),
+            Grid(xRange: lowerX, yRange: upperY, copiedFrom: self),
+            Grid(xRange: upperX, yRange: upperY, copiedFrom: self)
         ]
     }
 }

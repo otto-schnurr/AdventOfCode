@@ -81,14 +81,18 @@ public extension Grid {
             height: yRange.upperBound - yRange.lowerBound,
             diagonalsAllowed: false, nodeClass: Pixel.self
         )
-        
-        let sourcePixels = source.pixels?.filter {
-            xRange.contains($0.gridPosition.x) &&
-            yRange.contains($0.gridPosition.y)
-        } ?? [ ]
-        
-        // Weird compile error when attempting forEach { }.
-        for sourcePixel in sourcePixels {
+        guard let pixels = pixels else { return }
+
+        let validPositions = Set(
+            source.pixels?
+                .map { $0.gridPosition }
+                .filter { xRange.contains($0.x) && yRange.contains($0.y) }
+                ?? [ ]
+        )
+        remove(pixels.filter { !validPositions.contains( $0.gridPosition) })
+
+        // Weird compile errors when attempting forEach { }.
+        for sourcePixel in source.pixels ?? [ ] {
             node(atGridPosition: sourcePixel.gridPosition)?.value = sourcePixel.value
         }
     }

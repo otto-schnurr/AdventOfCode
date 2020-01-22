@@ -17,33 +17,34 @@ final class Day19: XCTestCase {
     func test_solutions() {
         let computer = Computer()
         var count = 0
-        var display = Display(backgroundColor: ".")
+        var display = Grid.PixelData()
         
         for x in 0 ..< 50 {
             for y in 0 ..< 50 {
-                if computer.valueAt(x, y) {
-                    display[Coordinate(x, y)] = "#"
+                let position = Position(x, y)
+                if computer.value(at: position) {
+                    display[position] = "#"
                     count += 1
                 }
             }
         }
         
-        display.render()
+        Grid(data: display).render(backgroundValue: ".")
         XCTAssertEqual(count, 231)
         
         guard _enableAllTests else { return }
         
         // HACK: Get us close to save some convergence time.
-        var corner = Coordinate(500, 400)
+        var corner = Position(500, 400)
         var span = computer.spanBack(from: corner)
         
         while span.horizontal != 100 || span.vertical != 100 {
-            corner = corner + Coordinate(100 - span.horizontal, 100 - span.vertical)
+            corner = corner &+ Position(100 - span.horizontal, 100 - span.vertical)
             span = computer.spanBack(from: corner)
             print("span from \(corner): \(span)")
         }
 
-        XCTAssertEqual(corner, Coordinate(1020, 844))
+        XCTAssertEqual(corner, Position(1020, 844))
     }
     
 }
@@ -54,9 +55,9 @@ private let _program = Program(testHarnessResource: "input19.txt")!
 
 private extension Computer {
     
-    func valueAt(_ x: Int, _ y: Int) -> Bool {
+    func value(at position: Position) -> Bool {
         load(_program)
-        inputBuffer = [x, y]
+        inputBuffer = [Word(position.x), Word(position.y)]
         run()
         return harvestOutput()[0] != 0
     }
@@ -66,17 +67,17 @@ private extension Computer {
     ///
     /// - Returns: The length of contiguously true values,
     ///   both horizontally and vertically from corner to the origin.
-    func spanBack(from corner: Coordinate) -> (horizontal: Int, vertical: Int) {
+    func spanBack(from corner: Position) -> (horizontal: Int, vertical: Int) {
         var span = (horizontal: 0, vertical: 0)
         guard corner.x >= 0 && corner.y >= 0 else { return span }
         
         for x in (0 ... corner.x).reversed() {
-            guard valueAt(x, corner.y) else { break }
+            guard value(at: Position(x, corner.y)) else { break }
             span.horizontal += 1
         }
         
         for y in (0 ... corner.y).reversed() {
-            guard valueAt(corner.x, y) else { break }
+            guard value(at: Position(corner.x, y)) else { break }
             span.vertical += 1
         }
         

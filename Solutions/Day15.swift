@@ -12,45 +12,35 @@ import AdventOfCode
 final class Day15: XCTestCase {
     
     func test_example() {
-        let screen = Screen(lines: """
+        let grid = Grid(lines: """
         ######
         #..###
         #.#..#
         #.O.##
         ######
-        """)!
-        let startingPoint = Coordinate(2, 3)
-        XCTAssertEqual(
-            screen.spanPath(from: startingPoint) { pixel, _ in
-                pixel == Observation.path.pixelValue
-            },
-            4
+        """, backgroundValue: "#"
         )
+        let startingPoint = Position(2, 3)
+        XCTAssertEqual(grid.span(from: startingPoint), 4)
     }
     
     func test_solutions() {
-        var display = Display(backgroundColor: " ")
-        let droid = Droid()
-        XCTAssertEqual(
-            droid.distanceToTarget(
-                directions: Direction.all, distance: 0,
-                from: Coordinate(21, 21), history: &display
-            ),
-            238
-        )
+        let history = Droid().explore().filter {
+            $0.value != Observation.wall.pixelValue
+        }
+        let grid = Grid(data: history)
+        grid.render(backgroundValue: "#")
         
-        let screen = display.export()!
-        screen.render()
+        let targetPosition = history.first {
+            $0.value == Observation.oxygen.pixelValue
+        }!.key
+        let start = grid.node(atGridPosition: .zero)!
+        let target = grid.node(atGridPosition: targetPosition)!
         
-        let startingPoint = screen.firstCoordinate {
-            $0 == Observation.oxygen.pixelValue
-        }!
-        XCTAssertEqual(
-            screen.spanPath(from: startingPoint) { pixel, _ in
-                pixel == Observation.path.pixelValue
-            },
-            392
-        )
+        let moveCount = grid.findPath(from: start, to: target).count - 1
+        XCTAssertEqual(moveCount, 238)
+
+        XCTAssertEqual(grid.span(from: targetPosition), 392)
     }
     
 }
@@ -65,7 +55,7 @@ private enum Observation: Word {
     case path = 1
     case oxygen = 2
 
-    var pixelValue: Screen.Pixel {
+    var pixelValue: Pixel.Value {
         switch self {
         case .wall:   return "#"
         case .path:   return "."
@@ -95,53 +85,46 @@ private struct Droid {
 
 private extension Droid {
     
-    func distanceToTarget(
-        directions: [Direction],
-        distance: Int,
-        from position: Coordinate,
-        history: inout Display
-    ) -> Int? {
-        history[position] = Observation.path.pixelValue
-        return directions.map {
-            self.searchForTarget(
-                heading: $0, distance: distance,
-                from: position, history: &history
-            )
-        }.compactMap { $0 }.min()
+    func explore() -> Grid.PixelData {
+        var history = [Position.zero: Observation.path.pixelValue]
+        explore(directions: Direction.all, from: .zero, history: &history)
+        return history
     }
     
-    func searchForTarget(
+    func explore(
+        directions: [Direction],
+        from position: Position,
+        history: inout Grid.PixelData
+    ) {
+        directions.forEach {
+            self.search(heading: $0, from: position, history: &history)
+        }
+    }
+    
+    func search(
         heading direction: Direction,
-        distance: Int,
-        from position: Coordinate,
-        history: inout Display
-    ) -> Int? {
+        from position: Position,
+        history: inout Grid.PixelData
+    ) {
         let newPosition = position + direction
-        guard history[newPosition] == " " else { return nil }
+        guard history[newPosition] == nil else { return }
         
         let observation = move(direction)
         history[newPosition] = observation.pixelValue
         
         switch observation {
         case .wall:
-            return nil
+            return
             
-        case .path:
-            let result = distanceToTarget(
+        case .path, .oxygen:
+            explore(
                 directions: Direction.nextDirections(afterMoving: direction),
-                distance: distance + 1,
                 from: newPosition,
                 history: &history
             )
             
             // important: Unwind droid position as we pop the stack.
             let _ = move(-direction)
-            return result
-            
-        case .oxygen:
-            // important: Unwind droid position as we pop the stack.
-            let _ = move(-direction)
-            return distance + 1
         }
     }
     

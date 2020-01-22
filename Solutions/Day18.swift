@@ -8,62 +8,75 @@
 
 import XCTest
 import AdventOfCode
+import GameplayKit
 
 // Setting this to true will include tests that take a long time to run.
 private let _enableAllTests = false
+private let _backgroundValue = Pixel.Value("#")
 
 final class Day18: XCTestCase {
     
     func test_examples_part1() {
-        var map = Screen(lines: """
-        #########
-        #b.A.@.a#
-        #########
-        """)!
-        map.render()
+        var map = Grid(lines: """
+            #########
+            #b.A.@.a#
+            #########
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
         var graph = Graph(from: map)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 8)
-        
+
         print()
-        
-        map = Screen(lines: """
-        ########################
-        #f.D.E.e.C.b.A.@.a.B.c.#
-        ######################.#
-        #d.....................#
-        ########################
-        """)!
-        map.render()
+
+        map = Grid(
+            lines: """
+            ########################
+            #f.D.E.e.C.b.A.@.a.B.c.#
+            ######################.#
+            #d.....................#
+            ########################
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
         graph = Graph(from: map)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 86)
 
         print()
 
-        map = Screen(lines: """
-        ########################
-        #...............b.C.D.f#
-        #.######################
-        #.....@.a.B.c.d.A.e.F.g#
-        ########################
-        """)!
-        map.render()
+        map = Grid(
+            lines: """
+            ########################
+            #...............b.C.D.f#
+            #.######################
+            #.....@.a.B.c.d.A.e.F.g#
+            ########################
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
         graph = Graph(from: map)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 132)
 
         print()
 
-        map = Screen(lines: """
-        #################
-        #i.G..c...e..H.p#
-        ########.########
-        #j.A..b...f..D.o#
-        ########@########
-        #k.E..a...g..B.n#
-        ########.########
-        #l.F..d...h..C.m#
-        #################
-        """)!
-        map.render()
+        map = Grid(
+            lines: """
+            #################
+            #i.G..c...e..H.p#
+            ########.########
+            #j.A..b...f..D.o#
+            ########@########
+            #k.E..a...g..B.n#
+            ########.########
+            #l.F..d...h..C.m#
+            #################
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
         graph = Graph(from: map)
 
         if _enableAllTests {
@@ -72,77 +85,94 @@ final class Day18: XCTestCase {
 
         print()
 
-        map = Screen(lines: """
-        ########################
-        #@..............ac.GI.b#
-        ###d#e#f################
-        ###A#B#C################
-        ###g#h#i################
-        ########################
-        """)!
-        map.render()
+        map = Grid(
+            lines: """
+            ########################
+            #@..............ac.GI.b#
+            ###d#e#f################
+            ###A#B#C################
+            ###g#h#i################
+            ########################
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
         graph = Graph(from: map)
         XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 81)
     }
 
     func test_examples_part2() {
-        var map = Screen(lines: """
-        #######
-        #a.#Cd#
-        ##@#@##
-        #######
-        ##@#@##
-        #cB#Ab#
-        #######
-        """)!
-        map.render()
+        var map = Grid(
+            lines: """
+            #######
+            #a.#Cd#
+            ##@#@##
+            #######
+            ##@#@##
+            #cB#Ab#
+            #######
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
         var distances = map.dividedIntoQuadrants.compactMap {
             Graph(from: $0).traverseAll(from: Terrain.start.label)
         }
         XCTAssertEqual(distances.reduce(0, +), 8)
+
+        print()
         
-        map = Screen(lines: """
-        ###############
-        #d.ABC.#.....a#
-        ######@#@######
-        ###############
-        ######@#@######
-        #b.....#.....c#
-        ###############
-        """)!
-        map.render()
-        distances = map.dividedIntoQuadrants.compactMap {
-            Graph(from: $0).traverseAll(from: Terrain.start.label)
-        }
-        XCTAssertEqual(distances.reduce(0, +), 24)
+        map = Grid(
+            lines: """
+            ###############
+            #d.ABC.#.....a#
+            ######@#@######
+            ###############
+            ######@#@######
+            #b.....#.....c#
+            ###############
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
+
+        print()
         
-        map = Screen(lines: """
-        #############
-        #DcBa.#.GhKl#
-        #.###@#@#I###
-        #e#d#####j#k#
-        ###C#@#@###J#
-        #fEbA.#.FgHi#
-        #############
-        """)!
-        map.render()
+        map = Grid(
+            lines: """
+            #############
+            #DcBa.#.GhKl#
+            #.###@#@#I###
+            #e#d#####j#k#
+            ###C#@#@###J#
+            #fEbA.#.FgHi#
+            #############
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
         distances = map.dividedIntoQuadrants.compactMap {
             Graph(from: $0).traverseAll(from: Terrain.start.label)
         }
         XCTAssertEqual(distances.reduce(0, +), 32)
-        
-        map = Screen(lines: """
-        #############
-        #g#f.D#..h#l#
-        #F###e#E###.#
-        #dCba@#@BcIJ#
-        #############
-        #nK.L@#@G...#
-        #M###N#H###.#
-        #o#m..#i#jk.#
-        #############
-        """)!
-        map.render()
+
+        print()
+
+        map = Grid(
+            lines: """
+            #############
+            #g#f.D#..h#l#
+            #F###e#E###.#
+            #dCba@#@BcIJ#
+            #############
+            #nK.L@#@G...#
+            #M###N#H###.#
+            #o#m..#i#jk.#
+            #############
+            """,
+            backgroundValue: _backgroundValue
+        )
+        map.render(backgroundValue: _backgroundValue)
         distances = map.dividedIntoQuadrants.compactMap {
             Graph(from: $0).traverseAll(from: Terrain.start.label)
         }
@@ -151,25 +181,26 @@ final class Day18: XCTestCase {
     }
     
     func test_solutions() {
-        _map.render()
-        let graph = Graph(from: _map)
+        let map = _makeMap()
+        map.render(backgroundValue: _backgroundValue)
+        let graph = Graph(from: map)
         if _enableAllTests {
             XCTAssertEqual(graph.traverseAll(from: Terrain.start.label), 4620)
         }
-        
+
         print()
-        
-        let filledMap = _map.copy()
-        let midX = filledMap.width / 2
-        let midY = filledMap.height / 2
+
+        let filledMap = _makeMap()
+        let midX = filledMap.gridWidth / 2
+        let midY = filledMap.gridHeight / 2
         for x in midX-1 ... midX+1 {
             for y in midY-1 ... midY+1 {
-                filledMap[Coordinate(x, y)] = x == midX || y == midY ?
-                    Terrain.wall.label : Terrain.start.label
+                filledMap.node(atGridPosition: Position(x, y))?.value =
+                    x == midX || y == midY ? Terrain.wall.label : Terrain.start.label
             }
         }
-        filledMap.render()
-        
+        filledMap.render(backgroundValue: _backgroundValue)
+
         if _enableAllTests {
             let distances = filledMap.dividedIntoQuadrants.compactMap {
                 Graph(from: $0).traverseAll(from: Terrain.start.label)
@@ -182,12 +213,12 @@ final class Day18: XCTestCase {
 
 
 // MARK: - Private Terrain Implementation
-private var _map: Screen = {
-    let pixels = try! TestHarnessInput("input18.txt").map({ Array($0) })
-    return Screen(pixels: pixels)!
-}()
+private func _makeMap() -> Grid {
+    let pixelValues = try! TestHarnessInput("input18.txt").map({ Array($0) })
+    return Grid(pixelValues: pixelValues, backgroundValue: _backgroundValue)
+}
 
-private typealias Label = Screen.Pixel
+private typealias Label = Pixel.Value
 
 private enum Terrain {
     
@@ -275,30 +306,33 @@ private extension Graph {
     
     var keyNodes: Nodes { Set(keys.filter { !$0.isDoor }) }
     
-    init(from map: Screen) {
-        let nodeLocations = map.allCoordinates { pixel in
-            switch Terrain(label: pixel)! {
+    init(from map: Grid) {
+        let nodeLocations = map.pixels?.filter { pixel in
+            switch Terrain(label: pixel.value)! {
             case .start, .key, .door:
                 return true
             default:
                 return false
             }
-        }
+        }.map { $0.gridPosition } ?? [ ]
         
         var result = Graph()
 
         for sourceLocation in nodeLocations {
-            let source = map[sourceLocation]
+            guard
+                let source = map.node(atGridPosition: sourceLocation)
+            else { continue }
             
-            let _ = map.spanPath(from: sourceLocation) { pixelValue, distance in
-                switch Terrain(label: pixelValue)! {
+            let _ = map.span(from: sourceLocation) { destination in
+                switch Terrain(label: destination.value)! {
                 case .path:
                     return true
                 case .wall:
                     return false
                 case .start, .key, .door:
-                    if !result.containsEdge(from: source, to: pixelValue) {
-                        result.addEdge(from: source, to: pixelValue, distance: distance)
+                    if !result.containsEdge(from: source.value, to: destination.value) {
+                        let distance = map.findPath(from: source, to: destination).count - 1
+                        result.addEdge(from: source.value, to: destination.value, distance: distance)
                     }
                     return false
                 }
@@ -402,21 +436,23 @@ private extension Graph {
 
 
 // MARK: - Private Extensions
-private extension Screen {
-    var dividedIntoQuadrants: [Screen] {
-        let midX = width / 2
-        let lowerX = Range(0...midX)
-        let upperX = midX ..< width
+private extension Grid {
+    var dividedIntoQuadrants: [Grid] {
+        let minX = gridOrigin.x
+        let midX = minX + Position.Scalar(gridWidth) / 2
+        let lowerX = Range(minX...midX)
+        let upperX = midX ..< (minX + Position.Scalar(gridWidth))
         
-        let midY = height / 2
-        let lowerY = Range(0...midY)
-        let upperY = midY ..< height
+        let minY = gridOrigin.y
+        let midY = minY + Position.Scalar(gridHeight) / 2
+        let lowerY = Range(minY...midY)
+        let upperY = midY ..< (minY + Position.Scalar(gridHeight))
         
         return [
-            Screen(xRange: lowerX, yRange: lowerY, copiedFrom: self)!,
-            Screen(xRange: upperX, yRange: lowerY, copiedFrom: self)!,
-            Screen(xRange: lowerX, yRange: upperY, copiedFrom: self)!,
-            Screen(xRange: upperX, yRange: upperY, copiedFrom: self)!
+            Grid(xRange: lowerX, yRange: lowerY, copiedFrom: self),
+            Grid(xRange: upperX, yRange: lowerY, copiedFrom: self),
+            Grid(xRange: lowerX, yRange: upperY, copiedFrom: self),
+            Grid(xRange: upperX, yRange: upperY, copiedFrom: self)
         ]
     }
 }

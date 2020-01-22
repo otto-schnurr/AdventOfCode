@@ -12,15 +12,14 @@ import AdventOfCode
 final class Day11: XCTestCase {
     
     func test_solution() {
-        var panels = Display(backgroundColor: "⬛️")
+        var panels = Grid.PixelData()
         var robot = Robot()
         robot.run(on: &panels)
-        XCTAssertEqual(panels.initialPixelCount, 2322)
+        XCTAssertEqual(panels.count, 2322)
         
-        panels = Display(backgroundColor: "⬛️")
-        panels[.zero] = Color.white.pixelValue
+        panels = [.zero: Color.white.pixelValue]
         robot.run(on: &panels)
-        panels.render()
+        Grid(data: panels).render(backgroundValue: Color.black.pixelValue)
     }
     
 }
@@ -33,7 +32,7 @@ private enum Color: Word, CustomStringConvertible {
     
     var description: String { String(self.pixelValue) }
     
-    var pixelValue: Display.Pixel {
+    var pixelValue: Pixel.Value {
         switch self {
         case .black: return "⬛️"
         case .white: return "⬜️"
@@ -42,7 +41,7 @@ private enum Color: Word, CustomStringConvertible {
     
 }
 
-private extension Display.Pixel {
+private extension Pixel.Value {
     var colorValue: Color? {
         switch self {
         case "⬛️": return .black
@@ -54,13 +53,13 @@ private extension Display.Pixel {
 
 private struct Robot {
     
-    private(set) var position = Coordinate.zero
+    private(set) var position = Position.zero
     
     init() {
         computer = Computer(outputMode: .yield)
     }
     
-    mutating func run(on panels: inout Display) {
+    mutating func run(on panels: inout Grid.PixelData) {
         position = .zero
         direction = .north
         
@@ -68,7 +67,7 @@ private struct Robot {
         var shouldKeepRunning = true
 
         repeat {
-            let input = panels[position].colorValue ?? .black
+            let input = panels[position]?.colorValue ?? .black
             computer.inputBuffer.append(input.rawValue)
             
             computer.run()

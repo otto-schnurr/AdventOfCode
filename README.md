@@ -16,3 +16,20 @@ Implemented in Swift using the [Swift Package Manager][SPM] and pathfinding from
 [advent-of-code]: https://adventofcode.com
 [Eric Wastl]: http://was.tl
 [SPM]: https://swift.org/package-manager/
+
+Usage
+-------
+
+### Install ###
+
+    $ git clone git@github.com:otto-schnurr/AdventOfCode.git
+    $ cd AdventOfCode
+
+### Test ###
+
+    $ swift test && echo "Solutions have been verified."
+
+### Browse ###
+
+    $ swift package generate-xcodeproj
+    $ open AdventOfCode.xcodeproj

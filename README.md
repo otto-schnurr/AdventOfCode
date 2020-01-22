@@ -4,10 +4,12 @@ Advent Of Code
 [![Platforms](https://img.shields.io/badge/platforms-macOS-important.svg)][Gameplay Kit]
 [![Xcode versions](https://img.shields.io/badge/Xcode-11.2-informational.svg)][Xcode versions]
 [![Swift versions](https://img.shields.io/badge/swift-5.0-informational.svg)][Swift versions]
+[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)][license]
 
 [Gameplay Kit]: https://developer.apple.com/documentation/gameplaykit
 [Xcode versions]: https://developer.apple.com/xcode/
 [Swift versions]: https://docs.swift.org/swift-book/RevisionHistory/RevisionHistory.html
+[license]: https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
 
 Otto's solutions for an Advent calendar of [small programming puzzles][advent-of-code] by [Eric Wastl].
 

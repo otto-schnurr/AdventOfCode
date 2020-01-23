@@ -15,9 +15,12 @@ Otto's solutions for an Advent calendar of [small programming puzzles][advent-of
 
 Implemented in Swift using the [Swift Package Manager][SPM] and pathfinding from [Gameplay Kit].
 
+Photo by [Annie Spratt].
+
 [advent-of-code]: https://adventofcode.com
 [Eric Wastl]: http://was.tl
 [SPM]: https://swift.org/package-manager/
+[Annie Spratt]: https://unsplash.com/@anniespratt
 
 Usage
 -------

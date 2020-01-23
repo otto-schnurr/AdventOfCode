@@ -1,9 +1,12 @@
+//  MIT License
+//  Copyright © 2019 Otto Schnurr
+//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+
 //
 //  Computer+String.swift
 //  AdventOfCode
 //
 //  Created by Otto Schnurr on 12/31/2019.
-//  Copyright © 2019 Otto Schnurr. All rights reserved.
 //
 
 public extension Computer {

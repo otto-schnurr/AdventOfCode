@@ -1,9 +1,12 @@
+//  MIT License
+//  Copyright © 2019 Otto Schnurr
+//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+
 //
 //  Direction_tests.swift
 //  AdventOfCode-UnitTests
 //
 //  Created by Otto Schnurr on 12/31/19.
-//  Copyright © 2019 Otto Schnurr. All rights reserved.
 //
 
 import XCTest

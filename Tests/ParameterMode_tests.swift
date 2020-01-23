@@ -1,9 +1,12 @@
+//  MIT License
+//  Copyright © 2019 Otto Schnurr
+//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+
 //
 //  ParameterMode_tests.swift
-//  AdventOfCode
+//  AdventOfCode-UnitTests
 //
 //  Created by Otto Schnurr on 12/13/2019.
-//  Copyright © 2019 Otto Schnurr. All rights reserved.
 //
 
 import XCTest

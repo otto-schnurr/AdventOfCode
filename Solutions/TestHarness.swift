@@ -1,9 +1,12 @@
+//  MIT License
+//  Copyright © 2019 Otto Schnurr
+//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+
 //
 //  TestHarness.swift
-//  AdventOfCode
+//  AdventOfCode-UnitTests
 //
 //  Created by Otto Schnurr on 12/15/2019.
-//  Copyright © 2019 Otto Schnurr. All rights reserved.
 //
 
 import Foundation
@@ -15,7 +18,7 @@ extension URL {
         let thisSourceFile = URL(fileURLWithPath: #file)
         let thisDirectory = thisSourceFile.deletingLastPathComponent()
         self = thisDirectory
-            .appendingPathComponent("Resources")
+            .appendingPathComponent("Input")
             .appendingPathComponent(testHarnessResource)
     }
 }

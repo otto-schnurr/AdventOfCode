@@ -5,7 +5,7 @@
 //  AdventOfCode
 //
 //  Created by Otto Schnurr on 12/12/2019.
-//  Copyright © 2019 Otto Schnurr. All rights reserved.
+//  Copyright © 2019 Otto Schnurr
 //
 
 import PackageDescription
@@ -24,6 +24,11 @@ let package = Package(
         ),
         .testTarget(
             name: "AdventOfCode-UnitTests",
+            dependencies: ["AdventOfCode"],
+            path: "Tests"
+        ),
+        .testTarget(
+            name: "AdventOfCode-Solutions",
             dependencies: ["AdventOfCode"],
             path: "Solutions"
         )

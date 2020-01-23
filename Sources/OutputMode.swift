@@ -1,3 +1,7 @@
+//  MIT License
+//  Copyright © 2019 Otto Schnurr
+//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+
 //
 //  OutputMode.swift
 //  AdventOfCode

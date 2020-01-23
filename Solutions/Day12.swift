@@ -1,9 +1,13 @@
+//  MIT License
+//  Copyright © 2019 Otto Schnurr
+//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+
 //
 //  Day12.swift
 //  AdventOfCode/Solutions
 //
+//  A solution for https://adventofcode.com/2019/day/12
 //  Created by Otto Schnurr on 12/20/2019.
-//  Copyright © 2019 Otto Schnurr. All rights reserved.
 //
 
 import XCTest

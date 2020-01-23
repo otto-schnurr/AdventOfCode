@@ -1,9 +1,12 @@
+//  MIT License
+//  Copyright © 2020 Otto Schnurr
+//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+
 //
 //  Grid_tests.swift
 //  AdventOfCode-UnitTests
 //
 //  Created by Otto Schnurr on 1/18/2020.
-//  Copyright © 2020 Otto Schnurr. All rights reserved.
 //
 
 import XCTest

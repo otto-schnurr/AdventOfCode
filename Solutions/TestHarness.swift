@@ -18,7 +18,7 @@ extension URL {
         let thisSourceFile = URL(fileURLWithPath: #file)
         let thisDirectory = thisSourceFile.deletingLastPathComponent()
         self = thisDirectory
-            .appendingPathComponent("Resources")
+            .appendingPathComponent("Input")
             .appendingPathComponent(testHarnessResource)
     }
 }

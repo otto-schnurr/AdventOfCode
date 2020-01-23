@@ -6,6 +6,7 @@
 //  Day03.swift
 //  AdventOfCode/Solutions
 //
+//  A solution for https://adventofcode.com/2019/day/3
 //  Created by Otto Schnurr on 12/15/2019.
 //
 

@@ -113,11 +113,11 @@ private extension Grid {
 
 
 // MARK: - Private Portal Implementation
-private typealias PortalMap = GKGridGraph<Portal>
+private typealias PortalMap = GKGraph
 
 // TODO: Share generic implementation with Pixel.
 //       Perhaps a Value template argument.
-private final class Portal: GKGridGraphNode {
+private final class Portal: GKGraphNode {
     
     typealias Name = String
     var name: Name
@@ -127,9 +127,9 @@ private final class Portal: GKGridGraphNode {
     }
     
     // MARK: Factory
-    init(gridPosition: Position, name: Name) {
+    init(name: Name) {
         self.name = name
-        super.init(gridPosition: gridPosition)
+        super.init()
     }
     
     required init?(coder: NSCoder) {
@@ -139,6 +139,11 @@ private final class Portal: GKGridGraphNode {
     func connect(to portal: Portal, distance: Int) {
         super.addConnections(to: [portal], bidirectional: true)
         distanceTo[portal] = distance
+    }
+    
+    override func estimatedCost(to node: GKGraphNode) -> Float {
+        // The distance is going to be at least as far as the closest node.
+        return Float(distanceTo.values.min() ?? 0)
     }
     
     // MARK: Span

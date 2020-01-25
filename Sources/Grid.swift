@@ -161,6 +161,18 @@ public extension Grid {
         return distanceTable.max { $0.value < $1.value }?.value ?? 0
     }
     
+    func distance(from startPosition: Position, to endPosition: Position) -> Int? {
+        guard
+            let start = node(atGridPosition: startPosition),
+            let end = node(atGridPosition: endPosition)
+        else { return nil }
+        
+        let path = findPath(from: start, to: end)
+        guard !path.isEmpty else { return nil }
+        
+        return path.count - 1
+    }
+
 }
 
 // MARK: Render

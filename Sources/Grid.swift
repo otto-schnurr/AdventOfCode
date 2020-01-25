@@ -58,12 +58,7 @@ public extension Grid {
             }
         }
         
-        if let allPixels = pixels {
-            let pixelsToRemove = allPixels.filter {
-                $0.value == backgroundValue
-            }
-            remove(pixelsToRemove)
-        }
+        filter { $0 != backgroundValue}
     }
 
     /// - Parameter lines:
@@ -98,6 +93,15 @@ public extension Grid {
         for sourcePixel in source.pixels ?? [ ] {
             node(atGridPosition: sourcePixel.gridPosition)?.value = sourcePixel.value
         }
+    }
+    
+    /// Removes pixel nodes with values that are _not_ identified by the filter.
+    ///
+    /// - Parameter isValueIncluded
+    ///   Return true for pixel values that should remain in this grid.
+    func filter(_ isValueIncluded: (_ value: Pixel.Value) -> Bool) {
+        guard let pixels = pixels else { return }
+        remove(pixels.filter { !isValueIncluded($0.value) })
     }
     
 }

@@ -41,8 +41,8 @@ final class Day20: XCTestCase {
             "             Z     ",
             "             Z     "
         ).map { Array($0) }
-        let map = Grid(pixelValues: pixelValues)
-        let portalAt = map.findPortals()
+        let terrain = Grid(pixelValues: pixelValues)
+        let portalAt = terrain.findPortals()
         print(portalAt)
     }
     

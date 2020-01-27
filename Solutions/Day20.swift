@@ -62,15 +62,15 @@ private func _makeMap() -> Grid {
     return Grid(pixelValues: pixelValues, backgroundValue: _backgroundValue)
 }
 
-private typealias Portal = String
+private typealias PortalName = String
 
 private extension Grid {
     
-    func findPortals() -> [Portal: Set<Position>] {
+    func findPortals() -> [PortalName: Set<Position>] {
         guard gridWidth >= 5 else { return [:] }
         guard gridHeight >= 5 else { return [:] }
     
-        var result = [Portal: Set<Position>]()
+        var result = [PortalName: Set<Position>]()
 
         for x in 2 ..< (gridWidth - 2) {
             for y in 2 ..< (gridHeight - 2) {
@@ -86,7 +86,7 @@ private extension Grid {
         return result
     }
     
-    func portal(at position: Position) -> Portal? {
+    func portal(at position: Position) -> PortalName? {
         guard node(atGridPosition: position)?.value == "." else { return nil }
 
         let positionFilter = [

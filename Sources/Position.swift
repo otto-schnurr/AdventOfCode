@@ -26,7 +26,7 @@ public extension Position {
         }
     }
     
-    var length: Scalar { return abs(x) + abs(y) }
+    var cityBlockLength: Scalar { return abs(x) + abs(y) }
 
     var angle: CGFloat {
         let result = atan2(CGFloat(x), CGFloat(-y))

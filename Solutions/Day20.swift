@@ -12,6 +12,7 @@
 
 import XCTest
 import AdventOfCode
+import GameplayKit
 
 // Setting this to true will include tests that take a long time to run.
 private let _enableAllTests = false
@@ -48,7 +49,7 @@ final class Day20: XCTestCase {
     
     func test_solutions() {
         guard _enableAllTests else { return }
-        let map = _makeMap()
+        let map = _makeTerrain()
         XCTAssertEqual(map.gridWidth, 127)
         XCTAssertEqual(map.gridHeight, 129)
     }
@@ -57,20 +58,18 @@ final class Day20: XCTestCase {
 
 
 // MARK: - Private Terrain Implementation
-private func _makeMap() -> Grid {
+private func _makeTerrain() -> Grid {
     let pixelValues = try! TestHarnessInput("input20.txt").map({ Array($0) })
     return Grid(pixelValues: pixelValues, backgroundValue: _backgroundValue)
 }
 
-private typealias PortalName = String
-
 private extension Grid {
     
-    func findPortals() -> [PortalName: Set<Position>] {
+    func findPortals() -> [Portal.Name: Set<Position>] {
         guard gridWidth >= 5 else { return [:] }
         guard gridHeight >= 5 else { return [:] }
     
-        var result = [PortalName: Set<Position>]()
+        var result = [Portal.Name: Set<Position>]()
 
         for x in 2 ..< (gridWidth - 2) {
             for y in 2 ..< (gridHeight - 2) {
@@ -86,7 +85,7 @@ private extension Grid {
         return result
     }
     
-    func portal(at position: Position) -> PortalName? {
+    func portal(at position: Position) -> Portal.Name? {
         guard node(atGridPosition: position)?.value == "." else { return nil }
 
         let positionFilter = [
@@ -110,4 +109,29 @@ private extension Grid {
         }
     }
     
+}
+
+
+// MARK: - Private Portal Implementation
+
+// TODO: Share generic implementation with Pixel.
+//       Perhaps a Value template argument.
+private final class Portal: GKGridGraphNode {
+    
+    typealias Name = String
+    var name: Name
+    
+    var connectedPortals: [Portal] {
+        connectedNodes.compactMap { $0 as? Portal }
+    }
+    
+    init(gridPosition: Position, name: Name) {
+        self.name = name
+        super.init(gridPosition: gridPosition)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
 }

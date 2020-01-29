@@ -63,13 +63,15 @@ private func _makeTerrain() -> Grid {
     return Grid(pixelValues: pixelValues, backgroundValue: _backgroundValue)
 }
 
+private typealias PortalPositions = [Portal.Name: Set<Position>]
+
 private extension Grid {
     
-    func findPortals() -> [Portal.Name: Set<Position>] {
+    func findPortals() -> PortalPositions {
         guard gridWidth >= 5 else { return [:] }
         guard gridHeight >= 5 else { return [:] }
     
-        var result = [Portal.Name: Set<Position>]()
+        var result = PortalPositions()
 
         for x in 2 ..< (gridWidth - 2) {
             for y in 2 ..< (gridHeight - 2) {
@@ -141,8 +143,9 @@ private final class Portal: GKGraphNode {
     }
     
     // MARK: Factory
-    init(name: Name) {
+    init(name: Name, terrain: PortalPositions) {
         self.name = name
+        estimatedDistanceTo = terrain.estimatedDistances(from: name)
         super.init()
     }
     
@@ -155,11 +158,6 @@ private final class Portal: GKGraphNode {
         distanceTo[portal] = distance
     }
     
-    override func estimatedCost(to node: GKGraphNode) -> Float {
-        // The distance is going to be at least as far as the closest node.
-        return Float(distanceTo.values.min() ?? 0)
-    }
-    
     // MARK: Span
     override func cost(to node: GKGraphNode) -> Float {
         guard let distance = distanceTo[node] else {
@@ -168,7 +166,35 @@ private final class Portal: GKGraphNode {
         return Float(distance)
     }
 
+    override func estimatedCost(to node: GKGraphNode) -> Float {
+        guard let destination = (node as? Portal)?.name else {
+            return .greatestFiniteMagnitude
+        }
+        return estimatedDistanceTo[destination] ?? .greatestFiniteMagnitude
+    }
+    
     // MARK: Private
     private var distanceTo = [GKGraphNode: Int]()
+    private var estimatedDistanceTo = [Name: Float]()
     
 }
+
+private extension PortalPositions {
+    func estimatedDistances(from source: Portal.Name) -> [Portal.Name: Float] {
+        guard let localPositions = self[source] else { return [:] }
+        
+        var result = [Portal.Name: Float]()
+        
+        for destination in Set(keys).subtracting([source]) {
+            guard
+                let remotePositions = self[destination],
+                let distance = _minimumDistanceBetween(localPositions, remotePositions)
+            else { continue }
+            
+            result[destination] = distance
+        }
+        
+        return result
+    }
+}
+

@@ -130,6 +130,69 @@ func _minimumDistanceBetween(_ lhs: Set<Position>, _ rhs: Set<Position>) -> Floa
 
 // MARK: - Private Portal Implementation
 private typealias PortalMap = GKGraph
+private typealias PortalData = [Portal.Name: Portal]
+
+private extension PortalData {
+    mutating func portal(named name: Portal.Name, positions: PortalPositions) -> Portal {
+        guard let portal = self[name] else {
+            let newPortal = Portal(name: name, positions: positions)
+            self[name] = newPortal
+            return newPortal
+        }
+        return portal
+    }
+}
+
+private extension PortalMap {
+    
+    convenience init(terrain: Grid) {
+        let portalLocations = terrain.findPortals()
+        
+        // Don't traverse the characters of the portal names.
+        // Instead, remove them from the grid.
+        terrain.filter { $0 == "." }
+        
+        var data = PortalData()
+        
+        for (sourceName, sourcePositions) in portalLocations {
+            let source = data.portal(named: sourceName, positions: portalLocations)
+            
+            for sourcePosition in sourcePositions {
+                let _ = terrain.span(from: sourcePosition) { pixel in
+                    let destinationPosition = pixel.gridPosition
+                    assert(sourcePosition != destinationPosition)
+                    
+                    let _destinationName = portalLocations.filter {
+                        $0.value.contains(destinationPosition)
+                    }.first?.key
+                    
+                    if let destinationName = _destinationName {
+                        let destination = data.portal(named: destinationName, positions: portalLocations)
+                        
+                        if
+                            !source.connectedPortals.contains(destination),
+                            let _distance = terrain.distance(from: sourcePosition, to: destinationPosition) {
+
+                            let distance = sourceName == "AA" || destinationName == "AA" ?
+                                _distance - 1 : _distance
+                            source.connect(to: destination, distance: distance)
+                        }
+                    }
+                    
+                    return true
+                }
+            }
+        }
+        
+        self.init(Array(data.values))
+    }
+    
+    func portal(named name: Portal.Name) -> Portal? {
+        guard let nodes = nodes else { return nil }
+        return nodes.compactMap { $0 as? Portal }.first { $0.name == name }
+    }
+    
+}
 
 // TODO: Share generic implementation with Pixel.
 //       Perhaps a Value template argument.
@@ -143,9 +206,9 @@ private final class Portal: GKGraphNode {
     }
     
     // MARK: Factory
-    init(name: Name, terrain: PortalPositions) {
+    init(name: Name, positions: PortalPositions) {
         self.name = name
-        estimatedDistanceTo = terrain.estimatedDistances(from: name)
+        estimatedDistanceTo = positions.estimatedDistances(from: name)
         super.init()
     }
     

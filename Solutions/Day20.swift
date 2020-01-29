@@ -111,6 +111,20 @@ private extension Grid {
     
 }
 
+func _minimumDistanceBetween(_ lhs: Set<Position>, _ rhs: Set<Position>) -> Float? {
+    guard !lhs.isEmpty && !rhs.isEmpty else { return nil }
+    
+    var result = Float.greatestFiniteMagnitude
+    
+    for lhsPosition in lhs {
+        for rhsPosition in rhs {
+            result = min(result, (lhsPosition &- rhsPosition).length)
+        }
+    }
+    
+    return result
+}
+
 
 // MARK: - Private Portal Implementation
 private typealias PortalMap = GKGraph

@@ -43,8 +43,12 @@ final class Day20: XCTestCase {
             "             Z     "
         ).map { Array($0) }
         let terrain = Grid(pixelValues: pixelValues)
-        let portalAt = terrain.findPortals()
-        print(portalAt)
+        terrain.render()
+        
+        print()
+
+        let map = PortalMap(terrain: terrain)
+        XCTAssertEqual(map.distanceFromAAToZZ, 23)
     }
     
     func test_solutions() {
@@ -145,6 +149,24 @@ private extension PortalData {
 
 private extension PortalMap {
     
+    var distanceFromAAToZZ: Int? {
+        guard
+            let start = portal(named: "AA"),
+            let end = portal(named: "ZZ")
+        else { return nil }
+        
+        let path = findPath(from: start, to: end).compactMap { $0 as? Portal }
+        guard path.count > 1 else { return nil }
+        
+        return zip(
+            path.prefix(path.count - 1), path.suffix(path.count - 1)
+        ).map { (source, destination) in
+            let distance = Int(source.cost(to: destination))
+            print("\(source.name) to \(destination.name): \(distance)")
+            return distance
+        }.reduce(0, +)
+    }
+    
     convenience init(terrain: Grid) {
         let portalLocations = terrain.findPortals()
         
@@ -174,7 +196,7 @@ private extension PortalMap {
                             let _distance = terrain.distance(from: sourcePosition, to: destinationPosition) {
 
                             let distance = sourceName == "AA" || destinationName == "AA" ?
-                                _distance - 1 : _distance
+                                _distance : _distance + 1
                             source.connect(to: destination, distance: distance)
                         }
                     }
@@ -219,6 +241,7 @@ private final class Portal: GKGraphNode {
     func connect(to portal: Portal, distance: Int) {
         super.addConnections(to: [portal], bidirectional: true)
         distanceTo[portal] = distance
+        portal.distanceTo[self] = distance
     }
     
     // MARK: Span

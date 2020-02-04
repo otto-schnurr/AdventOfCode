@@ -102,9 +102,15 @@ final class Day20: XCTestCase {
     
     func test_solutions() {
         guard _enableAllTests else { return }
-        let map = _makeTerrain()
-        XCTAssertEqual(map.gridWidth, 127)
-        XCTAssertEqual(map.gridHeight, 129)
+
+        let terrain = _makeTerrain()
+        terrain.render()
+        
+        let map = PortalMap(terrain: terrain)
+        print(map)
+
+        print("Solution")
+        XCTAssertEqual(map.distanceFromAAToZZ, 628)
     }
     
 }

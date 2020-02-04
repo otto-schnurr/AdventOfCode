@@ -21,7 +21,7 @@ private let _backgroundValue = Pixel.Value("#")
 final class Day20: XCTestCase {
     
     func test_examples() {
-        let pixelValues = Array(arrayLiteral:
+        var pixelValues = Array(arrayLiteral:
             "         A         ",
             "         A         ",
             "  #######.#########",
@@ -42,13 +42,62 @@ final class Day20: XCTestCase {
             "             Z     ",
             "             Z     "
         ).map { Array($0) }
-        let terrain = Grid(pixelValues: pixelValues)
+        var terrain = Grid(pixelValues: pixelValues)
         terrain.render()
         
-        print()
+        var map = PortalMap(terrain: terrain)
+        print(map)
 
-        let map = PortalMap(terrain: terrain)
+        print("Solution")
         XCTAssertEqual(map.distanceFromAAToZZ, 23)
+
+        pixelValues = Array(arrayLiteral:
+            "                   A               ",
+            "                   A               ",
+            "  #################.#############  ",
+            "  #.#...#...................#.#.#  ",
+            "  #.#.#.###.###.###.#########.#.#  ",
+            "  #.#.#.......#...#.....#.#.#...#  ",
+            "  #.#########.###.#####.#.#.###.#  ",
+            "  #.............#.#.....#.......#  ",
+            "  ###.###########.###.#####.#.#.#  ",
+            "  #.....#        A   C    #.#.#.#  ",
+            "  #######        S   P    #####.#  ",
+            "  #.#...#                 #......VT",
+            "  #.#.#.#                 #.#####  ",
+            "  #...#.#               YN....#.#  ",
+            "  #.###.#                 #####.#  ",
+            "DI....#.#                 #.....#  ",
+            "  #####.#                 #.###.#  ",
+            "ZZ......#               QG....#..AS",
+            "  ###.###                 #######  ",
+            "JO..#.#.#                 #.....#  ",
+            "  #.#.#.#                 ###.#.#  ",
+            "  #...#..DI             BU....#..LF",
+            "  #####.#                 #.#####  ",
+            "YN......#               VT..#....QG",
+            "  #.###.#                 #.###.#  ",
+            "  #.#...#                 #.....#  ",
+            "  ###.###    J L     J    #.#.###  ",
+            "  #.....#    O F     P    #.#...#  ",
+            "  #.###.#####.#.#####.#####.###.#  ",
+            "  #...#.#.#...#.....#.....#.#...#  ",
+            "  #.#####.###.###.#.#.#########.#  ",
+            "  #...#.#.....#...#.#.#.#.....#.#  ",
+            "  #.###.#####.###.###.#.#.#######  ",
+            "  #.#.........#...#.............#  ",
+            "  #########.###.###.#############  ",
+            "           B   J   C               ",
+            "           U   P   P               "
+        ).map { Array($0) }
+        terrain = Grid(pixelValues: pixelValues)
+        terrain.render()
+        
+        map = PortalMap(terrain: terrain)
+        print(map)
+
+        print("Solution")
+        XCTAssertEqual(map.distanceFromAAToZZ, 58)
     }
     
     func test_solutions() {
@@ -188,7 +237,7 @@ private extension PortalMap {
                         $0.value.contains(destinationPosition)
                     }.first?.key
                     
-                    if let destinationName = _destinationName {
+                    if let destinationName = _destinationName, destinationName != sourceName {
                         let destination = data.portal(named: destinationName, positions: portalLocations)
                         
                         if
@@ -214,6 +263,16 @@ private extension PortalMap {
         return nodes.compactMap { $0 as? Portal }.first { $0.name == name }
     }
     
+}
+
+extension PortalMap {
+    open override var description: String {
+        guard
+            let portals = nodes?.compactMap({ $0 as? Portal }),
+            !portals.isEmpty
+        else { return super.description }
+        return portals.reduce("") { $0 + String(describing: $1) + "\n" }
+    }
 }
 
 // TODO: Share generic implementation with Pixel.
@@ -263,6 +322,16 @@ private final class Portal: GKGraphNode {
     private var distanceTo = [GKGraphNode: Int]()
     private var estimatedDistanceTo = [Name: Float]()
     
+}
+
+extension Portal {
+    override var description: String {
+        let prefix = "Portal(\"\(name)\")"
+        return connectedPortals.reduce(prefix) {
+            guard let distance = distanceTo[$1] else { return $0 }
+            return $0 + "\n    \(distance) steps to Portal(\"\($1.name)\")"
+        }
+    }
 }
 
 private extension PortalPositions {

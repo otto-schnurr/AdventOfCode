@@ -11,14 +11,13 @@ Advent Of Code
 [Swift versions]: https://docs.swift.org/swift-book/RevisionHistory/RevisionHistory.html
 [license]: https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
 
-Otto's solutions for an Advent calendar of [small programming puzzles][advent-of-code] by [Eric Wastl].
+Solutions to [Advent of Code][advent-of-code] programming puzzles.
 
-Implemented in Swift using the [Swift Package Manager][SPM] and pathfinding from [Gameplay Kit].
-
-Photo by [Annie Spratt].
+- Implemented in Swift using the [Swift Package Manager][SPM].
+- Path finding from [Gameplay Kit].
+- Photo by [Annie Spratt].
 
 [advent-of-code]: https://adventofcode.com
-[Eric Wastl]: http://was.tl
 [SPM]: https://swift.org/package-manager/
 [Annie Spratt]: https://unsplash.com/@anniespratt
 

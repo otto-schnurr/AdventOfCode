@@ -27,7 +27,7 @@ Usage
 ### Install ###
 
     $ git clone git@github.com:otto-schnurr/AdventOfCode.git
-    $ cd AdventOfCode
+    $ cd AdventOfCode/2019
 
 ### Test ###
 

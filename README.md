@@ -2,8 +2,8 @@ Advent Of Code
 ==============
 
 [![Platforms](https://img.shields.io/badge/platforms-macOS-important.svg)][Gameplay Kit]
-[![Xcode versions](https://img.shields.io/badge/Xcode-11.2-informational.svg)][Xcode versions]
-[![Swift versions](https://img.shields.io/badge/swift-5.0-informational.svg)][Swift versions]
+[![Xcode versions](https://img.shields.io/badge/Xcode-12.2-informational.svg)][Xcode versions]
+[![Swift versions](https://img.shields.io/badge/swift-5.3-informational.svg)][Swift versions]
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)][license]
 
 [Gameplay Kit]: https://developer.apple.com/documentation/gameplaykit

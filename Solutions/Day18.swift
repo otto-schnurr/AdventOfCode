@@ -334,8 +334,10 @@ private extension Graph {
                 case .wall:
                     return false
                 case .start, .key, .door:
-                    if !result.containsEdge(from: source.value, to: destination.value) {
-                        let distance = map.findPath(from: source, to: destination).count - 1
+                    if
+                        !result.containsEdge(from: source.value, to: destination.value),
+                        let distance = map.distance(from: sourceLocation, to: destination.gridPosition) {
+                            
                         result.addEdge(from: source.value, to: destination.value, distance: distance)
                     }
                     return false

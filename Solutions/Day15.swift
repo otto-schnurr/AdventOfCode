@@ -38,10 +38,8 @@ final class Day15: XCTestCase {
         let targetPosition = history.first {
             $0.value == Observation.oxygen.pixelValue
         }!.key
-        let start = grid.node(atGridPosition: .zero)!
-        let target = grid.node(atGridPosition: targetPosition)!
         
-        let moveCount = grid.findPath(from: start, to: target).count - 1
+        let moveCount = grid.distance(from: .zero, to: targetPosition)!
         XCTAssertEqual(moveCount, 238)
 
         XCTAssertEqual(grid.span(from: targetPosition), 392)

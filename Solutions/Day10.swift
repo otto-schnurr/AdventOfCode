@@ -311,7 +311,7 @@ extension Array where Element == Position {
             let b = delta($1)
             
             if a.reduced == b.reduced {
-                return a.length < b.length
+                return a.cityBlockLength < b.cityBlockLength
             } else {
                 return a.angle < b.angle
             }

@@ -58,12 +58,7 @@ public extension Grid {
             }
         }
         
-        if let allPixels = pixels {
-            let pixelsToRemove = allPixels.filter {
-                $0.value == backgroundValue
-            }
-            remove(pixelsToRemove)
-        }
+        filter { $0 != backgroundValue}
     }
 
     /// - Parameter lines:
@@ -98,6 +93,15 @@ public extension Grid {
         for sourcePixel in source.pixels ?? [ ] {
             node(atGridPosition: sourcePixel.gridPosition)?.value = sourcePixel.value
         }
+    }
+    
+    /// Removes pixel nodes with values that are _not_ identified by the filter.
+    ///
+    /// - Parameter isValueIncluded
+    ///   Return true for pixel values that should remain in this grid.
+    func filter(_ isValueIncluded: (_ value: Pixel.Value) -> Bool) {
+        guard let pixels = pixels else { return }
+        remove(pixels.filter { !isValueIncluded($0.value) })
     }
     
 }
@@ -157,6 +161,18 @@ public extension Grid {
         return distanceTable.max { $0.value < $1.value }?.value ?? 0
     }
     
+    func distance(from startPosition: Position, to endPosition: Position) -> Int? {
+        guard
+            let start = node(atGridPosition: startPosition),
+            let end = node(atGridPosition: endPosition)
+        else { return nil }
+        
+        let path = findPath(from: start, to: end)
+        guard !path.isEmpty else { return nil }
+        
+        return path.count - 1
+    }
+
 }
 
 // MARK: Render

@@ -27,7 +27,7 @@ Usage
 ### Install ###
 
     $ git clone git@github.com:otto-schnurr/AdventOfCode.git
-    $ cd AdventOfCode/2019
+    $ cd AdventOfCode/2020
 
 ### Test ###
 
@@ -35,5 +35,6 @@ Usage
 
 ### Browse ###
 
-    $ swift package generate-xcodeproj
-    $ open AdventOfCode.xcodeproj
+With Xcode 12 or later.
+
+    $ open Package.swift

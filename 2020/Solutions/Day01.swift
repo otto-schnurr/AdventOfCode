@@ -15,20 +15,24 @@ import XCTest
 
 final class Day01: XCTestCase {
 
-    func test_example_1() {
+    func test_example() {
         let expenses = [1721, 979, 366, 299, 675, 1456]
-        let combination = expenses.firstCombination(
-            ofCount: 2, summingTo: 2020
-        )!
+        
+        var combination = expenses.firstCombination(ofCount: 2, summingTo: 2020)!
         XCTAssertEqual(combination[0] * combination[1], 514579)
+
+        combination = expenses.firstCombination(ofCount: 3, summingTo: 2020)!
+        XCTAssertEqual(combination[0] * combination[1] * combination[2], 241861950)
     }
     
     func test_solution() {
         let expenses = Array(Input())
-        let combination = expenses.firstCombination(
-            ofCount: 2, summingTo: 2020
-        )!
+        
+        var combination = expenses.firstCombination(ofCount: 2, summingTo: 2020)!
         XCTAssertEqual(combination[0] * combination[1], 858496)
+
+        combination = expenses.firstCombination(ofCount: 3, summingTo: 2020)!
+        XCTAssertEqual(combination[0] * combination[1] * combination[2], 263819430)
     }
 
 }

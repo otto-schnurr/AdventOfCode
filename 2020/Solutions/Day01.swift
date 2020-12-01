@@ -17,14 +17,18 @@ final class Day01: XCTestCase {
 
     func test_example_1() {
         let expenses = [1721, 979, 366, 299, 675, 1456]
-        let pair = expenses.firstPairThatAdds(to: 2020)!
-        XCTAssertEqual(pair.0 * pair.1, 514579)
+        let combination = expenses.firstCombination(
+            ofCount: 2, summingTo: 2020
+        )!
+        XCTAssertEqual(combination[0] * combination[1], 514579)
     }
     
     func test_solution() {
         let expenses = Array(Input())
-        let pair = expenses.firstPairThatAdds(to: 2020)!
-        XCTAssertEqual(pair.0 * pair.1, 858496)
+        let combination = expenses.firstCombination(
+            ofCount: 2, summingTo: 2020
+        )!
+        XCTAssertEqual(combination[0] * combination[1], 858496)
     }
 
 }
@@ -43,14 +47,8 @@ private struct Input: Sequence, IteratorProtocol {
 }
 
 private extension Array where Element == Int {
-
-    func firstPairThatAdds(to sum: Int) -> (Int, Int)? {
-        let pairs = combinations(ofCount: 2)
-        if let result = pairs.first(where: { $0[0] + $0[1] == sum }) {
-            return (result[0], result[1])
-        } else {
-            return nil
-        }
+    func firstCombination(ofCount count: Int, summingTo sum: Int) -> [Int]? {
+        let combinations = self.combinations(ofCount: count)
+        return combinations.first() { $0.reduce(0, +) == sum }
     }
-
 }

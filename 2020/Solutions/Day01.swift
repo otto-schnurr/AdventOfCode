@@ -10,35 +10,30 @@
 //  Created by Otto Schnurr on 11/26/2020.
 //
 
+import Algorithms
 import XCTest
 
 final class Day01: XCTestCase {
 
-    // As a placeholder, this is a Day 1 solution from 2019.
-    // TODO: Replace this with a Day 1 solution from 2020.
-    func test_solution() {
-        func fuel(for mass: Int) -> Int { return mass / 3 - 2 }
-
-        func totalFuel(for mass: Int) -> Int {
-            let f = fuel(for: mass)
-            return f > 0 ? f + totalFuel(for: f) : 0
-        }
-
-        XCTAssertEqual(Input().map(fuel).reduce(0, +), 3563458)
-        XCTAssertEqual(Input().map(totalFuel).reduce(0, +), 5342292)
+    func test_example_1() {
+        let expenses = [1721, 979, 366, 299, 675, 1456]
+        let pair = expenses.firstPairThatAdds(to: 2020)!
+        XCTAssertEqual(pair.0 * pair.1, 514579)
     }
 
 }
 
 
 // MARK: - Private
-private struct Input: Sequence, IteratorProtocol {
-    
-    mutating func next() -> Int? {
-        guard let line = lines.next() else { return nil }
-        return Int(line)
+private extension Array where Element == Int {
+
+    func firstPairThatAdds(to sum: Int) -> (Int, Int)? {
+        let pairs = combinations(ofCount: 2)
+        if let result = pairs.first(where: { $0[0] + $0[1] == sum }) {
+            return (result[0], result[1])
+        } else {
+            return nil
+        }
     }
 
-    private var lines = TestHarnessInput("input01.txt")!
 }
-

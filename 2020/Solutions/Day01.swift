@@ -20,11 +20,28 @@ final class Day01: XCTestCase {
         let pair = expenses.firstPairThatAdds(to: 2020)!
         XCTAssertEqual(pair.0 * pair.1, 514579)
     }
+    
+    func test_solution() {
+        let expenses = Array(Input())
+        let pair = expenses.firstPairThatAdds(to: 2020)!
+        XCTAssertEqual(pair.0 * pair.1, 858496)
+    }
 
 }
 
 
 // MARK: - Private
+private struct Input: Sequence, IteratorProtocol {
+    
+    mutating func next() -> Int? {
+        guard let line = lines.next() else { return nil }
+        return Int(line)
+    }
+
+    private var lines = TestHarnessInput("input01.txt")!
+
+}
+
 private extension Array where Element == Int {
 
     func firstPairThatAdds(to sum: Int) -> (Int, Int)? {

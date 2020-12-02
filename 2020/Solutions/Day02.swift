@@ -46,18 +46,8 @@ private struct PasswordEntry {
     let password: String
 
     var isValid: Bool {
-        let firstIndex =
-            password.index(password.startIndex, offsetBy: first - 1)
-        let secondIndex =
-            password.index(password.startIndex, offsetBy: second - 1)
-        
-        let firstMatch =
-            password.count >= first &&
-            password[firstIndex] == requiredCharacter
-        let secondMatch =
-            password.count >= second &&
-            password[secondIndex] == requiredCharacter
-        
+        let firstMatch = password.has(requiredCharacter, at: first - 1)
+        let secondMatch = password.has(requiredCharacter, at: second - 1)
         return firstMatch != secondMatch
     }
     
@@ -84,7 +74,7 @@ private struct PasswordEntry {
     
 }
 
-extension String {
+private extension String {
     
     var asRange: (Int, Int)? {
         let components = split(separator: "-")
@@ -95,6 +85,12 @@ extension String {
         else { return nil }
         
         return (first, second)
+    }
+    
+    func has(_ character: Character, at offset: Int) -> Bool {
+        guard count > offset else { return false }
+        let index = self.index(startIndex, offsetBy: offset)
+        return self[index] == character
     }
     
 }

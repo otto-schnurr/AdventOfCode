@@ -20,8 +20,14 @@ final class Day02: XCTestCase {
             "1-3 a: abcde",
             "1-3 b: cdefg",
             "2-9 c: ccccccccc"
-        ].compactMap { PasswordEntry(string: $0) }
+        ].compactMap { PasswordEntry(entry: $0) }
         XCTAssertEqual(entries.filter { $0.isValid }.count, 2)
+    }
+    
+    func test_solution() {
+        let entries = TestHarnessInput("input02.txt")!
+            .compactMap { PasswordEntry(entry: $0) }
+        XCTAssertEqual(entries.filter { $0.isValid }.count, 628)
     }
     
 }
@@ -39,8 +45,8 @@ private struct PasswordEntry {
         return range.contains(count)
     }
     
-    init?(string: String) {
-        let components = string
+    init?(entry: String) {
+        let components = entry
             .filter { $0 != ":" }
             .split(separator: " ")
             .map { String($0) }

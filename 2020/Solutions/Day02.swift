@@ -36,13 +36,14 @@ final class Day02: XCTestCase {
 // MARK: - Private
 private struct PasswordEntry {
 
+    let first: Int
+    let second: Int
     let requiredCharacter: Character
-    let range: Range<Int>
     let password: String
 
     var isValid: Bool {
         let count = password.filter { $0 == requiredCharacter }.count
-        return range.contains(count)
+        return Range(first...second).contains(count)
     }
     
     init?(entry: String) {
@@ -52,25 +53,24 @@ private struct PasswordEntry {
             .map { String($0) }
         guard
             components.count == 3,
-            let range = Range(string: components[0])
+            let (first, second) = _parse(range: components[0])
         else { return nil }
 
+        self.first = first
+        self.second = second
         requiredCharacter = Character(components[1])
-        self.range = range
         password = components[2]
     }
     
 }
 
-private extension Range where Element == Int {
-    init?(string: String) {
-        let components = string.split(separator: "-")
-        guard
-            components.count == 2,
-            let lowerBound = Int(components[0]),
-            let upperBound = Int(components[1])
-        else { return nil }
-        
-        self = Range(lowerBound...upperBound)
-    }
+private func _parse(range: String) -> (Int, Int)? {
+    let components = range.split(separator: "-")
+    guard
+        components.count == 2,
+        let first = Int(components[0]),
+        let second = Int(components[1])
+    else { return nil }
+    
+    return (first, second)
 }

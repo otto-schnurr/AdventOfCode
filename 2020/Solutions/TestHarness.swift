@@ -16,9 +16,9 @@ extension URL {
 
     init?(testHarnessResource: String) {
         let resource = testHarnessResource as NSString
-	guard
+	    guard
             let url = Bundle.module.url(
-                forResource: resource.deletingLastPathComponent, 
+                forResource: resource.deletingPathExtension, 
                 withExtension: resource.pathExtension
             )
         else { return nil }

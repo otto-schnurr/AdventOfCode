@@ -73,7 +73,7 @@ private struct PasswordEntry {
             .map { String($0) }
         guard
             components.count == 3,
-            let (first, second) = _parse(range: components[0])
+            let (first, second) = components[0].asRange
         else { return nil }
 
         self.first = first
@@ -84,13 +84,17 @@ private struct PasswordEntry {
     
 }
 
-private func _parse(range: String) -> (Int, Int)? {
-    let components = range.split(separator: "-")
-    guard
-        components.count == 2,
-        let first = Int(components[0]),
-        let second = Int(components[1])
-    else { return nil }
+extension String {
     
-    return (first, second)
+    var asRange: (Int, Int)? {
+        let components = split(separator: "-")
+        guard
+            components.count == 2,
+            let first = Int(components[0]),
+            let second = Int(components[1])
+        else { return nil }
+        
+        return (first, second)
+    }
+    
 }

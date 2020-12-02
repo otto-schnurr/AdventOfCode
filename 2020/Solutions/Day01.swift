@@ -58,7 +58,7 @@ private extension Array where Element == Int {
         let smallValues = filter { $0 <= threshold }
         let largeValues = filter { $0 > threshold }
 
-        return largeValues.map { largeValue in
+        return largeValues.lazy.map { largeValue in
             smallValues + [largeValue]
         }.compactMap {
             $0.combinations(ofCount: count).first(summingTo: sum)

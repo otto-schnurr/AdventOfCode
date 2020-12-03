@@ -28,8 +28,10 @@ final class Day03: XCTestCase {
         #...##....#
         .#..#...#.#
         """
+        
         let treePositions = [Position](from: map)
         let mapWidth = map.prefix { $0 != Character("\n") }.count
+        
         let collisionCount = treePositions.count(
             from: .zero, by: Position(3, 1), wrappingWidthBy: mapWidth
         )
@@ -37,6 +39,16 @@ final class Day03: XCTestCase {
     }
     
     func test_solution() {
+        let map = Array(TestHarnessInput("input03.txt")!)
+        
+        let treePositions = [Position](from: map)
+        let mapWidth = map.first!.count
+        
+        let collisionCount = treePositions.count(
+            from: .zero, by: Position(3, 1), wrappingWidthBy: mapWidth
+        )
+        XCTAssertEqual(collisionCount, 278)
+
     }
     
 }
@@ -53,6 +65,18 @@ private extension Position {
 
 extension Array where Element == Position {
     
+    init<Lines>(from lines: Lines) where Lines: Sequence, Lines.Element == String {
+        var result = [Position]()
+        
+        for (y, row) in lines.enumerated() {
+            for (x, _) in row.enumerated().filter({ $0.element == "#" }) {
+                result.append(Position(x, y))
+            }
+        }
+
+        self = result
+    }
+
     init(from map: String) {
         var result = [Position]()
 

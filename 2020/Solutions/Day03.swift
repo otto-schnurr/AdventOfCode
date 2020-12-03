@@ -28,7 +28,7 @@ final class Day03: XCTestCase {
         #...##....#
         .#..#...#.#
         """
-        let treePositions = [Position](from: map)
+        let treePositions = Set<Position>(from: map)
         let mapWidth = map.prefix { $0 != Character("\n") }.count
         
         let strides = [
@@ -45,7 +45,7 @@ final class Day03: XCTestCase {
     
     func test_solution() {
         let map = Array(TestHarnessInput("input03.txt")!)
-        let treePositions = [Position](from: map)
+        let treePositions = Set<Position>(from: map)
         let mapWidth = map.first!.count
 
         let strides = [
@@ -72,14 +72,14 @@ private extension Position {
     }
 }
 
-extension Array where Element == Position {
+extension Set where Element == Position {
     
     init<Lines>(from lines: Lines) where Lines: Sequence, Lines.Element == String {
-        var result = [Position]()
+        var result = Set<Position>()
         
         for (y, row) in lines.enumerated() {
             for (x, _) in row.enumerated().filter({ $0.element == "#" }) {
-                result.append(Position(x, y))
+                result.insert(Position(x, y))
             }
         }
 
@@ -87,11 +87,11 @@ extension Array where Element == Position {
     }
 
     init(from map: String) {
-        var result = [Position]()
+        var result = Set<Position>()
 
         for (y, row) in map.split(separator: "\n").enumerated() {
             for (x, _) in row.enumerated().filter({ $0.element == "#" }) {
-                result.append(Position(x, y))
+                result.insert(Position(x, y))
             }
         }
         

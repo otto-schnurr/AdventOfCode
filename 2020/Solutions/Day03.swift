@@ -29,14 +29,15 @@ final class Day03: XCTestCase {
         .#..#...#.#
         """
         let treePositions = Set<Position>(from: map)
-        let mapWidth = 11
+        let width = 11
+        let height = 11
         
         let strides = [
             Position(3, 1), Position(1, 1),
             Position(5, 1), Position(7, 1), Position(1, 2)
         ]
         let collisionCounts = strides.map {
-            treePositions.count(from: .zero, by: $0, widthWrappedTo: mapWidth)
+            treePositions.count(from: .zero, by: $0, width: width, height: height)
         }
         
         XCTAssertEqual(collisionCounts.first!, 7)
@@ -46,14 +47,15 @@ final class Day03: XCTestCase {
     func test_solution() {
         let map = Array(TestHarnessInput("input03.txt")!)
         let treePositions = Set<Position>(from: map)
-        let mapWidth = map.first!.count
+        let width = map.first!.count
+        let height = map.count
 
         let strides = [
             Position(3, 1), Position(1, 1),
             Position(5, 1), Position(7, 1), Position(1, 2)
         ]
         let collisionCounts = strides.map {
-            treePositions.count(from: .zero, by: $0, widthWrappedTo: mapWidth)
+            treePositions.count(from: .zero, by: $0, width: width, height: height)
         }
         
         XCTAssertEqual(collisionCounts.first!, 278)
@@ -98,11 +100,14 @@ extension Set where Element == Position {
         self = result
     }
     
-    func count(from start: Position, by stride: Position, widthWrappedTo width: Int) -> Int {
+    func count(
+        from start: Position, by stride: Position,
+        width: Int, height: Int
+    ) -> Int {
         var position = start
         var result = 0
         
-        while position.y < count {
+        while Int(position.y) < height {
             let wrappedPosition = Position(Int(position.x) % width, Int(position.y))
             if self.contains(wrappedPosition) { result += 1 }
             position &+= stride

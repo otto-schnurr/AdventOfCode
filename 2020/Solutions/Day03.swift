@@ -28,27 +28,36 @@ final class Day03: XCTestCase {
         #...##....#
         .#..#...#.#
         """
-        
         let treePositions = [Position](from: map)
         let mapWidth = map.prefix { $0 != Character("\n") }.count
         
-        let collisionCount = treePositions.count(
-            from: .zero, by: Position(3, 1), wrappingWidthBy: mapWidth
-        )
-        XCTAssertEqual(collisionCount, 7)
+        let strides = [
+            Position(3, 1), Position(1, 1),
+            Position(5, 1), Position(7, 1), Position(1, 2)
+        ]
+        let collisionCounts = strides.map {
+            treePositions.count(from: .zero, by: $0, wrappingWidthBy: mapWidth)
+        }
+        
+        XCTAssertEqual(collisionCounts.first!, 7)
+        XCTAssertEqual(collisionCounts.reduce(1, *), 336)
     }
     
     func test_solution() {
         let map = Array(TestHarnessInput("input03.txt")!)
-        
         let treePositions = [Position](from: map)
         let mapWidth = map.first!.count
-        
-        let collisionCount = treePositions.count(
-            from: .zero, by: Position(3, 1), wrappingWidthBy: mapWidth
-        )
-        XCTAssertEqual(collisionCount, 278)
 
+        let strides = [
+            Position(3, 1), Position(1, 1),
+            Position(5, 1), Position(7, 1), Position(1, 2)
+        ]
+        let collisionCounts = strides.map {
+            treePositions.count(from: .zero, by: $0, wrappingWidthBy: mapWidth)
+        }
+        
+        XCTAssertEqual(collisionCounts.first!, 278)
+        XCTAssertEqual(collisionCounts.reduce(1, *), 9_709_761_600)
     }
     
 }

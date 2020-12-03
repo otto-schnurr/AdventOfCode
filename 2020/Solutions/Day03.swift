@@ -29,14 +29,14 @@ final class Day03: XCTestCase {
         .#..#...#.#
         """
         let treePositions = Set<Position>(from: map)
-        let mapWidth = map.prefix { $0 != Character("\n") }.count
+        let mapWidth = 11
         
         let strides = [
             Position(3, 1), Position(1, 1),
             Position(5, 1), Position(7, 1), Position(1, 2)
         ]
         let collisionCounts = strides.map {
-            treePositions.count(from: .zero, by: $0, wrappingWidthBy: mapWidth)
+            treePositions.count(from: .zero, by: $0, widthWrappedTo: mapWidth)
         }
         
         XCTAssertEqual(collisionCounts.first!, 7)
@@ -53,7 +53,7 @@ final class Day03: XCTestCase {
             Position(5, 1), Position(7, 1), Position(1, 2)
         ]
         let collisionCounts = strides.map {
-            treePositions.count(from: .zero, by: $0, wrappingWidthBy: mapWidth)
+            treePositions.count(from: .zero, by: $0, widthWrappedTo: mapWidth)
         }
         
         XCTAssertEqual(collisionCounts.first!, 278)
@@ -98,7 +98,7 @@ extension Set where Element == Position {
         self = result
     }
     
-    func count(from start: Position, by stride: Position, wrappingWidthBy width: Int) -> Int {
+    func count(from start: Position, by stride: Position, widthWrappedTo width: Int) -> Int {
         var position = start
         var result = 0
         

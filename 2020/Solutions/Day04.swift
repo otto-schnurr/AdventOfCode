@@ -14,7 +14,7 @@ import XCTest
 
 final class Day04: XCTestCase {
 
-    func DISABLED_test_example() {
+    func test_example() {
         let data = """
         ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
         byr:1937 iyr:2017 cid:147 hgt:183cm
@@ -31,7 +31,7 @@ final class Day04: XCTestCase {
         iyr:2011 ecl:brn hgt:59in
         """
         let lines = _scan(data)
-        XCTAssertEqual(_validCount(for: lines), 2)
+        XCTAssertEqual(_validate(lines), 2)
     }
     
     func test_solution() {
@@ -41,12 +41,21 @@ final class Day04: XCTestCase {
 
 
 // MARK: - Private
+private let _requiredKeys = Set(
+    arrayLiteral: "ecl", "pid", "eyr", "hcl", "byr", "iyr", "hgt"
+)
+
 private func _scan(_ string: String) -> [String] {
-    // !!!: implement me
-    return [ ]
+    return string.components(separatedBy: .newlines)
 }
 
-private func _validCount(for lines: [String]) -> Int {
-    // !!!: impelement me
-    return 0
+private func _validate(_ lines: [String]) -> Int {
+    let entries = lines.split(separator: "").map {
+        Array($0)
+            .map { line in line.components(separatedBy: .whitespaces) }
+            .flatMap { $0 }
+    }
+    
+    let keys = entries.map { $0.map { String($0.prefix(3)) } }
+    return keys.filter { _requiredKeys.isSubset(of: $0) }.count
 }

@@ -30,22 +30,29 @@ extension URL {
 
 public struct TestHarnessInput: Sequence, IteratorProtocol {
     
-    init?(_ resourceName: String) {
+    init?(_ resourceName: String, includeEmptyLines: Bool = false) {
         guard
             let fileURL = URL(testHarnessResource: resourceName),
             let data = try? String(contentsOf: fileURL, encoding: .utf8)
         else { return  nil }
 
+        self.includeEmptyLines = includeEmptyLines
         lines = data.components(separatedBy: .newlines)
         iterator = lines.makeIterator()
     }
     
     public mutating func next() -> String? {
         let result = iterator.next()
-        return result?.isEmpty == true ? nil : result
+        
+        if includeEmptyLines {
+            return result
+        } else {
+            return result?.isEmpty == true ? nil : result
+        }
     }
     
     // MARK: Private
+    private let includeEmptyLines: Bool
     private let lines: [String]
     private var iterator: IndexingIterator<[String]>
     

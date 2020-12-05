@@ -43,6 +43,9 @@ final class Day04: XCTestCase {
         XCTAssertEqual(
             accounts.filter { $0.validate(with: _simplePolicy) }.count, 260
         )
+        XCTAssertEqual(
+            accounts.filter { $0.validate(with: _standardPolicy) }.count, 153
+        )
     }
     
 }
@@ -53,18 +56,51 @@ private typealias Account = [String: String]
 
 // reference: https://dev.to/onmyway133/how-to-make-simple-form-validator-in-swift-1hlg
 private struct Rule {
-    let validate: (String) -> Bool
+    
     static let alwaysValid = Rule { _ in return true }
+    
+    static let colorPredicate = NSPredicate(format: "SELF MATCHES %@", #"#[a-f0-9]{6}"#)
+    static let passportIDPredicate = NSPredicate(format: "SELF MATCHES %@", #"[0-9]{9}"#)
+    static let eyeColors = Set(arrayLiteral: "amb", "blu", "brn", "gry", "grn", "hzl", "oth")
+    
+    let validate: (String) -> Bool
+    
 }
 
 private let _simplePolicy: [String: Rule] = [
-    "ecl": .alwaysValid,
-    "pid": .alwaysValid,
-    "eyr": .alwaysValid,
-    "hcl": .alwaysValid,
-    "byr": .alwaysValid,
-    "iyr": .alwaysValid,
-    "hgt": .alwaysValid
+    "byr": .alwaysValid, "iyr": .alwaysValid, "eyr": .alwaysValid,
+    "hgt": .alwaysValid, "hcl": .alwaysValid, "ecl": .alwaysValid,
+    "pid": .alwaysValid
+]
+
+private let _standardPolicy: [String: Rule] = [
+    "byr": Rule { string in
+        guard string.count == 4, let value = Int(string) else { return false }
+        return (1920...2020).contains(value)
+    },
+    "iyr": Rule { string in
+        guard string.count == 4, let value = Int(string) else { return false }
+        return (2010...2020).contains(value)
+    },
+    "eyr": Rule { string in
+        guard string.count == 4, let value = Int(string) else { return false }
+        return (2020...2030).contains(value)
+    },
+    "hgt": Rule { string in
+        guard string.count > 2 else { return false }
+        
+        let suffix = string.suffix(2)
+        guard let value = Int(string.prefix(string.count - 2)) else { return false }
+        
+        switch suffix {
+        case "cm": return (150...193).contains(value)
+        case "in": return (59...76).contains(value)
+        default: return false
+        }
+    },
+    "hcl": Rule { string in Rule.colorPredicate.evaluate(with: string) },
+    "ecl": Rule { string in Rule.eyeColors.contains(string) },
+    "pid": Rule { string in Rule.passportIDPredicate.evaluate(with: string) }
 ]
 
 private func _parse(_ lines: [String]) -> [Account] {

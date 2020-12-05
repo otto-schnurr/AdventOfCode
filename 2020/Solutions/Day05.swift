@@ -28,6 +28,11 @@ final class Day05: XCTestCase {
         let boardingPasses = Array(TestHarnessInput("input05.txt", includeEmptyLines: true)!)
         let seatIDs = boardingPasses.compactMap { _seatID(for: $0) }
         XCTAssertEqual(seatIDs.reduce(0, max), 883)
+        
+        let sortedIDs = seatIDs.sorted()
+        let adjcacentIDs = zip(sortedIDs, Array(sortedIDs.dropFirst()))
+        let missingID = adjcacentIDs.first { $0.0 + 1 < $0.1 }!.0 + 1
+        XCTAssertEqual(missingID, 532)
     }
     
 }

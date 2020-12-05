@@ -33,7 +33,7 @@ final class Day04: XCTestCase {
         let lines = data.components(separatedBy: .newlines)
         let accounts = _parse(lines)
         XCTAssertEqual(
-            accounts.filter { $0.validate(with: _requiredKeys) }.count, 2
+            accounts.filter { $0.validate(with: _simplePolicy) }.count, 2
         )
     }
     
@@ -41,7 +41,7 @@ final class Day04: XCTestCase {
         let lines = Array(TestHarnessInput("input04.txt", includeEmptyLines: true)!)
         let accounts = _parse(lines)
         XCTAssertEqual(
-            accounts.filter { $0.validate(with: _requiredKeys) }.count, 260
+            accounts.filter { $0.validate(with: _simplePolicy) }.count, 260
         )
     }
     
@@ -51,9 +51,21 @@ final class Day04: XCTestCase {
 // MARK: - Private
 private typealias Account = [String: String]
 
-private let _requiredKeys = Set(
-    arrayLiteral: "ecl", "pid", "eyr", "hcl", "byr", "iyr", "hgt"
-)
+// reference: https://dev.to/onmyway133/how-to-make-simple-form-validator-in-swift-1hlg
+private struct Rule {
+    let validate: (String) -> Bool
+    static let alwaysValid = Rule { _ in return true }
+}
+
+private let _simplePolicy: [String: Rule] = [
+    "ecl": .alwaysValid,
+    "pid": .alwaysValid,
+    "eyr": .alwaysValid,
+    "hcl": .alwaysValid,
+    "byr": .alwaysValid,
+    "iyr": .alwaysValid,
+    "hgt": .alwaysValid
+]
 
 private func _parse(_ lines: [String]) -> [Account] {
     return lines.split(separator: "").map {
@@ -74,8 +86,11 @@ private extension Account {
         self = result
     }
     
-    func validate(with requiredKeys: Set<String>) -> Bool {
-        return requiredKeys.isSubset(of: self.keys)
+    func validate(with policy: [String: Rule]) -> Bool {
+        return policy.allSatisfy { key, rule in
+            guard let value = self[key] else { return false }
+            return rule.validate(value)
+        }
     }
     
 }

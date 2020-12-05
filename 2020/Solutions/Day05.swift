@@ -15,6 +15,12 @@ import XCTest
 final class Day05: XCTestCase {
 
     func test_example() {
+        let seatIDs = [
+            "BFFFBBFRRR",
+            "FFFBBBFRRR",
+            "BBFFBBFRLL"
+        ].compactMap { _seatID(for: $0) }
+        XCTAssertEqual(seatIDs.reduce(0, max), 820)
     }
     
     func test_solution() {
@@ -24,4 +30,14 @@ final class Day05: XCTestCase {
 
 
 // MARK: - Private
-
+private func _seatID(for boardingPass: String) -> Int? {
+    let characters = boardingPass.map { (c: Character) -> Character in
+        switch c {
+        case "F", "L": return "0"
+        case "B", "R": return "1"
+        default: return c
+        }
+    }
+    let binaryString = String(characters)
+    return Int(binaryString, radix: 2)
+}

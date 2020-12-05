@@ -54,17 +54,17 @@ final class Day04: XCTestCase {
 // MARK: - Private
 private typealias Account = [String: String]
 
+private let _eyeColors = Set(arrayLiteral: "amb", "blu", "brn", "gry", "grn", "hzl", "oth")
+
 // reference: https://dev.to/onmyway133/how-to-make-simple-form-validator-in-swift-1hlg
 private struct Rule {
-    
     static let alwaysValid = Rule { _ in return true }
-    
-    static let colorPredicate = NSPredicate(format: "SELF MATCHES %@", #"#[a-f0-9]{6}"#)
-    static let passportIDPredicate = NSPredicate(format: "SELF MATCHES %@", #"[0-9]{9}"#)
-    static let eyeColors = Set(arrayLiteral: "amb", "blu", "brn", "gry", "grn", "hzl", "oth")
-    
     let validate: (String) -> Bool
-    
+}
+
+private enum Predicate {
+    static let color = NSPredicate(format: "SELF MATCHES %@", #"#[a-f0-9]{6}"#)
+    static let passportID = NSPredicate(format: "SELF MATCHES %@", #"[0-9]{9}"#)
 }
 
 private let _simplePolicy: [String: Rule] = [
@@ -98,9 +98,9 @@ private let _standardPolicy: [String: Rule] = [
         default: return false
         }
     },
-    "hcl": Rule { string in Rule.colorPredicate.evaluate(with: string) },
-    "ecl": Rule { string in Rule.eyeColors.contains(string) },
-    "pid": Rule { string in Rule.passportIDPredicate.evaluate(with: string) }
+    "hcl": Rule { string in Predicate.color.evaluate(with: string) },
+    "ecl": Rule { string in _eyeColors.contains(string) },
+    "pid": Rule { string in Predicate.passportID.evaluate(with: string) }
 ]
 
 private func _parse(_ lines: [String]) -> [Account] {

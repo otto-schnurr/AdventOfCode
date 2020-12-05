@@ -25,7 +25,7 @@ final class Day05: XCTestCase {
     }
     
     func test_solution() {
-        let boardingPasses = Array(TestHarnessInput("input05.txt", includeEmptyLines: true)!)
+        let boardingPasses = Array(TestHarnessInput("input05.txt")!)
         let seatIDs = boardingPasses.compactMap { _seatID(for: $0) }
         XCTAssertEqual(seatIDs.reduce(0, max), 883)
         

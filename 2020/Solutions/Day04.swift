@@ -30,34 +30,52 @@ final class Day04: XCTestCase {
         hcl:#cfa07d eyr:2025 pid:166559648
         iyr:2011 ecl:brn hgt:59in
         """
-        let lines = _scan(data)
-        XCTAssertEqual(_validate(lines), 2)
+        let lines = data.components(separatedBy: .newlines)
+        let accounts = _parse(lines)
+        XCTAssertEqual(
+            accounts.filter { $0.validate(with: _requiredKeys) }.count, 2
+        )
     }
     
     func test_solution() {
         let lines = Array(TestHarnessInput("input04.txt", includeEmptyLines: true)!)
-        XCTAssertEqual(_validate(lines), 260)
+        let accounts = _parse(lines)
+        XCTAssertEqual(
+            accounts.filter { $0.validate(with: _requiredKeys) }.count, 260
+        )
     }
     
 }
 
 
 // MARK: - Private
+private typealias Account = [String: String]
+
 private let _requiredKeys = Set(
     arrayLiteral: "ecl", "pid", "eyr", "hcl", "byr", "iyr", "hgt"
 )
 
-private func _scan(_ string: String) -> [String] {
-    return string.components(separatedBy: .newlines)
-}
-
-private func _validate(_ lines: [String]) -> Int {
-    let entries = lines.split(separator: "").map {
+private func _parse(_ lines: [String]) -> [Account] {
+    return lines.split(separator: "").map {
         Array($0)
             .map { line in line.components(separatedBy: .whitespaces) }
             .flatMap { $0 }
+    }.map { Account(fields: $0) }
+}
+
+private extension Account {
+    
+    init(fields: [String]) {
+        var result = Account()
+        fields.forEach { field in
+            let components = field.components(separatedBy: ":")
+            result[components[0]] = components[1]
+        }
+        self = result
     }
     
-    let keys = entries.map { $0.map { String($0.prefix(3)) } }
-    return keys.filter { _requiredKeys.isSubset(of: $0) }.count
+    func validate(with requiredKeys: Set<String>) -> Bool {
+        return requiredKeys.isSubset(of: self.keys)
+    }
+    
 }

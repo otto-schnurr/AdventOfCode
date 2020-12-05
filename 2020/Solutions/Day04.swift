@@ -58,8 +58,31 @@ private let _eyeColors = Set(arrayLiteral: "amb", "blu", "brn", "gry", "grn", "h
 
 // reference: https://dev.to/onmyway133/how-to-make-simple-form-validator-in-swift-1hlg
 private struct Rule {
-    static let alwaysValid = Rule { _ in return true }
+    
+    static let alwaysValid = Self { _ in return true }
+    
+    static let height = Self { string in
+        guard string.count > 2 else { return false }
+        
+        let suffix = string.suffix(2)
+        guard let value = Int(string.prefix(string.count - 2)) else { return false }
+        
+        switch suffix {
+        case "cm": return (150...193).contains(value)
+        case "in": return (59...76).contains(value)
+        default: return false
+        }
+    }
+    
+    static func year(range: Range<Int>) -> Self {
+        return Self {string in
+            guard string.count == 4, let value = Int(string) else { return false }
+            return range.contains(value)
+        }
+    }
+
     let validate: (String) -> Bool
+    
 }
 
 private enum Predicate {
@@ -74,33 +97,13 @@ private let _simplePolicy: [String: Rule] = [
 ]
 
 private let _standardPolicy: [String: Rule] = [
-    "byr": Rule { string in
-        guard string.count == 4, let value = Int(string) else { return false }
-        return (1920...2020).contains(value)
-    },
-    "iyr": Rule { string in
-        guard string.count == 4, let value = Int(string) else { return false }
-        return (2010...2020).contains(value)
-    },
-    "eyr": Rule { string in
-        guard string.count == 4, let value = Int(string) else { return false }
-        return (2020...2030).contains(value)
-    },
-    "hgt": Rule { string in
-        guard string.count > 2 else { return false }
-        
-        let suffix = string.suffix(2)
-        guard let value = Int(string.prefix(string.count - 2)) else { return false }
-        
-        switch suffix {
-        case "cm": return (150...193).contains(value)
-        case "in": return (59...76).contains(value)
-        default: return false
-        }
-    },
-    "hcl": Rule { string in Predicate.color.evaluate(with: string) },
-    "ecl": Rule { string in _eyeColors.contains(string) },
-    "pid": Rule { string in Predicate.passportID.evaluate(with: string) }
+    "byr": .year(range: Range(1920...2020)),
+    "iyr": .year(range: Range(2010...2020)),
+    "eyr": .year(range: Range(2020...2030)),
+    "hgt": .height,
+    "hcl": Rule { Predicate.color.evaluate(with: $0) },
+    "ecl": Rule { _eyeColors.contains($0) },
+    "pid": Rule { Predicate.passportID.evaluate(with: $0) }
 ]
 
 private func _parse(_ lines: [String]) -> [Account] {

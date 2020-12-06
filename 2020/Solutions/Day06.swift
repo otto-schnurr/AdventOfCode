@@ -47,11 +47,13 @@ final class Day06: XCTestCase {
 
 
 // MARK: - Private
-private func _parse(_ lines: [String]) -> [Set<Character>] {
+typealias Form = Set<Character>
+
+private func _parse(_ lines: [String]) -> [Form] {
     return lines.split(separator: "").map { group in
         group.map {
             Set($0)
-        }.reduce(Set<Character>()) { result, element in
+        }.reduce(Form()) { result, element in
             return result.union(element)
         }
     }

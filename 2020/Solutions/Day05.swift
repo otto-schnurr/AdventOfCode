@@ -31,8 +31,8 @@ final class Day05: XCTestCase {
         
         let sortedIDs = seatIDs.sorted()
         let adjcacentIDs = zip(sortedIDs, Array(sortedIDs.dropFirst()))
-        let missingID = adjcacentIDs.first { $0.0 + 1 < $0.1 }!.0 + 1
-        XCTAssertEqual(missingID, 532)
+        let (firstGap, _) = adjcacentIDs.first { $0.0 + 1 < $0.1 }!
+        XCTAssertEqual(firstGap + 1, 532)
     }
     
 }

@@ -12,6 +12,11 @@
 
 import XCTest
 
+private let _strides = [
+    Stride(3, 1), Stride(1, 1),
+    Stride(5, 1), Stride(7, 1), Stride(1, 2)
+]
+
 final class Day03: XCTestCase {
 
     func test_example() {
@@ -28,36 +33,15 @@ final class Day03: XCTestCase {
         #...##....#
         .#..#...#.#
         """
-        let treePositions = Set<Position>(from: map)
-        let width = 11
-        let height = 11
-        
-        let strides = [
-            Position(3, 1), Position(1, 1),
-            Position(5, 1), Position(7, 1), Position(1, 2)
-        ]
-        let collisionCounts = strides.map {
-            treePositions.count(from: .zero, by: $0, width: width, height: height)
-        }
-        
+        let lines = map.components(separatedBy: .newlines)
+        let collisionCounts = _strides.map { _traverse(lines, by: $0) }
         XCTAssertEqual(collisionCounts.first!, 7)
         XCTAssertEqual(collisionCounts.reduce(1, *), 336)
     }
     
     func test_solution() {
-        let map = Array(TestHarnessInput("input03.txt")!)
-        let treePositions = Set<Position>(from: map)
-        let width = map.first!.count
-        let height = map.count
-
-        let strides = [
-            Position(3, 1), Position(1, 1),
-            Position(5, 1), Position(7, 1), Position(1, 2)
-        ]
-        let collisionCounts = strides.map {
-            treePositions.count(from: .zero, by: $0, width: width, height: height)
-        }
-        
+        let lines = Array(TestHarnessInput("input03.txt")!)
+        let collisionCounts = _strides.map { _traverse(lines, by: $0) }
         XCTAssertEqual(collisionCounts.first!, 278)
         XCTAssertEqual(collisionCounts.reduce(1, *), 9_709_761_600)
     }
@@ -66,54 +50,22 @@ final class Day03: XCTestCase {
 
 
 // MARK: - Private
-private typealias Position = SIMD2<Int32>
+private typealias Stride = SIMD2<Int>
 
-private extension Position {
-    init(_ x: Int, _ y: Int) {
-        self.init(Scalar(x), Scalar(y))
-    }
-}
+// Simplification recommended by Mike Bell.
+private func _traverse(_ lines: [String], by stride: Stride) -> Int {
+    var column = 0
+    var result = 0
 
-extension Set where Element == Position {
-    
-    init<Lines>(from lines: Lines) where Lines: Sequence, Lines.Element == String {
-        var result = Set<Position>()
+    for row in Swift.stride(from: 0, to: lines.count, by: stride.y) {
+        let line = lines[row]
+        let index = line.index(line.startIndex, offsetBy: column)
         
-        for (y, row) in lines.enumerated() {
-            for (x, _) in row.enumerated().filter({ $0.element == "#" }) {
-                result.insert(Position(x, y))
-            }
-        }
-
-        self = result
-    }
-
-    init(from map: String) {
-        var result = Set<Position>()
-
-        for (y, row) in map.split(separator: "\n").enumerated() {
-            for (x, _) in row.enumerated().filter({ $0.element == "#" }) {
-                result.insert(Position(x, y))
-            }
-        }
+        if line[index] == "#" { result += 1 }
         
-        self = result
+        column += stride.x
+        column %= line.count
     }
     
-    func count(
-        from start: Position, by stride: Position,
-        width: Int, height: Int
-    ) -> Int {
-        var position = start
-        var result = 0
-        
-        while Int(position.y) < height {
-            let wrappedPosition = Position(Int(position.x) % width, Int(position.y))
-            if self.contains(wrappedPosition) { result += 1 }
-            position &+= stride
-        }
-        
-        return result
-    }
-    
+    return result
 }

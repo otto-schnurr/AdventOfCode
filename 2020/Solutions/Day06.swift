@@ -34,13 +34,13 @@ final class Day06: XCTestCase {
         """
         let lines = data.components(separatedBy: .newlines)
         let groups = _parse(lines)
-        XCTAssertEqual(groups.map { $0.count }.reduce(0, +), 11)
+        XCTAssertEqual(_collateAll(groups).map { $0.count }.reduce(0, +), 11)
     }
     
     func test_solution() {
         let lines = Array(TestHarnessInput("input06.txt", includeEmptyLines: true)!)
         let groups = _parse(lines)
-        XCTAssertEqual(groups.map { $0.count }.reduce(0, +), 6_612)
+        XCTAssertEqual(_collateAll(groups).map { $0.count }.reduce(0, +), 6_612)
     }
     
 }
@@ -49,11 +49,15 @@ final class Day06: XCTestCase {
 // MARK: - Private
 typealias Form = Set<Character>
 
-private func _parse(_ lines: [String]) -> [Form] {
+private func _parse(_ lines: [String]) -> [[Form]] {
     return lines.split(separator: "").map { group in
-        group.map {
-            Set($0)
-        }.reduce(Form()) { result, element in
+        group.map { Set($0) }
+    }
+}
+
+private func _collateAll(_ groups: [[Form]]) -> [Form] {
+    return groups.map { group in
+        group.reduce(Form()) { result, element in
             return result.union(element)
         }
     }

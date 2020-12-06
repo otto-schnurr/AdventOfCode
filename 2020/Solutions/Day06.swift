@@ -35,12 +35,14 @@ final class Day06: XCTestCase {
         let lines = data.components(separatedBy: .newlines)
         let groups = _parse(lines)
         XCTAssertEqual(_collateAll(groups).map { $0.count }.reduce(0, +), 11)
+        XCTAssertEqual(_collateCommon(groups).map { $0.count }.reduce(0, +), 6)
     }
     
     func test_solution() {
         let lines = Array(TestHarnessInput("input06.txt", includeEmptyLines: true)!)
         let groups = _parse(lines)
         XCTAssertEqual(_collateAll(groups).map { $0.count }.reduce(0, +), 6_612)
+        XCTAssertEqual(_collateCommon(groups).map { $0.count }.reduce(0, +), 3_268)
     }
     
 }
@@ -59,6 +61,14 @@ private func _collateAll(_ groups: [[Form]]) -> [Form] {
     return groups.map { group in
         group.reduce(Form()) { result, element in
             return result.union(element)
+        }
+    }
+}
+
+private func _collateCommon(_ groups: [[Form]]) -> [Form] {
+    return groups.map { group in
+        group.dropFirst().reduce(group.first!) { result, element in
+            return result.intersection(element)
         }
     }
 }

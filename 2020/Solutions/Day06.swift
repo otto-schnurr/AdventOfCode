@@ -38,6 +38,9 @@ final class Day06: XCTestCase {
     }
     
     func test_solution() {
+        let lines = Array(TestHarnessInput("input06.txt", includeEmptyLines: true)!)
+        let groups = _parse(lines)
+        XCTAssertEqual(groups.map { $0.count }.reduce(0, +), 6_612)
     }
     
 }

@@ -17,11 +17,11 @@ final class Day07: XCTestCase {
     func test_ruleParsing() {
         var rule = Rule("light red bags contain 1 bright white bag, 2 muted yellow bags.")
         XCTAssertEqual(rule.bag, "light red")
-        XCTAssertEqual(rule.contents, Set(["bright white", "muted yellow"]))
+        XCTAssertEqual(rule.ingredients, ["bright white": 1, "muted yellow": 2])
         
         rule = Rule("faded blue bags contain no other bags.")
         XCTAssertEqual(rule.bag, "faded blue")
-        XCTAssertEqual(rule.contents, [ ])
+        XCTAssertEqual(rule.ingredients, [:])
     }
 
     func test_example() {
@@ -52,12 +52,13 @@ final class Day07: XCTestCase {
 
 // MARK: - Private
 private typealias Bag = String
+private typealias Ingredients = [Bag: Int]
 private typealias ContainerMap = [Bag: Set<Bag>]
 
 private struct Rule {
     
     let bag: Bag
-    let contents: Set<Bag>
+    let ingredients: Ingredients
     
     init(_ rule: String) {
         let components = rule
@@ -67,15 +68,16 @@ private struct Rule {
         
         bag = components[0...1].joined(separator: " ")
         
-        if components[2...3].joined(separator: " ") == "no other" {
-            contents = [ ]
-        } else {
-            contents = Set(
-                stride(from: 3, to: components.count, by: 3).map {
-                    components[$0...($0+1)].joined(separator: " ")
-                }
-            )
+        var ingredients = Ingredients()
+        
+        if components[2...3].joined(separator: " ") != "no other" {
+            stride(from: 2, to: components.count, by: 3).forEach { index in
+                let bag = components[(index + 1)...(index+2)].joined(separator: " ")
+                ingredients[bag] = Int(components[index])!
+            }
         }
+        
+        self.ingredients = ingredients
     }
     
 }
@@ -83,7 +85,7 @@ private struct Rule {
 private func _parse(_ rules: [Rule]) -> ContainerMap {
     var result = ContainerMap()
     rules.forEach { rule in
-        rule.contents.forEach { bag in
+        rule.ingredients.forEach { (bag, _) in
             let containers = result[bag] ?? Set<Bag>()
             result[bag] = containers.union(Set([rule.bag]))
         }

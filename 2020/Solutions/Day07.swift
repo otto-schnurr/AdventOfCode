@@ -36,15 +36,15 @@ final class Day07: XCTestCase {
         faded blue bags contain no other bags.
         dotted black bags contain no other bags.
         """
-        let lines = data.components(separatedBy: .newlines)
-        let map = _parse(lines.map { Rule($0) })
-        XCTAssertEqual(_nestedContainers(for: "shiny gold", using: map).count, 4)
+        let rules = data.components(separatedBy: .newlines).map { Rule($0) }
+        let containerMap = _parseContainerMap(from: rules)
+        XCTAssertEqual(_nestedContainers(for: "shiny gold", using: containerMap).count, 4)
     }
     
     func test_solution() {
-        let lines = Array(TestHarnessInput("input07.txt")!)
-        let map = _parse(lines.map { Rule($0) })
-        XCTAssertEqual(_nestedContainers(for: "shiny gold", using: map).count, 242)
+        let rules = Array(TestHarnessInput("input07.txt")!).map { Rule($0) }
+        let containerMap = _parseContainerMap(from: rules)
+        XCTAssertEqual(_nestedContainers(for: "shiny gold", using: containerMap).count, 242)
     }
     
 }
@@ -53,7 +53,7 @@ final class Day07: XCTestCase {
 // MARK: - Private
 private typealias Bag = String
 private typealias Ingredients = [Bag: Int]
-private typealias ContainerMap = [Bag: Set<Bag>]
+private typealias BagMap = [Bag: Set<Bag>]
 
 private struct Rule {
     
@@ -82,8 +82,8 @@ private struct Rule {
     
 }
 
-private func _parse(_ rules: [Rule]) -> ContainerMap {
-    var result = ContainerMap()
+private func _parseContainerMap(from rules: [Rule]) -> BagMap {
+    var result = BagMap()
     rules.forEach { rule in
         rule.ingredients.forEach { (bag, _) in
             let containers = result[bag] ?? Set<Bag>()
@@ -93,10 +93,10 @@ private func _parse(_ rules: [Rule]) -> ContainerMap {
     return result
 }
 
-private func _nestedContainers(for bag: Bag, using map: ContainerMap) -> Set<Bag> {
-    let containers = map[bag] ?? Set<Bag>()
+private func _nestedContainers(for bag: Bag, using containerMap: BagMap) -> Set<Bag> {
+    let containers = containerMap[bag] ?? Set<Bag>()
     let nestedContainers = containers.reduce(Set<Bag>()) { result, container in
-        result.union(_nestedContainers(for: container, using: map))
+        result.union(_nestedContainers(for: container, using: containerMap))
     }
     return containers.union(nestedContainers)
 }

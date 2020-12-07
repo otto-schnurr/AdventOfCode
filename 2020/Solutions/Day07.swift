@@ -15,18 +15,17 @@ import XCTest
 final class Day07: XCTestCase {
 
     func test_ruleParsing() {
-        let rule = Rule(
-            rule: "light red bags contain 1 bright white bag, 2 muted yellow bags."
-        )
+        var rule = Rule("light red bags contain 1 bright white bag, 2 muted yellow bags.")
         XCTAssertEqual(rule.bag, "light red")
-        XCTAssertEqual(
-            rule.contents,
-            Set(["bright white", "muted yellow"])
-        )
+        XCTAssertEqual(rule.contents, Set(["bright white", "muted yellow"]))
+        
+        rule = Rule("faded blue bags contain no other bags.")
+        XCTAssertEqual(rule.bag, "faded blue")
+        XCTAssertEqual(rule.contents, [ ])
     }
 
     func test_example() {
-        let _ = """
+        let rules = """
         light red bags contain 1 bright white bag, 2 muted yellow bags.
         dark orange bags contain 3 bright white bags, 4 muted yellow bags.
         bright white bags contain 1 shiny gold bag.
@@ -37,6 +36,9 @@ final class Day07: XCTestCase {
         faded blue bags contain no other bags.
         dotted black bags contain no other bags.
         """
+        let lines = rules.components(separatedBy: .newlines)
+        let map = _parse(lines.map { Rule($0) })
+        XCTAssertEqual(_nestedContainers(for: "shiny gold", using: map).count, 4)
     }
     
     func test_solution() {
@@ -47,13 +49,14 @@ final class Day07: XCTestCase {
 
 // MARK: - Private
 private typealias Bag = String
+private typealias ContainerMap = [Bag: Set<Bag>]
 
 private struct Rule {
     
     let bag: Bag
     let contents: Set<Bag>
     
-    init(rule: String) {
+    init(_ rule: String) {
         let components = rule
             .filter { $0 != "." && $0 != "," }
             .components(separatedBy: .whitespaces)
@@ -61,11 +64,34 @@ private struct Rule {
         
         bag = components[0...1].joined(separator: " ")
         
-        contents = Set(
-            stride(from: 3, to: components.count, by: 3).map {
-                components[$0...($0+1)].joined(separator: " ")
-            }
-        )
+        if components[2...3].joined(separator: " ") == "no other" {
+            contents = [ ]
+        } else {
+            contents = Set(
+                stride(from: 3, to: components.count, by: 3).map {
+                    components[$0...($0+1)].joined(separator: " ")
+                }
+            )
+        }
     }
     
+}
+
+private func _parse(_ rules: [Rule]) -> ContainerMap {
+    var result = ContainerMap()
+    rules.forEach { rule in
+        rule.contents.forEach { bag in
+            let containers = result[bag] ?? Set<Bag>()
+            result[bag] = containers.union(Set([rule.bag]))
+        }
+    }
+    return result
+}
+
+private func _nestedContainers(for bag: Bag, using map: ContainerMap) -> Set<Bag> {
+    let containers = map[bag] ?? Set<Bag>()
+    let nestedContainers = containers.reduce(Set<Bag>()) { result, container in
+        result.union(_nestedContainers(for: container, using: map))
+    }
+    return containers.union(nestedContainers)
 }

@@ -25,7 +25,7 @@ final class Day07: XCTestCase {
     }
 
     func test_example() {
-        let rules = """
+        let data = """
         light red bags contain 1 bright white bag, 2 muted yellow bags.
         dark orange bags contain 3 bright white bags, 4 muted yellow bags.
         bright white bags contain 1 shiny gold bag.
@@ -36,12 +36,15 @@ final class Day07: XCTestCase {
         faded blue bags contain no other bags.
         dotted black bags contain no other bags.
         """
-        let lines = rules.components(separatedBy: .newlines)
+        let lines = data.components(separatedBy: .newlines)
         let map = _parse(lines.map { Rule($0) })
         XCTAssertEqual(_nestedContainers(for: "shiny gold", using: map).count, 4)
     }
     
     func test_solution() {
+        let lines = Array(TestHarnessInput("input07.txt")!)
+        let map = _parse(lines.map { Rule($0) })
+        XCTAssertEqual(_nestedContainers(for: "shiny gold", using: map).count, 242)
     }
     
 }

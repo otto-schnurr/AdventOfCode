@@ -17,11 +17,14 @@ final class Day07: XCTestCase {
     func test_ruleParsing() {
         var rule = Rule("light red bags contain 1 bright white bag, 2 muted yellow bags.")
         XCTAssertEqual(rule.bag, "light red")
-        XCTAssertEqual(rule.ingredients, ["bright white": 1, "muted yellow": 2])
+        XCTAssertEqual(
+            rule.ingredients,
+            [Ingredient(bag: "bright white", count: 1), Ingredient(bag: "muted yellow", count: 2)]
+        )
         
         rule = Rule("faded blue bags contain no other bags.")
         XCTAssertEqual(rule.bag, "faded blue")
-        XCTAssertEqual(rule.ingredients, [:])
+        XCTAssertEqual(rule.ingredients, [ ])
     }
 
     func test_example() {
@@ -52,13 +55,17 @@ final class Day07: XCTestCase {
 
 // MARK: - Private
 private typealias Bag = String
-private typealias Ingredients = [Bag: Int]
 private typealias BagMap = [Bag: Set<Bag>]
+
+private struct Ingredient: Hashable {
+    let bag: Bag
+    let count: Int
+}
 
 private struct Rule {
     
     let bag: Bag
-    let ingredients: Ingredients
+    let ingredients: [Ingredient]
     
     init(_ rule: String) {
         let components = rule
@@ -68,12 +75,14 @@ private struct Rule {
         
         bag = components[0...1].joined(separator: " ")
         
-        var ingredients = Ingredients()
+        var ingredients = [Ingredient]()
         
-        if components[2...3].joined(separator: " ") != "no other" {
-            stride(from: 2, to: components.count, by: 3).forEach { index in
+        if components[2...3].joined(separator: " ") == "no other" {
+            ingredients = [ ]
+        } else {
+            ingredients = stride(from: 2, to: components.count, by: 3).map { index in
                 let bag = components[(index + 1)...(index+2)].joined(separator: " ")
-                ingredients[bag] = Int(components[index])!
+                return Ingredient(bag: bag, count: Int(components[index])!)
             }
         }
         
@@ -85,9 +94,9 @@ private struct Rule {
 private func _parseContainerMap(from rules: [Rule]) -> BagMap {
     var result = BagMap()
     rules.forEach { rule in
-        rule.ingredients.forEach { (bag, _) in
-            let containers = result[bag] ?? Set<Bag>()
-            result[bag] = containers.union(Set([rule.bag]))
+        rule.ingredients.forEach { ingredient in
+            let containers = result[ingredient.bag] ?? Set<Bag>()
+            result[ingredient.bag] = containers.union(Set([rule.bag]))
         }
     }
     return result

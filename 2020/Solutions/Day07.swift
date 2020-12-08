@@ -55,7 +55,7 @@ final class Day07: XCTestCase {
 
 // MARK: - Private
 private typealias Bag = String
-private typealias BagMap = [Bag: Set<Bag>]
+private typealias ContainerMap = [Bag: Set<Bag>]
 
 private struct Ingredient: Hashable {
     let bag: Bag
@@ -91,8 +91,8 @@ private struct Rule {
     
 }
 
-private func _parseContainerMap(from rules: [Rule]) -> BagMap {
-    var result = BagMap()
+private func _parseContainerMap(from rules: [Rule]) -> ContainerMap {
+    var result = ContainerMap()
     rules.forEach { rule in
         rule.ingredients.forEach { ingredient in
             let containers = result[ingredient.bag] ?? Set<Bag>()
@@ -102,7 +102,7 @@ private func _parseContainerMap(from rules: [Rule]) -> BagMap {
     return result
 }
 
-private func _nestedContainers(for bag: Bag, using containerMap: BagMap) -> Set<Bag> {
+private func _nestedContainers(for bag: Bag, using containerMap: ContainerMap) -> Set<Bag> {
     let containers = containerMap[bag] ?? Set<Bag>()
     let nestedContainers = containers.reduce(Set<Bag>()) { result, container in
         result.union(_nestedContainers(for: container, using: containerMap))

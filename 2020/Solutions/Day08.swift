@@ -30,6 +30,11 @@ final class Day08: XCTestCase {
         XCTAssertEqual(_runFirstLoop(of: Program(lines: lines)!), 5)
     }
 
+    func test_solution() {
+        let lines = TestHarnessInput("input08.txt")!
+        XCTAssertEqual(_runFirstLoop(of: Program(lines: lines)!), 1_797)
+    }
+    
 }
 
 
@@ -56,7 +61,7 @@ private func _runFirstLoop(of program: Program) -> Int {
 private typealias Program = [Instruction]
 
 private extension Array where Element == Instruction {
-    init?(lines: [String]) {
+    init?<S>(lines: S) where S: Sequence, S.Element == String {
         let program = lines.map({ Instruction(for: $0) })
         guard program.allSatisfy({ $0 != nil }) else { return nil }
         self = program.compactMap { $0 }

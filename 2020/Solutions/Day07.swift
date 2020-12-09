@@ -85,7 +85,7 @@ final class Day07: XCTestCase {
         let ingredientMap = _parseIngredientMap(from: rules)
         XCTAssertEqual(
             _nestedIngredientCount(for: "shiny gold", using: ingredientMap) - 1,
-            176035
+            176_035
         )
     }
     

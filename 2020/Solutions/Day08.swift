@@ -27,33 +27,32 @@ final class Day08: XCTestCase {
         acc +6
         """
         let lines = source.components(separatedBy: .newlines)
-
-        let program = Program(lines: lines)!
-        var accumulator = 0
-        var programCounter = 0
-        var traversedInstructions = Set<Int>()
-        
-        while !traversedInstructions.contains(programCounter) {
-            traversedInstructions.insert(programCounter)
-            
-            let nextInstruction = program[programCounter]
-            nextInstruction.operation.apply(
-                argument: nextInstruction.argument,
-                accumulator: &accumulator,
-                programCounter: &programCounter
-            )
-        }
-        
-        XCTAssertEqual(accumulator, 5)
+        XCTAssertEqual(_runFirstLoop(of: Program(lines: lines)!), 5)
     }
 
-    func test_solution() {
-    }
-    
 }
 
 
 // MARK: - Private
+private func _runFirstLoop(of program: Program) -> Int {
+    var accumulator = 0
+    var lineNumber = 0
+    var executedLines = Set<Int>()
+
+    while !executedLines.contains(lineNumber) {
+        executedLines.insert(lineNumber)
+        
+        let nextInstruction = program[lineNumber]
+        nextInstruction.operation.apply(
+            argument: nextInstruction.argument,
+            accumulator: &accumulator,
+            lineNumber: &lineNumber
+        )
+    }
+    
+    return accumulator
+}
+
 private typealias Program = [Instruction]
 
 private extension Array where Element == Instruction {
@@ -87,16 +86,16 @@ private enum Operation: String {
     case acc, jmp, nop
 
     func apply(
-        argument: Int, accumulator: inout Int, programCounter: inout Int
+        argument: Int, accumulator: inout Int, lineNumber: inout Int
     ) {
         switch self {
         case .acc:
             accumulator += argument
-            programCounter += 1
+            lineNumber += 1
         case .jmp:
-            programCounter += argument
+            lineNumber += argument
         case .nop:
-            programCounter += 1
+            lineNumber += 1
         }
     }
     

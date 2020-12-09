@@ -75,8 +75,18 @@ final class Day07: XCTestCase {
     
     func test_solution() {
         let rules = Array(TestHarnessInput("input07.txt")!).map { Rule($0) }
+        
         let parentMap = _parseParentMap(from: rules)
-        XCTAssertEqual(_nestedContainers(for: "shiny gold", using: parentMap).count, 242)
+        XCTAssertEqual(
+            _nestedContainers(for: "shiny gold", using: parentMap).count,
+            242
+        )
+        
+        let ingredientMap = _parseIngredientMap(from: rules)
+        XCTAssertEqual(
+            _nestedIngredientCount(for: "shiny gold", using: ingredientMap) - 1,
+            176035
+        )
     }
     
 }

@@ -27,25 +27,29 @@ final class Day08: XCTestCase {
         acc +6
         """
         let lines = source.components(separatedBy: .newlines)
-        XCTAssertEqual(_runFirstLoop(of: Program(lines: lines)!), 5)
+        let program = Program(lines: lines)!
+        XCTAssertEqual(_runFirstLoop(of: program).0, 5)
     }
 
     func test_solution() {
         let lines = TestHarnessInput("input08.txt")!
-        XCTAssertEqual(_runFirstLoop(of: Program(lines: lines)!), 1_797)
+        let program = Program(lines: lines)!
+        XCTAssertEqual(_runFirstLoop(of: program).0, 1_797)
     }
     
 }
 
 
 // MARK: - Private
-private func _runFirstLoop(of program: Program) -> Int {
+private func _runFirstLoop(
+    of program: Program
+) -> (accumulator: Int, didLoop: Bool) {
     var accumulator = 0
     var lineNumber = 0
-    var executedLines = Set<Int>()
+    var visitedLines = Set<Int>()
 
-    while !executedLines.contains(lineNumber) {
-        executedLines.insert(lineNumber)
+    while !visitedLines.contains(lineNumber) {
+        visitedLines.insert(lineNumber)
         
         let nextInstruction = program[lineNumber]
         nextInstruction.operation.apply(
@@ -55,7 +59,7 @@ private func _runFirstLoop(of program: Program) -> Int {
         )
     }
     
-    return accumulator
+    return (accumulator: accumulator, didLoop: true)
 }
 
 private typealias Program = [Instruction]

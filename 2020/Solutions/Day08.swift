@@ -28,13 +28,15 @@ final class Day08: XCTestCase {
         """
         let lines = source.components(separatedBy: .newlines)
         let program = Program(lines: lines)!
-        XCTAssertEqual(_runFirstLoop(of: program).0, 5)
+        XCTAssertEqual(_runFirstLoop(of: program).accumulator, 5)
+        XCTAssertEqual(_fixAndRun(program)!, 8)
     }
 
     func test_solution() {
         let lines = TestHarnessInput("input08.txt")!
         let program = Program(lines: lines)!
-        XCTAssertEqual(_runFirstLoop(of: program).0, 1_797)
+        XCTAssertEqual(_runFirstLoop(of: program).accumulator, 1_797)
+        XCTAssertEqual(_fixAndRun(program)!, 1_036)
     }
     
 }
@@ -48,7 +50,7 @@ private func _runFirstLoop(
     var lineNumber = 0
     var visitedLines = Set<Int>()
 
-    while !visitedLines.contains(lineNumber) {
+    while !visitedLines.contains(lineNumber) && lineNumber < program.count {
         visitedLines.insert(lineNumber)
         
         let nextInstruction = program[lineNumber]
@@ -59,7 +61,26 @@ private func _runFirstLoop(
         )
     }
     
-    return (accumulator: accumulator, didLoop: true)
+    return (accumulator: accumulator, didLoop: visitedLines.contains(lineNumber))
+}
+
+private func _fixAndRun(_ program: Program) -> Int? {
+    let lineNumbersToToggle = program.enumerated().filter {
+        switch $0.element.operation {
+        case .jmp, .nop: return true
+        default: return false
+        }
+    }.map { $0.offset }
+    
+    var modifiedProgram = program
+    
+    return lineNumbersToToggle.map { (lineNumber: Int) -> Int? in
+        modifiedProgram[lineNumber].toggle()
+        let result = _runFirstLoop(of: modifiedProgram)
+        modifiedProgram[lineNumber].toggle()
+        
+        return result.didLoop ? nil : result.accumulator
+    }.compactMap { $0 }.first
 }
 
 private typealias Program = [Instruction]
@@ -74,7 +95,7 @@ private extension Array where Element == Instruction {
 
 private struct Instruction {
     
-    let operation: Operation
+    var operation: Operation
     let argument: Int
     
     init?(for line: String) {
@@ -87,7 +108,15 @@ private struct Instruction {
         self.operation = operation
         self.argument = argument
     }
-    
+
+    mutating func toggle() {
+        switch operation {
+        case .acc: break
+        case .jmp: operation = .nop
+        case .nop: operation = .jmp
+        }
+    }
+
 }
 
 private enum Operation: String {

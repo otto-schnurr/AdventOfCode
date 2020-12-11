@@ -27,7 +27,7 @@ final class Day09: XCTestCase {
 
     func test_solution() {
         let numbers = TestHarnessInput("input09.txt")!.compactMap { Int($0) }
-        XCTAssertEqual(_firstCypherFailure(for: numbers, poolSize: 25)!, 2089807806)
+        XCTAssertEqual(_firstCypherFailure(for: numbers, poolSize: 25)!, 2_089_807_806)
     }
     
 }
@@ -38,14 +38,16 @@ func _firstCypherFailure(for numbers: [Int], poolSize: Int) -> Int? {
     guard numbers.count > poolSize + 1 else { return nil }
     
     for index in (0 ..<  (numbers.count - poolSize)) {
-        let available = numbers[index ..< index + poolSize]
-            .combinations(ofCount: 2)
-            .map { $0.reduce(0, +) }
-        let availableValues = Set(available)
-        
-        let value = numbers[index + poolSize]
-        if !availableValues.contains(value) { return value }
+        let subsequence = numbers[index ... index + poolSize]
+        if !_validate(subsequence) { return subsequence.last }
     }
     
     return nil
+}
+
+func _validate(_ subsequence: Array<Int>.SubSequence) -> Bool {
+    guard let value = subsequence.last else { return false }
+    let availableValues =
+        subsequence.dropLast().combinations(ofCount: 2).map { $0.reduce(0, +) }
+    return availableValues.first(where: { $0 == value }) != nil
 }

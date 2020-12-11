@@ -59,8 +59,9 @@ func _firstCypherFailure(for numbers: [Int], poolSize: Int) -> Int? {
 
 func _validate(_ slice: Slice) -> Bool {
     guard let value = slice.last else { return false }
-    let availableValues =
-        slice.dropLast().combinations(ofCount: 2).map { $0.reduce(0, +) }
+    let availableValues = slice.dropLast()
+        .combinations(ofCount: 2)
+        .map { $0.reduce(0, +) }
     return availableValues.first(where: { $0 == value }) != nil
 }
 
@@ -73,9 +74,9 @@ func _firstSlice(for numbers: [Int], addingTo sum: Int) -> Slice {
         let sliceSum = slice.reduce(0, +)
         
         if sliceSum < sum {
-            end = slice.index(after: end)
+            end += 1
         } else if sliceSum > sum {
-            start = slice.index(after: start)
+            start += 1
         } else {
             return slice
         }

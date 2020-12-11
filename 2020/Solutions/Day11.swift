@@ -43,6 +43,18 @@ final class Day11: XCTestCase {
     }
 
     func test_solution() {
+        let lines = TestHarnessInput("input11.txt")!
+        let seats = Set(from: lines)
+        var occupiedSeats = Set<Position>()
+        var snapShot = Set<Position>()
+        
+        repeat {
+            snapShot = occupiedSeats
+            occupiedSeats.fillVacant(from: seats)
+            occupiedSeats.pruneCrowds()
+        } while occupiedSeats != snapShot
+        
+        XCTAssertEqual(occupiedSeats.count, 2_324)
     }
     
 }

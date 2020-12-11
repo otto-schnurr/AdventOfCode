@@ -26,6 +26,8 @@ final class Day09: XCTestCase {
     }
 
     func test_solution() {
+        let numbers = TestHarnessInput("input09.txt")!.compactMap { Int($0) }
+        XCTAssertEqual(_firstCypherFailure(for: numbers, poolSize: 25)!, 2089807806)
     }
     
 }

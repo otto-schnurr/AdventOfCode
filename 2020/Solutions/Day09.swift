@@ -22,18 +22,30 @@ final class Day09: XCTestCase {
             102, 117, 150, 182, 127,
             219, 299, 277, 309, 576
         ]
-        XCTAssertEqual(_firstCypherFailure(for: numbers, poolSize: 5)!, 127)
+        
+        let invalidNumber = _firstCypherFailure(for: numbers, poolSize: 5)!
+        XCTAssertEqual(invalidNumber, 127)
+        
+        let slice = _firstSlice(for: numbers, addingTo: invalidNumber)
+        XCTAssertEqual(slice.min()! + slice.max()!, 62)
     }
 
     func test_solution() {
         let numbers = TestHarnessInput("input09.txt")!.compactMap { Int($0) }
-        XCTAssertEqual(_firstCypherFailure(for: numbers, poolSize: 25)!, 2_089_807_806)
+        
+        let invalidNumber = _firstCypherFailure(for: numbers, poolSize: 25)!
+        XCTAssertEqual(invalidNumber, 2_089_807_806)
+        
+        let slice = _firstSlice(for: numbers, addingTo: invalidNumber)
+        XCTAssertEqual(slice.min()! + slice.max()!, 245_848_639)
     }
     
 }
 
 
 // MARK: - Private
+typealias Slice = Array<Int>.SubSequence
+
 func _firstCypherFailure(for numbers: [Int], poolSize: Int) -> Int? {
     guard numbers.count > poolSize + 1 else { return nil }
     
@@ -45,9 +57,29 @@ func _firstCypherFailure(for numbers: [Int], poolSize: Int) -> Int? {
     return nil
 }
 
-func _validate(_ subsequence: Array<Int>.SubSequence) -> Bool {
-    guard let value = subsequence.last else { return false }
+func _validate(_ slice: Slice) -> Bool {
+    guard let value = slice.last else { return false }
     let availableValues =
-        subsequence.dropLast().combinations(ofCount: 2).map { $0.reduce(0, +) }
+        slice.dropLast().combinations(ofCount: 2).map { $0.reduce(0, +) }
     return availableValues.first(where: { $0 == value }) != nil
+}
+
+func _firstSlice(for numbers: [Int], addingTo sum: Int) -> Slice {
+    var start = numbers.startIndex
+    var end = numbers.startIndex
+    
+    while end <= numbers.endIndex {
+        let slice = numbers[start ..< end]
+        let sliceSum = slice.reduce(0, +)
+        
+        if sliceSum < sum {
+            end = slice.index(after: end)
+        } else if sliceSum > sum {
+            start = slice.index(after: start)
+        } else {
+            return slice
+        }
+    }
+    
+    return [ ]
 }

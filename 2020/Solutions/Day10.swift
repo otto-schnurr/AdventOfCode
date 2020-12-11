@@ -35,6 +35,12 @@ final class Day10: XCTestCase {
     }
 
     func test_solution() {
+        let adapters = TestHarnessInput("input10.txt")!.compactMap { Int($0) }
+        let differences = _differences(for: adapters)
+        let answer =
+            differences.filter { $0 == 1 }.count *
+            (differences.filter { $0 == 3 }.count)
+        XCTAssertEqual(answer, 2_592)
     }
     
 }

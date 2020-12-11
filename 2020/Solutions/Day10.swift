@@ -15,32 +15,34 @@ import XCTest
 
 final class Day10: XCTestCase {
 
-    func test_examples() {
-        var adapters = [ 16, 10, 15, 5, 1, 11, 7, 19, 6, 12, 4 ]
-        var differences = _differences(for: adapters)
-        var answer =
+    func test_firstExample() {
+        let adapters = [ 16, 10, 15, 5, 1, 11, 7, 19, 6, 12, 4 ]
+        let differences = _differences(for: adapters)
+        let firstAnswer =
             differences.filter { $0 == 1 }.count *
             (differences.filter { $0 == 3 }.count)
-        XCTAssertEqual(answer, 35)
-        
-        adapters = [
+        XCTAssertEqual(firstAnswer, 35)
+    }
+
+    func test_secondExample() {
+        let adapters = [
             28, 33, 18, 42, 31, 14, 46, 20, 48, 47, 24, 23, 49, 45, 19,
             38, 39, 11, 1, 32, 25, 35, 8, 17, 7, 9, 4, 2, 34, 10, 3
         ]
-        differences = _differences(for: adapters)
-        answer =
+        let differences = _differences(for: adapters)
+        let firstAnswer =
             differences.filter { $0 == 1 }.count *
             (differences.filter { $0 == 3 }.count)
-        XCTAssertEqual(answer, 220)
+        XCTAssertEqual(firstAnswer, 220)
     }
-
+    
     func test_solution() {
         let adapters = TestHarnessInput("input10.txt")!.compactMap { Int($0) }
         let differences = _differences(for: adapters)
-        let answer =
+        let firstAnswer =
             differences.filter { $0 == 1 }.count *
             (differences.filter { $0 == 3 }.count)
-        XCTAssertEqual(answer, 2_592)
+        XCTAssertEqual(firstAnswer, 2_592)
     }
     
 }

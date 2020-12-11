@@ -49,7 +49,7 @@ final class Day06: XCTestCase {
 
 
 // MARK: - Private
-typealias Form = Set<Character>
+private typealias Form = Set<Character>
 
 private func _parse(_ lines: [String]) -> [[Form]] {
     return lines.split(separator: "").map { group in

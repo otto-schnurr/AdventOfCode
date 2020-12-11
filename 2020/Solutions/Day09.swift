@@ -44,9 +44,9 @@ final class Day09: XCTestCase {
 
 
 // MARK: - Private
-typealias Slice = Array<Int>.SubSequence
+private typealias Slice = Array<Int>.SubSequence
 
-func _firstCypherFailure(for numbers: [Int], poolSize: Int) -> Int? {
+private func _firstCypherFailure(for numbers: [Int], poolSize: Int) -> Int? {
     guard numbers.count > poolSize + 1 else { return nil }
     
     for index in (0 ..<  (numbers.count - poolSize)) {
@@ -57,7 +57,7 @@ func _firstCypherFailure(for numbers: [Int], poolSize: Int) -> Int? {
     return nil
 }
 
-func _validate(_ slice: Slice) -> Bool {
+private func _validate(_ slice: Slice) -> Bool {
     guard let value = slice.last else { return false }
     let availableValues = slice.dropLast()
         .combinations(ofCount: 2)
@@ -65,7 +65,7 @@ func _validate(_ slice: Slice) -> Bool {
     return availableValues.first(where: { $0 == value }) != nil
 }
 
-func _firstSlice(for numbers: [Int], addingTo sum: Int) -> Slice {
+private func _firstSlice(for numbers: [Int], addingTo sum: Int) -> Slice {
     var start = numbers.startIndex
     var end = numbers.startIndex
     

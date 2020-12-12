@@ -59,11 +59,14 @@ private func _differences(for adapters: [Int]) -> [Int] {
 
 private func _combinationCount(for adapters: [Int]) -> Int {
     // note: The diff of 3 at the end does not change the count.
-    let foo = _slices(for: [ 0 ] + adapters.sorted()).map { slice in
-        _combinations(for: slice).filter { _isValid(combination: $0) }
-    }
+    let countPerSlice = _slices(for: [ 0 ] + adapters.sorted())
+        .map { (slice) -> Int in
+            let combinations = _combinations(for: slice)
+            let validCombinatons = combinations.filter { _isValid(combination: $0) }
+            return validCombinatons.count
+        }
     
-    return foo.map { $0.count }.reduce(1, *)
+    return countPerSlice.reduce(1, *)
 }
 
 private func _slices(for sortedAdapters: [Int]) -> [[Int]] {

@@ -23,14 +23,21 @@ final class Day12: XCTestCase {
         R90
         F11
         """.components(separatedBy: .newlines).map { Instruction($0)! }
-        let position = _run(instructions)
+        var position = _run(instructions)
         XCTAssertEqual(abs(position.x) + abs(position.y), 25)
+        
+        position = _run(instructions, waypoint: Position(10, -1))
+        XCTAssertEqual(abs(position.x) + abs(position.y), 286)
     }
 
     func test_solution() {
         let instructions = TestHarnessInput("input12.txt")!.map { Instruction($0)! }
-        let position = _run(instructions)
+
+        var position = _run(instructions)
         XCTAssertEqual(abs(position.x) + abs(position.y), 2_280)
+
+        position = _run(instructions, waypoint: Position(10, -1))
+        XCTAssertEqual(abs(position.x) + abs(position.y), 38_693)
     }
     
 }
@@ -44,7 +51,19 @@ private func _run(_ instructions: [Instruction]) -> Position {
     return position
 }
 
+private func _run(_ instructions: [Instruction], waypoint: Position) -> Position {
+    var position = Position.zero
+    var waypoint = waypoint
+    instructions.forEach { $0.apply(to: &position, waypoint: &waypoint) }
+    return position
+}
+
 private typealias Position = SIMD2<Int>
+
+private extension Position {
+    mutating func rotateLeft()  { self = Position(+y, -x) }
+    mutating func rotateRight() { self = Position(-y, +x) }
+}
 
 private enum Direction: Character {
     
@@ -102,6 +121,19 @@ private enum Movement: Character {
         }
     }
     
+    func apply(
+        value: Int, to position: inout Position, waypoint: inout Position
+    ) {
+        switch self {
+        case .left:
+            for _ in 1 ... (value / 90) { waypoint.rotateLeft() }
+        case .right:
+            for _ in 1 ... (value / 90) { waypoint.rotateRight() }
+        case .forward:
+            position &+= value &* waypoint
+        }
+    }
+    
 }
 
 private enum Action {
@@ -150,4 +182,13 @@ private struct Instruction {
         }
     }
     
+    func apply(to position: inout Position, waypoint: inout Position) {
+        switch action {
+        case .direction(let direction):
+            direction.apply(value: value, to: &waypoint)
+        case .movement(let movement):
+            movement.apply(value: value, to: &position, waypoint: &waypoint)
+        }
+    }
+
 }

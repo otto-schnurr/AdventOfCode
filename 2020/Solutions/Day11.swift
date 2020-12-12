@@ -30,30 +30,14 @@ final class Day11: XCTestCase {
         """
         let lines = map.components(separatedBy: .newlines)
         let seats = Set(from: lines)
-        var occupiedSeats = Set<Position>()
-        var snapShot = Set<Position>()
-        
-        repeat {
-            snapShot = occupiedSeats
-            occupiedSeats.fillVacant(from: seats)
-            occupiedSeats.pruneCrowds()
-        } while occupiedSeats != snapShot
-        
+        let occupiedSeats = _simulate(seats: seats)
         XCTAssertEqual(occupiedSeats.count, 37)
     }
 
     func test_solution() {
         let lines = TestHarnessInput("input11.txt")!
         let seats = Set(from: lines)
-        var occupiedSeats = Set<Position>()
-        var snapShot = Set<Position>()
-        
-        repeat {
-            snapShot = occupiedSeats
-            occupiedSeats.fillVacant(from: seats)
-            occupiedSeats.pruneCrowds()
-        } while occupiedSeats != snapShot
-        
+        let occupiedSeats = _simulate(seats: seats)
         XCTAssertEqual(occupiedSeats.count, 2_324)
     }
     
@@ -62,6 +46,20 @@ final class Day11: XCTestCase {
 
 // MARK: - Private
 private typealias Position = SIMD2<Int>
+private typealias Grid = Set<Position>
+
+private func _simulate(seats: Grid) -> Grid {
+    var occupiedSeats = Grid()
+    var snapShot = Grid()
+    
+    repeat {
+        snapShot = occupiedSeats
+        occupiedSeats.fillVacant(from: seats)
+        occupiedSeats.pruneCrowds()
+    } while occupiedSeats != snapShot
+    
+    return occupiedSeats
+}
 
 private let _adjacentOffsets = [
     Position(-1, -1), Position(0, -1), Position(+1, -1),

@@ -22,6 +22,7 @@ final class Day10: XCTestCase {
             differences.filter { $0 == 1 }.count *
             (differences.filter { $0 == 3 }.count)
         XCTAssertEqual(firstAnswer, 35)
+        XCTAssertEqual(_combinationCount(for: adapters), 8)
     }
 
     func test_secondExample() {
@@ -34,6 +35,7 @@ final class Day10: XCTestCase {
             differences.filter { $0 == 1 }.count *
             (differences.filter { $0 == 3 }.count)
         XCTAssertEqual(firstAnswer, 220)
+        XCTAssertEqual(_combinationCount(for: adapters), 19_208)
     }
     
     func test_solution() {
@@ -43,6 +45,7 @@ final class Day10: XCTestCase {
             differences.filter { $0 == 1 }.count *
             (differences.filter { $0 == 3 }.count)
         XCTAssertEqual(firstAnswer, 2_592)
+        XCTAssertEqual(_combinationCount(for: adapters), 198_428_693_313_536)
     }
     
 }
@@ -50,6 +53,62 @@ final class Day10: XCTestCase {
 
 // MARK: - Private
 private func _differences(for adapters: [Int]) -> [Int] {
-    let sorted = [ 0 ] + adapters.sorted()
-    return zip(sorted, sorted.dropFirst()).map { $0.1 - $0.0 } + [ 3 ]
+    let sorted = adapters.sorted()
+    return zip([ 0 ] + sorted, sorted).map { $0.1 - $0.0 } + [ 3 ]
+}
+
+private func _combinationCount(for adapters: [Int]) -> Int {
+    // note: The diff of 3 at the end does not change the count.
+    let foo = _slices(for: [ 0 ] + adapters.sorted()).map { slice in
+        _combinations(for: slice).filter { _isValid(combination: $0) }
+    }
+    
+    return foo.map { $0.count }.reduce(1, *)
+}
+
+private func _slices(for sortedAdapters: [Int]) -> [[Int]] {
+    var result = [[Int]]()
+    var slice = [Int]()
+    
+    for nextValue in sortedAdapters {
+        if let previousValue = slice.last {
+            if nextValue - previousValue > 2 {
+                result.append(slice)
+                slice = [ nextValue ]
+            } else {
+                slice.append(nextValue)
+            }
+        } else {
+            slice.append(nextValue)
+        }
+    }
+    
+    if !slice.isEmpty { result.append(slice) }
+    
+    return result
+}
+
+private func _combinations(for slice: [Int]) -> [[Int]] {
+    guard
+        slice.count > 2,
+        let first = slice.first,
+        let last = slice.last
+    else { return [ slice ] }
+    
+    let interior = slice[1 ..< slice.count - 1]
+    
+    let result = (0 ... interior.count).map {
+        interior.combinations(ofCount: $0).map { [ first ] + $0 + [ last ] }
+    }.flatMap { $0 }
+    
+    return result
+}
+
+private func _isValid(combination: [Int]) -> Bool {
+    assert(!combination.isEmpty)
+    guard combination.count > 1 else { return true }
+
+    let differences = zip(combination, combination.dropFirst()).map { $0.1 - $0.0 }
+    guard let max = differences.max() else { return false }
+    return max <= 3
 }

@@ -16,29 +16,34 @@ import XCTest
 final class Day12: XCTestCase {
 
     func test_examples() {
-        let lines = """
+        let instructions = """
         F10
         N3
         F7
         R90
         F11
-        """.components(separatedBy: .newlines)
-        let instructions = lines.map { Insruction($0)! }
-        
-        var position = Position.zero
-        var direction = Direction.east
-        
-        instructions.forEach { $0.apply(to: &position, facing: &direction)}
+        """.components(separatedBy: .newlines).map { Instruction($0)! }
+        let position = _run(instructions)
         XCTAssertEqual(abs(position.x) + abs(position.y), 25)
     }
 
     func test_solution() {
+        let instructions = TestHarnessInput("input12.txt")!.map { Instruction($0)! }
+        let position = _run(instructions)
+        XCTAssertEqual(abs(position.x) + abs(position.y), 2_280)
     }
     
 }
 
 
 // MARK: - Private
+private func _run(_ instructions: [Instruction]) -> Position {
+    var position = Position.zero
+    var direction = Direction.east
+    instructions.forEach { $0.apply(to: &position, facing: &direction)}
+    return position
+}
+
 private typealias Position = SIMD2<Int>
 
 private enum Direction: Character {
@@ -116,7 +121,7 @@ private enum Action {
     
 }
 
-private struct Insruction {
+private struct Instruction {
     
     let action: Action
     let value: Int

@@ -24,7 +24,12 @@ final class Day12: XCTestCase {
         F11
         """.components(separatedBy: .newlines)
         let instructions = lines.map { Insruction($0)! }
-        print(instructions)
+        
+        var position = Position.zero
+        var direction = Direction.east
+        
+        instructions.forEach { $0.apply(to: &position, facing: &direction)}
+        XCTAssertEqual(abs(position.x) + abs(position.y), 25)
     }
 
     func test_solution() {
@@ -37,16 +42,61 @@ final class Day12: XCTestCase {
 private typealias Position = SIMD2<Int>
 
 private enum Direction: Character {
+    
     case north = "N"
     case south = "S"
     case east = "E"
     case west = "W"
+    
+    func apply(value: Int, to position: inout Position) {
+        switch self {
+        case .north: position.y -= value
+        case .south: position.y += value
+        case .east: position.x += value
+        case .west: position.x -= value
+        }
+    }
+    
+    mutating func turnLeft() {
+        switch self {
+        case .north: self = .west
+        case .south: self = .east
+        case .east:  self = .north
+        case .west:  self = .south
+        }
+    }
+    
+    mutating func turnRight() {
+        switch self {
+        case .north: self = .east
+        case .south: self = .west
+        case .east:  self = .south
+        case .west:  self = .north
+        }
+
+    }
+    
 }
 
 private enum Movement: Character {
+
     case left = "L"
     case right = "R"
     case forward = "F"
+
+    func apply(
+        value: Int, to position: inout Position, facing direction: inout Direction
+    ) {
+        switch self {
+        case .left:
+            for _ in 1 ... (value / 90) { direction.turnLeft() }
+        case .right:
+            for _ in 1 ... (value / 90) { direction.turnRight() }
+        case .forward:
+            direction.apply(value: value, to: &position)
+        }
+    }
+    
 }
 
 private enum Action {
@@ -84,6 +134,15 @@ private struct Insruction {
         
         self.action = action
         self.value = value
+    }
+    
+    func apply(to position: inout Position, facing direction: inout Direction) {
+        switch action {
+        case .direction(let direction):
+            direction.apply(value: value, to: &position)
+        case .movement(let movement):
+            movement.apply(value: value, to: &position, facing: &direction)
+        }
     }
     
 }

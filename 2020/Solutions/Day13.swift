@@ -20,19 +20,9 @@ final class Day13: XCTestCase {
         939
         7,13,x,x,59,x,31,19
         """.components(separatedBy: .newlines)
-        let timestamp = Int(lines[0])!
-        let busIDs = lines[1]
-            .components(separatedBy: .punctuationCharacters)
-            .filter { $0 != "x" }
-            .compactMap { Int($0) }
-        let pairs = busIDs
-            .map { busID -> (busID: Int, departure: Int) in
-                let nextDeparture = (timestamp / busID + 1) * busID
-                return (busID: busID, departure: nextDeparture)
-            }
-        let bestPair = pairs
-            .min { $0.departure < $1.departure }!
-        XCTAssertEqual((bestPair.departure - 939) * bestPair.busID, 295)
+        let timestamp = _timeStamp(for: lines)!
+        let result = _nextDeparture(for: lines)!
+        XCTAssertEqual((result.departure - timestamp) * result.busID, 295)
     }
 
     func test_solution() {
@@ -42,3 +32,19 @@ final class Day13: XCTestCase {
 
 
 // MARK: - Private
+private func _timeStamp(for lines: [String]) -> Int? { return Int(lines[0]) }
+
+private func _nextDeparture(for lines: [String]) -> (busID: Int, departure: Int)? {
+    guard let timestamp = _timeStamp(for: lines) else { return nil }
+
+    let busIDs = lines[1]
+        .components(separatedBy: .punctuationCharacters)
+        .filter { $0 != "x" }
+        .compactMap { Int($0) }
+    let pairs = busIDs
+        .map { busID -> (busID: Int, departure: Int) in
+            let nextDeparture = (timestamp / busID + 1) * busID
+            return (busID: busID, departure: nextDeparture)
+        }
+    return pairs.min { $0.departure < $1.departure }
+}

@@ -26,6 +26,10 @@ final class Day13: XCTestCase {
     }
 
     func test_solution() {
+        let lines = Array(TestHarnessInput("input13.txt")!)
+        let timestamp = _timeStamp(for: lines)!
+        let result = _nextDeparture(for: lines)!
+        XCTAssertEqual((result.departure - timestamp) * result.busID, 5_257)
     }
     
 }

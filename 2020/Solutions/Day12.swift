@@ -10,7 +10,6 @@
 //  Created by Otto Schnurr on 12/12/2020.
 //
 
-import Algorithms
 import XCTest
 
 final class Day12: XCTestCase {

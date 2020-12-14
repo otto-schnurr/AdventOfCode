@@ -26,6 +26,9 @@ final class Day14: XCTestCase {
     }
 
     func test_solution() {
+        let lines = Array(TestHarnessInput("input14.txt")!)
+        let memory = _initializeMemory(from: lines)
+        XCTAssertEqual(memory.values.reduce(0, +), 9_628_746_976_360)
     }
     
 }

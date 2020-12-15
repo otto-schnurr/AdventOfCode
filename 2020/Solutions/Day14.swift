@@ -21,13 +21,15 @@ final class Day14: XCTestCase {
         mem[7] = 101
         mem[8] = 0
         """.components(separatedBy: .newlines)
-        let memory = _initializeMemory(from: lines)
+        let instructions = lines.compactMap { Instruction(line: $0) }
+        let memory = _initializeMemory(from: instructions)
         XCTAssertEqual(memory.values.reduce(0, +), 165)
     }
 
     func test_solution() {
         let lines = Array(TestHarnessInput("input14.txt")!)
-        let memory = _initializeMemory(from: lines)
+        let instructions = lines.compactMap { Instruction(line: $0) }
+        let memory = _initializeMemory(from: instructions)
         XCTAssertEqual(memory.values.reduce(0, +), 9_628_746_976_360)
     }
     
@@ -35,19 +37,18 @@ final class Day14: XCTestCase {
 
 
 // MARK: - Private
-typealias Memory = [Int: Int]
+private typealias Memory = [Int: Int]
 
-private func _initializeMemory(from lines: [String]) -> Memory {
-    let instructions = lines.compactMap { Instruction(line: $0) }
+private func _initializeMemory(from instructions: [Instruction]) -> Memory {
     var zerosMask = 0
     var onesMask = 0
     var memory = Memory()
 
     instructions.forEach {
         switch $0 {
-        case .mask(let newZeros, let newOnes):
-            zerosMask = newZeros
-            onesMask = newOnes
+        case .mask(let mask):
+            zerosMask = _isolateZeros(from: mask)!
+            onesMask = _isolateOnes(from: mask)!
         case .mem(let address, let value):
             memory[address] = (value | onesMask) & zerosMask
         }
@@ -58,18 +59,15 @@ private func _initializeMemory(from lines: [String]) -> Memory {
 
 private enum Instruction {
     
-    case mask(zeros: Int, ones: Int)
+    case mask(String)
     case mem(address: Int, value: Int)
     
     init?(line: String) {
         let words = line.components(separatedBy: .whitespaces)
         guard words.count == 3 else { return nil }
         
-        if
-            words[0] == "mask",
-            let zeros = _isolateZeros(from: words[2]),
-            let ones = _isolateOnes(from: words[2]) {
-            self = .mask(zeros: zeros, ones: ones)
+        if words[0] == "mask" {
+            self = .mask(words[2])
         } else if
             let address = _parseAddress(from: words[0]),
             let value = Int(words[2]) {
@@ -91,12 +89,12 @@ private func _parseAddress(from word: String) -> Int? {
     return Int(components[1])
 }
 
-private func _isolateZeros(from word: String) -> Int? {
-    let binaryNumber = word.replacingOccurrences(of: "X", with: "1")
+private func _isolateZeros(from mask: String) -> Int? {
+    let binaryNumber = mask.replacingOccurrences(of: "X", with: "1")
     return Int(binaryNumber, radix: 2)
 }
 
-private func _isolateOnes(from word: String) -> Int? {
-    let binaryNumber = word.replacingOccurrences(of: "X", with: "0")
+private func _isolateOnes(from mask: String) -> Int? {
+    let binaryNumber = mask.replacingOccurrences(of: "X", with: "0")
     return Int(binaryNumber, radix: 2)
 }

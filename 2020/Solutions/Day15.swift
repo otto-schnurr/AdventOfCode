@@ -25,6 +25,7 @@ final class Day15: XCTestCase {
     }
 
     func test_solution() {
+        XCTAssertEqual(_memoryGame(for: [7, 12, 1, 0, 16, 2]), 410)
     }
     
 }

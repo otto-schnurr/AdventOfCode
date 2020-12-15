@@ -16,6 +16,12 @@ final class Day15: XCTestCase {
 
     func test_examples() {
         XCTAssertEqual(_memoryGame(for: [0, 3, 6]), 436)
+        XCTAssertEqual(_memoryGame(for: [1, 3, 2]), 1)
+        XCTAssertEqual(_memoryGame(for: [2, 1, 3]), 10)
+        XCTAssertEqual(_memoryGame(for: [1, 2, 3]), 27)
+        XCTAssertEqual(_memoryGame(for: [2, 3, 1]), 78)
+        XCTAssertEqual(_memoryGame(for: [3, 2, 1]), 438)
+        XCTAssertEqual(_memoryGame(for: [3, 1, 2]), 1_836)
     }
 
     func test_solution() {

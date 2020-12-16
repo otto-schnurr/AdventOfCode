@@ -34,8 +34,11 @@ final class Day15: XCTestCase {
         XCTAssertEqual(_memoryGame(for: [3, 1, 2], turns: 30_000_000), 362)
     }
 
-    func TOO_SLOW_test_solution() {
+    func test_solution_part2() {
         XCTAssertEqual(_memoryGame(for: [7, 12, 1, 0, 16, 2], turns: 2020), 410)
+    }
+
+    func TOO_SLOW_test_solution_part2() {
         XCTAssertEqual(_memoryGame(for: [7, 12, 1, 0, 16, 2], turns: 30_000_000), 238)
     }
     

@@ -33,7 +33,7 @@ final class Day11: XCTestCase {
         XCTAssertEqual(occupiedSeats.count, 37)
     }
 
-    func test_solution() {
+    func TOO_SLOW_test_solution() {
         let lines = TestHarnessInput("input11.txt")!
         let seats = Set(from: lines)
         let occupiedSeats = _simulate(seats: seats)

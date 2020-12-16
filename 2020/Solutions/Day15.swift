@@ -15,28 +15,28 @@ import XCTest
 final class Day15: XCTestCase {
 
     func test_examples() {
-        XCTAssertEqual(_memoryGame(for: [0, 3, 6]), 436)
-        XCTAssertEqual(_memoryGame(for: [1, 3, 2]), 1)
-        XCTAssertEqual(_memoryGame(for: [2, 1, 3]), 10)
-        XCTAssertEqual(_memoryGame(for: [1, 2, 3]), 27)
-        XCTAssertEqual(_memoryGame(for: [2, 3, 1]), 78)
-        XCTAssertEqual(_memoryGame(for: [3, 2, 1]), 438)
-        XCTAssertEqual(_memoryGame(for: [3, 1, 2]), 1_836)
+        XCTAssertEqual(_memoryGame(for: [0, 3, 6], turns: 2020), 436)
+        XCTAssertEqual(_memoryGame(for: [1, 3, 2], turns: 2020), 1)
+        XCTAssertEqual(_memoryGame(for: [2, 1, 3], turns: 2020), 10)
+        XCTAssertEqual(_memoryGame(for: [1, 2, 3], turns: 2020), 27)
+        XCTAssertEqual(_memoryGame(for: [2, 3, 1], turns: 2020), 78)
+        XCTAssertEqual(_memoryGame(for: [3, 2, 1], turns: 2020), 438)
+        XCTAssertEqual(_memoryGame(for: [3, 1, 2], turns: 2020), 1_836)
     }
 
     func test_solution() {
-        XCTAssertEqual(_memoryGame(for: [7, 12, 1, 0, 16, 2]), 410)
+        XCTAssertEqual(_memoryGame(for: [7, 12, 1, 0, 16, 2], turns: 2020), 410)
     }
     
 }
 
 
 // MARK: - Private
-private func _memoryGame(for startingNumbers: [Int]) -> Int {
+private func _memoryGame(for startingNumbers: [Int], turns: Int) -> Int {
     var history = [Int: Int]()
     var nextNumber = 0
     
-    for turn in 1...2019 {
+    for turn in 1 ..< turns {
         var currentNumber = nextNumber
         
         if turn <= startingNumbers.count {

@@ -33,6 +33,8 @@ final class Day16: XCTestCase {
     }
 
     func test_solution() {
+        let lines = Array(TestHarnessInput("input16.txt", includeEmptyLines: true)!)
+        XCTAssertEqual(_invalidValues(in: lines).reduce(0, +), 20_013)
     }
     
 }

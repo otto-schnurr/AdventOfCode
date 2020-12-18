@@ -39,10 +39,16 @@ final class Day16: XCTestCase {
     func test_solution() {
         let lines = Array(TestHarnessInput("input16.txt", includeEmptyLines: true)!)
         let (fields, tickets) = _parse(lines)!
-        XCTAssertEqual(
-            _invalidValues(in: tickets, basedOn: fields).reduce(0, +),
-            20_013
-        )
+
+        let invalidValues = _invalidValues(in: tickets, basedOn: fields)
+        XCTAssertEqual(invalidValues.reduce(0, +), 20_013)
+
+        let validTickets = tickets.filter { ticket in
+            ticket.allSatisfy { !invalidValues.contains($0) }
+        }
+
+        let departureValues = _myDepartureValues(in: validTickets, basedOn: fields)
+        XCTAssertEqual(departureValues.reduce(1, *), 5_977_293_343_129)
     }
     
 }
@@ -50,6 +56,7 @@ final class Day16: XCTestCase {
 
 // MARK: - Private
 private typealias Ticket = [Int]
+private typealias Index = Int
 
 private func _parse(_ lines: [String]) -> (fields: [Field], tickets: [Ticket])? {
     let groups = lines.split(separator: "").map { Array($0) }
@@ -63,7 +70,9 @@ private func _parse(_ lines: [String]) -> (fields: [Field], tickets: [Ticket])? 
     return (fields, tickets)
 }
 
-private func _invalidValues(in tickets: [Ticket], basedOn fields: [Field]) -> [Int] {
+private func _invalidValues(
+    in tickets: [Ticket], basedOn fields: [Field]
+) -> [Int] {
     let allowedValues = fields.reduce(IndexSet()) { result, field in
         return result.union(field.range)
     }
@@ -71,6 +80,53 @@ private func _invalidValues(in tickets: [Ticket], basedOn fields: [Field]) -> [I
     return tickets.map { ticket in
         ticket.filter { !allowedValues.contains($0) }
     }.flatMap { $0 }
+}
+
+private func _myDepartureValues(
+    in tickets: [Ticket], basedOn fields: [Field]
+) -> [Int] {
+    guard let myTicket = tickets.first else { return [ ] }
+    
+    let initial = Array(repeating: IndexSet(), count: myTicket.count)
+    let columns = tickets.reduce(initial) { result, ticket in
+        zip(result, ticket).map { (indices, value) in
+            indices.union(IndexSet(integer: value))
+        }
+    }
+    
+    var fieldMap = [String: IndexSet]()
+    
+    for field in fields {
+        var indices = fieldMap[field.name] ?? IndexSet()
+
+        for (index, column) in columns.enumerated() {
+            if field.range .contains(integersIn: column) {
+                indices.insert(index)
+            }
+        }
+
+        fieldMap[field.name] = indices
+    }
+    
+    return _simplify(fieldMap)
+        .filter { $0.key.hasPrefix("departure") }
+        .map { myTicket[$0.value] }
+}
+
+private func _simplify(_ rawMap: [String: IndexSet]) -> [String: Index] {
+    var resolvedIndices = IndexSet()
+    var result = [String: Index]()
+    
+    repeat {
+        for (field, indices) in rawMap {
+            if let onlyIndex = indices.subtracting(resolvedIndices).onlyIndex {
+                result[field] = onlyIndex
+                resolvedIndices.insert(onlyIndex)
+            }
+        }
+    } while result.count < rawMap.count
+    
+    return result
 }
 
 private struct Field {
@@ -96,6 +152,12 @@ private struct Field {
 }
 
 private extension IndexSet {
+
+    var onlyIndex: IndexSet.Element? {
+        guard count == 1, let index = first else { return nil }
+        return index
+    }
+    
     init?(string: String) {
         let words = string.components(separatedBy: "-")
         guard
@@ -106,6 +168,7 @@ private extension IndexSet {
         
         self = IndexSet(minimum ... maximum)
     }
+
 }
 
 private extension Array where Element == Int {

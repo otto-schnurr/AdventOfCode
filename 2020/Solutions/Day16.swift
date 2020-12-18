@@ -41,31 +41,48 @@ final class Day16: XCTestCase {
 
 
 // MARK: - Private
+private typealias Ticket = [Int]
+
 private func _invalidValues(in lines: [String]) -> [Int] {
     let groups = lines.split(separator: "").map { Array($0) }
     guard groups.count >= 3 else { return [ ] }
     
-    let ranges = _parseRanges(from: groups[0])
-    return _parseValues(from: groups[2]).filter { value in
-        !ranges.contains { $0.contains(value) }
+    let fields = groups[0].compactMap { Field(string: $0) }
+    let allowedValues = fields.reduce(IndexSet()) { result, field in
+        return result.union(field.range)
     }
-}
+    let tickets =
+        [ Ticket(string: groups[1][1])! ] +
+        groups[2].dropFirst().compactMap { Ticket(string: $0) }
 
-private func _parseRanges(from lines: [String]) -> [ClosedRange<Int>] {
-    return lines.map {
-         $0.components(separatedBy: .whitespaces)
-           .compactMap { ClosedRange<Int>(string: $0) }
+    return tickets.map { ticket in
+        ticket.filter { !allowedValues.contains($0) }
     }.flatMap { $0 }
 }
 
-private func _parseValues(from lines: [String]) -> [Int] {
-    return lines.dropFirst().map {
-        $0.components(separatedBy: .punctuationCharacters)
-          .compactMap { Int($0) }
-    }.flatMap { $0 }
+private struct Field {
+
+    let name: String
+    let range: IndexSet
+
+    init?(string: String) {
+        let components = string.components(separatedBy: ": ")
+        guard components.count == 2 else { return nil }
+        
+        let words = components[1].components(separatedBy: .whitespaces)
+        guard
+            words.count == 3,
+            let firstSet = IndexSet(string: words[0]),
+            let secondSet = IndexSet(string: words[2])
+        else { return nil }
+            
+        name = components[0]
+        range = firstSet.union(secondSet)
+    }
+
 }
 
-private extension ClosedRange where Element == Int {
+private extension IndexSet {
     init?(string: String) {
         let words = string.components(separatedBy: "-")
         guard
@@ -74,6 +91,16 @@ private extension ClosedRange where Element == Int {
             let maximum = Int(words[1])
         else { return nil }
         
-        self = minimum ... maximum
+        self = IndexSet(minimum ... maximum)
+    }
+}
+
+private extension Array where Element == Int {
+    init?(string: String) {
+        let values = string
+            .components(separatedBy: .punctuationCharacters)
+            .map { Int($0) }
+        guard values.allSatisfy({ $0 != nil }) else { return nil }
+        self = values.compactMap { $0 }
     }
 }

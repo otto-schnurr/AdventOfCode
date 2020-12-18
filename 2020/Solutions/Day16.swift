@@ -29,12 +29,20 @@ final class Day16: XCTestCase {
         55,2,20
         38,6,12
         """.components(separatedBy: .newlines)
-        XCTAssertEqual(_invalidValues(in: lines).reduce(0, +), 71)
+        let (fields, tickets) = _parse(lines)!
+        XCTAssertEqual(
+            _invalidValues(in: tickets, basedOn: fields).reduce(0, +),
+            71
+        )
     }
 
     func test_solution() {
         let lines = Array(TestHarnessInput("input16.txt", includeEmptyLines: true)!)
-        XCTAssertEqual(_invalidValues(in: lines).reduce(0, +), 20_013)
+        let (fields, tickets) = _parse(lines)!
+        XCTAssertEqual(
+            _invalidValues(in: tickets, basedOn: fields).reduce(0, +),
+            20_013
+        )
     }
     
 }
@@ -43,17 +51,22 @@ final class Day16: XCTestCase {
 // MARK: - Private
 private typealias Ticket = [Int]
 
-private func _invalidValues(in lines: [String]) -> [Int] {
+private func _parse(_ lines: [String]) -> (fields: [Field], tickets: [Ticket])? {
     let groups = lines.split(separator: "").map { Array($0) }
-    guard groups.count >= 3 else { return [ ] }
+    guard groups.count >= 3 else { return nil }
     
     let fields = groups[0].compactMap { Field(string: $0) }
-    let allowedValues = fields.reduce(IndexSet()) { result, field in
-        return result.union(field.range)
-    }
     let tickets =
         [ Ticket(string: groups[1][1])! ] +
         groups[2].dropFirst().compactMap { Ticket(string: $0) }
+
+    return (fields, tickets)
+}
+
+private func _invalidValues(in tickets: [Ticket], basedOn fields: [Field]) -> [Int] {
+    let allowedValues = fields.reduce(IndexSet()) { result, field in
+        return result.union(field.range)
+    }
 
     return tickets.map { ticket in
         ticket.filter { !allowedValues.contains($0) }

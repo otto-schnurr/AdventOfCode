@@ -14,7 +14,7 @@ import XCTest
 
 final class Day18: XCTestCase {
 
-    func test_examples() {
+    func test_example_part1() {
         let lines = """
         2 * 3 + (4 * 5)
         5 + (8 * 3 + 9 + 3 * 4 * 3)
@@ -37,29 +37,52 @@ final class Day18: XCTestCase {
 
 // MARK: - Private
 private func _evaluate(_ line: String) -> Int {
-    var index = line.startIndex
-    return _evaluate(line, from: &index)
+    let tokens = line.compactMap { Token(character: $0) }
+    var index = 0
+    return _evaluate(tokens, from: &index)
 }
 
-private func _evaluate(_ line: String, from index: inout String.Index) -> Int {
+private enum Token {
+
+    case value(Int)
+    case add, multiply
+    case beginGroup, endGroup
+
+    init?(character: Character) {
+        if let value = character.wholeNumberValue {
+            self = .value(value)
+        } else {
+            switch character {
+            case "+": self = .add
+            case "*": self = .multiply
+            case "(": self = .beginGroup
+            case ")": self = .endGroup
+            default:  return nil
+            }
+        }
+    }
+
+}
+
+private func _evaluate(_ tokens: [Token], from index: inout Int) -> Int {
     var accumulator = 0
-    var operation: Character?
+    var operation: Token?
     
-    while index < line.endIndex {
-        let character = line[index]
-        index = line.index(after: index)
+    while index < tokens.count {
+        let token = tokens[index]
+        index += 1
 
         var nextValue: Int?
         
-        if let value = character.wholeNumberValue {
+        switch token {
+        case .value(let value):
             nextValue = value
-        } else {
-            switch character {
-            case "+", "*": operation = character
-            case "(": nextValue = _evaluate(line, from: &index)
-            case ")": return accumulator
-            default: break
-            }
+        case .add, .multiply:
+            operation = token
+        case .beginGroup:
+            nextValue = _evaluate(tokens, from: &index)
+        case .endGroup:
+            return accumulator
         }
         
         if let nextValue = nextValue {
@@ -67,9 +90,12 @@ private func _evaluate(_ line: String, from index: inout String.Index) -> Int {
                 operation = nil
                 
                 switch _operation {
-                case "+": accumulator += nextValue
-                case "*": accumulator *= nextValue
-                default: break
+                case .add:
+                    accumulator += nextValue
+                case .multiply:
+                    accumulator *= nextValue
+                default:
+                    break
                 }
             } else {
                 // This is the first value before any operations.

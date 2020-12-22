@@ -27,6 +27,9 @@ final class Day18: XCTestCase {
     }
 
     func test_solution() {
+        let lines = Array(TestHarnessInput("input18.txt")!)
+        let results = lines.map { _evaluate($0) }
+        XCTAssertEqual(results.reduce(0, +), 4_940_631_886_147)
     }
     
 }

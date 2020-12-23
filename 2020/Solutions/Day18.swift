@@ -64,6 +64,18 @@ private enum Token {
 
 }
 
+extension Token: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .value(let value): return String(value)
+        case .add:              return "+"
+        case .multiply:         return "*"
+        case .beginGroup:       return "("
+        case .endGroup:         return ")"
+        }
+    }
+}
+
 private func _evaluate(_ tokens: [Token], from index: inout Int) -> Int {
     var accumulator = 0
     var operation: Token?

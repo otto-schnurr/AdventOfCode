@@ -20,7 +20,7 @@ final class Day17: XCTestCase {
         ..#
         ###
         """.components(separatedBy: .newlines)
-        var grid = Grid(from: lines)
+        var grid = Grid3D(from: lines)
         
         for _ in 1...6 { grid = _update(grid) }
         XCTAssertEqual(grid.count, 112)
@@ -37,7 +37,7 @@ final class Day17: XCTestCase {
         #..####.
         #...#.#.
         """.components(separatedBy: .newlines)
-        var grid = Grid(from: lines)
+        var grid = Grid3D(from: lines)
         
         for _ in 1...6 { grid = _update(grid) }
         XCTAssertEqual(grid.count, 380)
@@ -47,17 +47,17 @@ final class Day17: XCTestCase {
 
 
 // MARK: - Private
-private typealias Position = SIMD3<Int>
-private typealias Grid = Set<Position>
+private typealias Position3D = SIMD3<Int>
+private typealias Grid3D = Set<Position3D>
 
-private let _adjacentOffsets: [Position] = {
+private let _adjacentOffsets: [Position3D] = {
     let range = -1 ... +1
-    var result = [Position]()
+    var result = [Position3D]()
     
     for x in range {
         for y in range {
             for z in range {
-                let position = Position(x, y, z)
+                let position = Position3D(x, y, z)
                 if position != .zero { result.append(position) }
             }
         }
@@ -66,14 +66,14 @@ private let _adjacentOffsets: [Position] = {
     return result
 }()
 
-private extension Set where Element == Position {
+private extension Set where Element == Position3D {
     
     init<Lines>(from lines: Lines) where Lines: Sequence, Lines.Element == String {
-        var result = Set<Position>()
+        var result = Set<Position3D>()
         
         for (y, row) in lines.enumerated() {
             for (x, _) in row.enumerated().filter({ $0.element == "#" }) {
-                result.insert(Position(x, y, 0))
+                result.insert(Position3D(x, y, 0))
             }
         }
 
@@ -82,9 +82,9 @@ private extension Set where Element == Position {
 
 }
 
-private func _update(_ grid: Grid) -> Grid {
-    var adjacentPositions = Grid()
-    var result = Grid()
+private func _update(_ grid: Grid3D) -> Grid3D {
+    var adjacentPositions = Grid3D()
+    var result = Grid3D()
 
     // Collate active neighbors around active positions.
     // Also collate positions adjacent to active positions.

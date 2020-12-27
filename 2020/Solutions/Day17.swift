@@ -21,9 +21,9 @@ final class Day17: XCTestCase {
         ###
         """.components(separatedBy: .newlines)
 
-        var grid3D = Grid3D(from: lines)
-        for _ in 1...6 { grid3D = _update(grid3D, offsets: _adjacentOffsets3D) }
-        XCTAssertEqual(grid3D.count, 112)
+        var grid = Grid3D(from: lines)
+        for _ in 1...6 { grid = _update(grid, offsets: _adjacentOffsets3D) }
+        XCTAssertEqual(grid.count, 112)
     }
     
     func TOO_SLOW_test_example_part2() {
@@ -33,12 +33,12 @@ final class Day17: XCTestCase {
         ###
         """.components(separatedBy: .newlines)
 
-        var grid4D = Grid4D(from: lines)
-        for _ in 1...6 { grid4D = _update(grid4D, offsets: _adjacentOffsets4D) }
-        XCTAssertEqual(grid4D.count, 848)
+        var grid = Grid4D(from: lines)
+        for _ in 1...6 { grid = _update(grid, offsets: _adjacentOffsets4D) }
+        XCTAssertEqual(grid.count, 848)
     }
 
-    func test_solution() {
+    func test_solution_part1() {
         let lines = """
         #.#.##.#
         #.####.#
@@ -49,10 +49,27 @@ final class Day17: XCTestCase {
         #..####.
         #...#.#.
         """.components(separatedBy: .newlines)
-        var grid = Grid3D(from: lines)
         
+        var grid = Grid3D(from: lines)
         for _ in 1...6 { grid = _update(grid, offsets: _adjacentOffsets3D) }
         XCTAssertEqual(grid.count, 380)
+    }
+    
+    func TOO_SLOW_test_solution_part2() {
+        let lines = """
+        #.#.##.#
+        #.####.#
+        ...##...
+        #####.##
+        #....###
+        ##..##..
+        #..####.
+        #...#.#.
+        """.components(separatedBy: .newlines)
+        
+        var grid = Grid4D(from: lines)
+        for _ in 1...6 { grid = _update(grid, offsets: _adjacentOffsets4D) }
+        XCTAssertEqual(grid.count, 2_332)
     }
     
 }

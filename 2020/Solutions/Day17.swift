@@ -22,7 +22,7 @@ final class Day17: XCTestCase {
         """.components(separatedBy: .newlines)
         var grid = Grid3D(from: lines)
         
-        for _ in 1...6 { grid = _update(grid) }
+        for _ in 1...6 { grid = _update(grid, offsets: _adjacentOffsets3D) }
         XCTAssertEqual(grid.count, 112)
     }
 
@@ -39,7 +39,7 @@ final class Day17: XCTestCase {
         """.components(separatedBy: .newlines)
         var grid = Grid3D(from: lines)
         
-        for _ in 1...6 { grid = _update(grid) }
+        for _ in 1...6 { grid = _update(grid, offsets: _adjacentOffsets3D) }
         XCTAssertEqual(grid.count, 380)
     }
     
@@ -50,7 +50,7 @@ final class Day17: XCTestCase {
 private typealias Position3D = SIMD3<Int>
 private typealias Grid3D = Set<Position3D>
 
-private let _adjacentOffsets: [Position3D] = {
+private let _adjacentOffsets3D: [Position3D] = {
     let range = -1 ... +1
     var result = [Position3D]()
     
@@ -82,7 +82,7 @@ private extension Set where Element == Position3D {
 
 }
 
-private func _update(_ grid: Grid3D) -> Grid3D {
+private func _update(_ grid: Grid3D, offsets: [Position3D]) -> Grid3D {
     var adjacentPositions = Grid3D()
     var result = Grid3D()
 
@@ -91,7 +91,7 @@ private func _update(_ grid: Grid3D) -> Grid3D {
     for position in grid {
         var neigborCount = 0
         
-        for offset in _adjacentOffsets {
+        for offset in offsets {
             let adjacentPosition = position &+ offset
             adjacentPositions.insert(adjacentPosition)
             
@@ -112,7 +112,7 @@ private func _update(_ grid: Grid3D) -> Grid3D {
     for position in adjacentPositions {
         var neigborCount = 0
         
-        for offset in _adjacentOffsets {
+        for offset in offsets {
             let adjacentPosition = position &+ offset
             
             if neigborCount < 4 {

@@ -41,12 +41,18 @@ final class Day11: XCTestCase {
     }
 
     func test_solution() {
-        let lines = TestHarnessInput("input11.txt")!
+        let lines = Array(TestHarnessInput("input11.txt")!)
         let seats = Grid(from: lines)
         
-        let map = _makeAdjacencyMap(for: seats)
-        let occupiedSeats = _simulate(seats: seats, threshold: 4, map: map)
+        var map = _makeAdjacencyMap(for: seats)
+        var occupiedSeats = _simulate(seats: seats, threshold: 4, map: map)
         XCTAssertEqual(occupiedSeats.count, 2_324)
+
+        map = _makeLineOfSightMap(
+            for: seats, width: lines.first?.count ?? 0, height: lines.count
+        )
+        occupiedSeats = _simulate(seats: seats, threshold: 5, map: map)
+        XCTAssertEqual(occupiedSeats.count, 2_068)
     }
     
 }

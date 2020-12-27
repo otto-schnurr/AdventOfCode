@@ -66,12 +66,6 @@ private let _adjacentOffsets = [
     Position(-1, +1), Position(0, +1), Position(+1, +1)
 ]
 
-private extension Position {
-    var adjacentPositions: [Position] {
-        return _adjacentOffsets.map { self &+ $0 }
-    }
-}
-
 private extension Set where Element == Position {
     
     init<Lines>(from lines: Lines) where Lines: Sequence, Lines.Element == String {
@@ -86,17 +80,38 @@ private extension Set where Element == Position {
         self = result
     }
 
-    func elements(adjacentTo position: Position) -> [Position] {
-        return position.adjacentPositions.filter { self.contains($0) }
-    }
-    
     mutating func fillVacant(from seats: Set<Position>) {
-        let emptySeats = seats.filter { elements(adjacentTo: $0).isEmpty }
+        var emptySeats = [Position]()
+
+        nextSeat: for seat in seats {
+            for offset in _adjacentOffsets {
+                let adjacentPosition = seat &+ offset
+                if contains(adjacentPosition) { continue nextSeat }
+            }
+            
+            emptySeats.append(seat)
+        }
+
         formUnion(emptySeats)
     }
     
     mutating func pruneCrowds() {
-        let crowdedSeats = filter { elements(adjacentTo: $0 ).count >= 4 }
+        var crowdedSeats = [Position]()
+        
+        nextSeat: for seat in self {
+            var neighborCount = 0
+            
+            for offset in _adjacentOffsets {
+                let adjacentPosition = seat &+ offset
+                neighborCount += contains(adjacentPosition) ? 1 : 0
+
+                if neighborCount >= 4 {
+                    crowdedSeats.append(seat)
+                    continue nextSeat
+                }
+            }
+        }
+        
         subtract(crowdedSeats)
     }
     

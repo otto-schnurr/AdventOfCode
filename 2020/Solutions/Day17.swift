@@ -50,6 +50,9 @@ final class Day17: XCTestCase {
 private typealias Position3D = SIMD3<Int>
 private typealias Grid3D = Set<Position3D>
 
+private typealias Position4D = SIMD4<Int>
+private typealias Grid4D = Set<Position4D>
+
 private let _adjacentOffsets3D: [Position3D] = {
     let range = -1 ... +1
     var result = [Position3D]()
@@ -69,7 +72,7 @@ private let _adjacentOffsets3D: [Position3D] = {
 private extension Set where Element == Position3D {
     
     init<Lines>(from lines: Lines) where Lines: Sequence, Lines.Element == String {
-        var result = Set<Position3D>()
+        var result = Grid3D()
         
         for (y, row) in lines.enumerated() {
             for (x, _) in row.enumerated().filter({ $0.element == "#" }) {
@@ -82,9 +85,27 @@ private extension Set where Element == Position3D {
 
 }
 
-private func _update(_ grid: Grid3D, offsets: [Position3D]) -> Grid3D {
-    var adjacentPositions = Grid3D()
-    var result = Grid3D()
+private extension Set where Element == Position4D {
+    
+    init<Lines>(from lines: Lines) where Lines: Sequence, Lines.Element == String {
+        var result = Grid4D()
+        
+        for (y, row) in lines.enumerated() {
+            for (x, _) in row.enumerated().filter({ $0.element == "#" }) {
+                result.insert(Position4D(x, y, 0, 0))
+            }
+        }
+
+        self = result
+    }
+
+}
+
+private func _update<P: SIMD>(
+    _ grid: Set<P>, offsets: [P]
+) -> Set<P> where P.Scalar: FixedWidthInteger {
+    var adjacentPositions = Set<P>()
+    var result = Set<P>()
 
     // Collate active neighbors around active positions.
     // Also collate positions adjacent to active positions.

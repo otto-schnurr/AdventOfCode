@@ -14,16 +14,28 @@ import XCTest
 
 final class Day17: XCTestCase {
 
-    func test_examples() {
+    func test_example_part1() {
         let lines = """
         .#.
         ..#
         ###
         """.components(separatedBy: .newlines)
-        var grid = Grid3D(from: lines)
-        
-        for _ in 1...6 { grid = _update(grid, offsets: _adjacentOffsets3D) }
-        XCTAssertEqual(grid.count, 112)
+
+        var grid3D = Grid3D(from: lines)
+        for _ in 1...6 { grid3D = _update(grid3D, offsets: _adjacentOffsets3D) }
+        XCTAssertEqual(grid3D.count, 112)
+    }
+    
+    func TOO_SLOW_test_example_part2() {
+        let lines = """
+        .#.
+        ..#
+        ###
+        """.components(separatedBy: .newlines)
+
+        var grid4D = Grid4D(from: lines)
+        for _ in 1...6 { grid4D = _update(grid4D, offsets: _adjacentOffsets4D) }
+        XCTAssertEqual(grid4D.count, 848)
     }
 
     func test_solution() {
@@ -62,6 +74,24 @@ private let _adjacentOffsets3D: [Position3D] = {
             for z in range {
                 let position = Position3D(x, y, z)
                 if position != .zero { result.append(position) }
+            }
+        }
+    }
+    
+    return result
+}()
+
+private let _adjacentOffsets4D: [Position4D] = {
+    let range = -1 ... +1
+    var result = [Position4D]()
+    
+    for x in range {
+        for y in range {
+            for z in range {
+                for w in range {
+                    let position = Position4D(x, y, z, w)
+                    if position != .zero { result.append(position) }
+                }
             }
         }
     }

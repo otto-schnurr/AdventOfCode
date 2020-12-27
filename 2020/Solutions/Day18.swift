@@ -32,8 +32,12 @@ final class Day18: XCTestCase {
 
     func test_solution() {
         let lines = Array(TestHarnessInput("input18.txt")!)
-        let results = lines.map { _evaluate($0, precedence: .none) }
+        
+        var results = lines.map { _evaluate($0, precedence: .none) }
         XCTAssertEqual(results.reduce(0, +), 4_940_631_886_147)
+        
+        results = lines.map { _evaluate($0, precedence: .additionFirst) }
+        XCTAssertEqual(results.reduce(0, +), 283_582_817_678_281)
     }
     
 }

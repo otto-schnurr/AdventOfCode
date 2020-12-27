@@ -20,8 +20,10 @@ final class Day17: XCTestCase {
         ..#
         ###
         """.components(separatedBy: .newlines)
-        let grid = Grid(from: lines)
-        print(grid)
+        var grid = Grid(from: lines)
+        
+        for _ in 1...6 { grid = _update(grid) }
+        XCTAssertEqual(grid.count, 112)
     }
 
     func test_solution() {
@@ -34,12 +36,21 @@ final class Day17: XCTestCase {
 private typealias Position = SIMD3<Int>
 private typealias Grid = Set<Position>
 
-private extension Position {
-    var adjacentPositions: [Position] {
-        // !!!: implement me
-        return [ ]
+private let _adjacentOffsets: [Position] = {
+    let range = -1 ... +1
+    var result = [Position]()
+    
+    for x in range {
+        for y in range {
+            for z in range {
+                let position = Position(x, y, z)
+                if position != .zero { result.append(position) }
+            }
+        }
     }
-}
+    
+    return result
+}()
 
 private extension Set where Element == Position {
     
@@ -55,4 +66,50 @@ private extension Set where Element == Position {
         self = result
     }
 
+}
+
+private func _update(_ grid: Grid) -> Grid {
+    var adjacentPositions = Grid()
+    var result = Grid()
+
+    // Collate active neighbors around active positions.
+    // Also collate positions adjacent to active positions.
+    for position in grid {
+        var neigborCount = 0
+        
+        for offset in _adjacentOffsets {
+            let adjacentPosition = position &+ offset
+            adjacentPositions.insert(adjacentPosition)
+            
+            if neigborCount < 4 {
+                neigborCount += grid.contains(adjacentPosition) ? 1 : 0
+            }
+        }
+        
+        if (2...3).contains(neigborCount) {
+            result.insert(position)
+        }
+    }
+    
+    // Don't include previously active in adjacent.
+    adjacentPositions.subtract(grid)
+    
+    // Collate active neighbors around empty adjacent positions.
+    for position in adjacentPositions {
+        var neigborCount = 0
+        
+        for offset in _adjacentOffsets {
+            let adjacentPosition = position &+ offset
+            
+            if neigborCount < 4 {
+                neigborCount += grid.contains(adjacentPosition) ? 1 : 0
+            }
+        }
+        
+        if neigborCount == 3 {
+            result.insert(position)
+        }
+    }
+    
+    return result
 }

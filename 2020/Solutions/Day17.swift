@@ -27,6 +27,20 @@ final class Day17: XCTestCase {
     }
 
     func test_solution() {
+        let lines = """
+        #.#.##.#
+        #.####.#
+        ...##...
+        #####.##
+        #....###
+        ##..##..
+        #..####.
+        #...#.#.
+        """.components(separatedBy: .newlines)
+        var grid = Grid(from: lines)
+        
+        for _ in 1...6 { grid = _update(grid) }
+        XCTAssertEqual(grid.count, 380)
     }
     
 }

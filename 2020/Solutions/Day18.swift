@@ -37,9 +37,12 @@ final class Day18: XCTestCase {
 
 // MARK: - Private
 private func _evaluate(_ line: String) -> Int {
-    let tokens = line.compactMap { Token(character: $0) }
-    var index = 0
-    return _evaluate(tokens, from: &index)
+    let expression = line.compactMap { Token(character: $0) }
+    let result = _simplify(expression)
+    switch result[0] {
+    case .value(let result): return result
+    default:                 return 0
+    }
 }
 
 private enum Token {
@@ -76,45 +79,60 @@ extension Token: CustomStringConvertible {
     }
 }
 
-private func _evaluate(_ tokens: [Token], from index: inout Int) -> Int {
-    var accumulator = 0
-    var operation: Token?
-    
-    while index < tokens.count {
-        let token = tokens[index]
-        index += 1
+private func _simplify(_ expression: [Token]) -> [Token] {
+    let firstPass = _reduceSubexpressions(in: expression)
+    return _reduceOperations(in: firstPass)
+}
 
-        var nextValue: Int?
-        
+private func _reduceSubexpressions(in expression: [Token]) -> [Token] {
+    var subexpression = [Token]()
+    
+    return expression.reduce(into: [ ]) { result, token in
         switch token {
-        case .value(let value):
-            nextValue = value
-        case .add, .multiply:
-            operation = token
-        case .beginGroup:
-            nextValue = _evaluate(tokens, from: &index)
-        case .endGroup:
-            return accumulator
+        case .beginGroup, .endGroup:
+            subexpression.append(token)
+        default:
+            if subexpression.isEmpty {
+                result.append(token)
+            } else {
+                subexpression.append(token)
+            }
         }
         
-        if let nextValue = nextValue {
-            if let _operation = operation {
-                operation = nil
-                
-                switch _operation {
-                case .add:
-                    accumulator += nextValue
-                case .multiply:
-                    accumulator *= nextValue
-                default:
-                    break
-                }
-            } else {
-                // This is the first value before any operations.
-                accumulator = nextValue
+        if !subexpression.isEmpty && subexpression.nestedCount == 0 {
+            result += _simplify(subexpression.dropFirst().dropLast())
+            subexpression = [ ]
+        }
+    }
+}
+
+private func _reduceOperations(in expression: [Token]) -> [Token] {
+    return expression.reduce(into: [ ]) { result, token in
+        result.append(token)
+        let suffix = result.suffix(3)
+        guard suffix.count == 3 else { return }
+        
+        switch (suffix[0], suffix[1], suffix[2]) {
+        case (.value(let lhs), .add, .value(let rhs)):
+            result.removeLast(3)
+            result.append(.value(lhs + rhs))
+        case (.value(let lhs), .multiply, .value(let rhs)):
+            result.removeLast(3)
+            result.append(.value(lhs * rhs))
+        default:
+            break
+        }
+    }
+}
+
+private extension Array where Element == Token {
+    var nestedCount: Int {
+        return self.reduce(0) { result, token in
+            switch token {
+            case .beginGroup: return result + 1
+            case .endGroup:   return result - 1
+            default:          return result
             }
         }
     }
-    
-    return accumulator
 }

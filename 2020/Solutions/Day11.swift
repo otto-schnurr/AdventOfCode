@@ -15,7 +15,7 @@ import XCTest
 final class Day11: XCTestCase {
 
     func test_examples() {
-        let map = """
+        let lines = """
         L.LL.LL.LL
         LLLLLLL.LL
         L.L.L..L..
@@ -26,17 +26,20 @@ final class Day11: XCTestCase {
         LLLLLLLLLL
         L.LLLLLL.L
         L.LLLLL.LL
-        """
-        let lines = map.components(separatedBy: .newlines)
-        let seats = Set(from: lines)
-        let occupiedSeats = _simulate(seats: seats)
+        """.components(separatedBy: .newlines)
+        let seats = Grid(from: lines)
+        let map = _makeAdjacencyMap(for: seats)
+        
+        let occupiedSeats = _simulate(seats: seats, map: map)
         XCTAssertEqual(occupiedSeats.count, 37)
     }
 
-    func TOO_SLOW_test_solution() {
+    func test_solution() {
         let lines = TestHarnessInput("input11.txt")!
-        let seats = Set(from: lines)
-        let occupiedSeats = _simulate(seats: seats)
+        let seats = Grid(from: lines)
+        let map = _makeAdjacencyMap(for: seats)
+        
+        let occupiedSeats = _simulate(seats: seats, map: map)
         XCTAssertEqual(occupiedSeats.count, 2_324)
     }
     
@@ -46,15 +49,16 @@ final class Day11: XCTestCase {
 // MARK: - Private
 private typealias Position = SIMD2<Int>
 private typealias Grid = Set<Position>
+private typealias Map = [Position: [Position]]
 
-private func _simulate(seats: Grid) -> Grid {
+private func _simulate(seats: Grid, map: Map) -> Grid {
     var occupiedSeats = Grid()
     var snapShot = Grid()
     
     repeat {
         snapShot = occupiedSeats
-        occupiedSeats.fillVacant(from: seats)
-        occupiedSeats.pruneCrowds()
+        occupiedSeats.fillVacant(from: seats, map: map)
+        occupiedSeats.pruneCrowds(map: map)
     } while occupiedSeats != snapShot
     
     return occupiedSeats
@@ -80,12 +84,11 @@ private extension Set where Element == Position {
         self = result
     }
 
-    mutating func fillVacant(from seats: Set<Position>) {
+    mutating func fillVacant(from seats: Set<Position>, map: Map) {
         var emptySeats = [Position]()
 
         nextSeat: for seat in seats {
-            for offset in _adjacentOffsets {
-                let adjacentPosition = seat &+ offset
+            for adjacentPosition in map[seat, default: [ ]] {
                 if contains(adjacentPosition) { continue nextSeat }
             }
             
@@ -95,14 +98,13 @@ private extension Set where Element == Position {
         formUnion(emptySeats)
     }
     
-    mutating func pruneCrowds() {
+    mutating func pruneCrowds(map: Map) {
         var crowdedSeats = [Position]()
         
         nextSeat: for seat in self {
             var neighborCount = 0
             
-            for offset in _adjacentOffsets {
-                let adjacentPosition = seat &+ offset
+            for adjacentPosition in map[seat, default: [ ]] {
                 neighborCount += contains(adjacentPosition) ? 1 : 0
 
                 if neighborCount >= 4 {
@@ -115,4 +117,16 @@ private extension Set where Element == Position {
         subtract(crowdedSeats)
     }
     
+}
+
+private func _makeAdjacencyMap(for seats: Grid) -> Map {
+    var result = Map()
+    
+    for seat in seats {
+        result[seat] = _adjacentOffsets
+            .map { seat &+ $0 }
+            .filter { seats.contains($0) }
+    }
+
+    return result
 }

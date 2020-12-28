@@ -38,6 +38,12 @@ final class Day19: XCTestCase {
     }
 
     func test_solution() {
+        let lines = Array(TestHarnessInput("input19.txt", includeEmptyLines: true)!)
+        let (rules, messages) = _parse(lines)
+        let validMessages = messages.filter {
+            _validate(string: $0, with: rules, pending: [0])
+        }
+        XCTAssertEqual(validMessages.count, 180)
     }
     
 }

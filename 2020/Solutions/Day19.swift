@@ -39,11 +39,21 @@ final class Day19: XCTestCase {
 
     func test_solution() {
         let lines = Array(TestHarnessInput("input19.txt", includeEmptyLines: true)!)
+
         let (rules, messages) = _parse(lines)
-        let validMessages = messages.filter {
+        var validMessages = messages.filter {
             _validate(string: $0, with: rules, pending: [0])
         }
         XCTAssertEqual(validMessages.count, 180)
+        
+        var newRules = rules
+        newRules[8] = Components(words: [ "42", "|", "42", "8"])!
+        newRules[11] = Components(words: [ "42", "31", "|", "42", "11", "31" ])!
+
+        validMessages = messages.filter {
+            _validate(string: $0, with: newRules, pending: [0])
+        }
+        XCTAssertEqual(validMessages.count, 323)
     }
     
 }

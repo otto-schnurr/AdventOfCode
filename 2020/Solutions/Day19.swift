@@ -31,10 +31,10 @@ final class Day19: XCTestCase {
         aaaabbb
         """.components(separatedBy: .newlines)
         let (rules, messages) = _parse(lines)
-        let _ = messages.filter {
+        let validMessages = messages.filter {
             _validate(string: $0, with: rules, pending: [0])
         }
-//        XCTAssertEqual(validMessages.count, 2)
+        XCTAssertEqual(validMessages.count, 2)
     }
 
     func test_solution() {
@@ -48,18 +48,74 @@ private typealias RuleID = Int
 private typealias Rules = [RuleID: Components]
 
 private enum Components {
+    
     case character(Character)
     case subRules([[RuleID]])
+    
+    init?(words: [String]) {
+        guard let firstWord = words.first else { return nil }
+        
+        if firstWord.hasPrefix("\"") {
+            self = .character(firstWord.dropFirst().first!)
+        } else {
+            let ruleIDs = words.split(separator: "|").map { group in
+                group.compactMap { Int($0) }
+            }
+            self = .subRules(ruleIDs)
+        }
+    }
+    
 }
 
 private func _parse(_ lines: [String]) -> (rules: Rules, messages: [String]) {
-    // !!!: implement me
-    return ([:], [ ])
+    let groups = lines.split(separator: "")
+    var rules = Rules()
+    groups[0].forEach { _parseRule(from: $0, to: &rules) }
+    return (rules: rules, messages: groups[1].map { String($0) })
+}
+
+private func _parseRule(from line: String, to rules: inout Rules) {
+    let words = line.components(separatedBy: .whitespaces)
+    guard
+        words.count >= 2,
+        let ruleID = Int(words[0].dropLast()),
+        let components = Components(words: Array(words.dropFirst()))
+    else { return }
+    
+    rules[ruleID] = components
 }
 
 private func _validate(
     string: String, with rules: Rules, pending: [RuleID]
 ) -> Bool {
-    // !!!: implement me
-    return false
+    guard
+        let character = string.first,
+        let ruleID = pending.first,
+        let components = rules[ruleID]
+    else { return string.isEmpty && pending.isEmpty }
+
+    let nextString = String(string.dropFirst())
+    let nextPending = Array(pending.dropFirst())
+    
+    switch components {
+    case .character(let requiredCharacter):
+        if character != requiredCharacter {
+            return false
+        } else {
+            return _validate(
+                string: nextString,
+                with: rules,
+                pending: nextPending
+            )
+        }
+    case .subRules(let ruleGroups):
+        let any = ruleGroups.first {
+            _validate(
+                string: string,
+                with: rules,
+                pending: $0 + nextPending
+            )
+        }
+        return any != nil
+    }
 }

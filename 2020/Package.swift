@@ -12,9 +12,6 @@ import PackageDescription
 
 let package = Package(
     name: "AdventOfCode",
-    products: [
-        .library(name: "AdventOfCode", targets: ["AdventOfCode"]),
-    ],
     dependencies: [
         .package(
             url: "https://github.com/apple/swift-algorithms",
@@ -24,13 +21,8 @@ let package = Package(
     targets: [
         .target(
             name: "AdventOfCode",
-            dependencies: [],
+            dependencies: [ ],
             path: "Sources"
-        ),
-        .testTarget(
-            name: "AdventOfCode-UnitTests", 
-            dependencies: ["AdventOfCode"],
-            path: "Tests"
         ),
         .testTarget(
             name: "AdventOfCode-Solutions",

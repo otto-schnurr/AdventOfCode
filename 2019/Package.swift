@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.5
 
 //
 //  Package.swift
@@ -19,7 +19,7 @@ let package = Package(
     targets: [
         .target(
             name: "AdventOfCode",
-            dependencies: [],
+            dependencies: [ ],
             path: "Sources"
         ),
         .testTarget(
@@ -30,7 +30,8 @@ let package = Package(
         .testTarget(
             name: "AdventOfCode-Solutions",
             dependencies: ["AdventOfCode"],
-            path: "Solutions"
+            path: "Solutions",
+            resources: [.process("Input")]
         )
     ]
 )

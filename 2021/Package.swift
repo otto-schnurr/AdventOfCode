@@ -12,8 +12,11 @@ import PackageDescription
 
 let package = Package(
     name: "AdventOfCode",
-    products: [
-        .library(name: "AdventOfCode", targets: ["AdventOfCode"]),
+    dependencies: [
+        .package(
+            url: "https://github.com/apple/swift-algorithms",
+            .upToNextMinor(from: "1.0.0")
+        ),
     ],
     targets: [
         .target(
@@ -22,9 +25,13 @@ let package = Package(
             path: "Sources"
         ),
         .testTarget(
-            name: "AdventOfCodeTests",
-            dependencies: ["AdventOfCode"],
-            path: "Tests"
+            name: "AdventOfCode-Solutions",
+            dependencies: [
+                "AdventOfCode",
+                .product(name: "Algorithms", package: "swift-algorithms"),
+            ],
+            path: "Solutions",
+            resources: [.process("Input")]
         )
     ]
 )

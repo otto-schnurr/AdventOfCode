@@ -22,7 +22,7 @@ final class Day02: XCTestCase {
         let result = commands.reduce(Position.zero) { previousPosition, command in
             command.apply(to: previousPosition)
         }
-        XCTAssertEqual(result.x * result.y, 150)
+        XCTAssertEqual(result.area, 150)
     }
 
     func test_solution() {
@@ -30,7 +30,7 @@ final class Day02: XCTestCase {
         let result = commands.reduce(Position.zero) { previousPosition, command in
             command.apply(to: previousPosition)
         }
-        XCTAssertEqual(result.x * result.y, 2117_664)
+        XCTAssertEqual(result.area, 2117_664)
     }
 
 }
@@ -38,6 +38,10 @@ final class Day02: XCTestCase {
 
 // MARK: - Privates
 private typealias Position = SIMD2<Int>
+
+private extension Position {
+    var area: Int { x * y }
+}
 
 private struct Command {
     

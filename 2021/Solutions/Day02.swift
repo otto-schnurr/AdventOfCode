@@ -19,18 +19,28 @@ final class Day02: XCTestCase {
             "forward 5", "down 5", "forward 8",
             "up 3",      "down 8", "forward 2"
         ].map { Command(text: $0)! }
+        
         let result = commands.reduce(Position.zero) { previousPosition, command in
             command.apply(to: previousPosition)
         }
         XCTAssertEqual(result.area, 150)
+        
+        var helm = Helm()
+        commands.forEach { helm.apply(command: $0) }
+        XCTAssertEqual(helm.position.area, 900)
     }
 
     func test_solution() {
         let commands = TestHarnessInput("input02.txt")!.map { Command(text: $0)! }
+        
         let result = commands.reduce(Position.zero) { previousPosition, command in
             command.apply(to: previousPosition)
         }
         XCTAssertEqual(result.area, 2117_664)
+        
+        var helm = Helm()
+        commands.forEach { helm.apply(command: $0) }
+        XCTAssertEqual(helm.position.area, 2_073_416_724)
     }
 
 }
@@ -41,6 +51,26 @@ private typealias Position = SIMD2<Int>
 
 private extension Position {
     var area: Int { x * y }
+}
+
+private struct Helm {
+    
+    private(set) var position = Position.zero
+    private var aim = 0
+
+    mutating func apply(command: Command) {
+        switch command.direction {
+        case "forward":
+            position.x += command.distance
+            position.y += command.distance * aim
+        case "down":
+            aim += command.distance
+        case "up":
+            aim -= command.distance
+        default:        break
+        }
+    }
+    
 }
 
 private struct Command {

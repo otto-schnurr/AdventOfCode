@@ -29,7 +29,8 @@ let package = Package(
         .testTarget(
             name: "AdventOfCode-Solutions",
             dependencies: ["AdventOfCode"],
-            path: "Solutions"
+            path: "Solutions",
+            resources: [.process("Input")]
         )
     ]
 )

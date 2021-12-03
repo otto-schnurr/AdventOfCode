@@ -16,7 +16,11 @@ let package = Package(
         .library(name: "AdventOfCode", targets: ["AdventOfCode"]),
     ],
     targets: [
-        .target(name: "AdventOfCode", dependencies: [ ]),
+        .target(
+            name: "AdventOfCode",
+            dependencies: [ ],
+            path: "Sources"
+        ),
         .testTarget(
             name: "AdventOfCodeTests",
             dependencies: ["AdventOfCode"],

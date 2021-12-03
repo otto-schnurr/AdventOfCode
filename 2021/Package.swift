@@ -22,11 +22,6 @@ let package = Package(
             path: "Sources"
         ),
         .testTarget(
-            name: "AdventOfCode-UnitTests",
-            dependencies: ["AdventOfCode"],
-            path: "Tests"
-        ),
-        .testTarget(
             name: "AdventOfCode-Solutions",
             dependencies: ["AdventOfCode"],
             path: "Solutions",

@@ -21,4 +21,23 @@ final class Day01: XCTestCase {
         XCTAssertEqual(count, 7)
     }
 
+    func test_solution() {
+        let depths = Array(Input())
+        let count = depths.adjacentPairs().filter { $0 < $1 }.count
+        XCTAssertEqual(count, 1791)
+    }
+
+}
+
+
+// MARK: - Private
+private struct Input: Sequence, IteratorProtocol {
+    
+    mutating func next() -> Int? {
+        guard let line = lines.next() else { return nil }
+        return Int(line)
+    }
+
+    private var lines = TestHarnessInput("input01.txt")!
+
 }

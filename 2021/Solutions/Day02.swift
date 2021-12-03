@@ -18,11 +18,19 @@ final class Day02: XCTestCase {
         let commands = [
             "forward 5", "down 5", "forward 8",
             "up 3",      "down 8", "forward 2"
-        ].compactMap { Command(text: $0) }
+        ].map { Command(text: $0)! }
         let result = commands.reduce(Position.zero) { previousPosition, command in
             command.apply(to: previousPosition)
         }
         XCTAssertEqual(result.x * result.y, 150)
+    }
+
+    func test_solution() {
+        let commands = TestHarnessInput("input02.txt")!.map { Command(text: $0)! }
+        let result = commands.reduce(Position.zero) { previousPosition, command in
+            command.apply(to: previousPosition)
+        }
+        XCTAssertEqual(result.x * result.y, 2117_664)
     }
 
 }

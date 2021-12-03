@@ -11,7 +11,14 @@
 //
 
 import XCTest
+import Algorithms
 
 final class Day01: XCTestCase {
+
+    func test_example() {
+        let depths = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263]
+        let count = depths.adjacentPairs().filter { $0 < $1 }.count
+        XCTAssertEqual(count, 7)
+    }
 
 }

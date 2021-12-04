@@ -27,6 +27,16 @@ final class Day03: XCTestCase {
         XCTAssertEqual(gamma * epsilon, 198)
     }
 
+    func test_solution() {
+        let diagnostics = TestHarnessInput("input03.txt")!.map {
+            return Diagnostic(word: Word($0, radix: 2)!)!
+        }
+
+        let gamma = _gamma(from: diagnostics)
+        let epsilon = _epsilon(from: gamma, bitWidth: 12)
+        XCTAssertEqual(Int(gamma) * Int(epsilon), 3_985_686)
+    }
+    
 }
 
 

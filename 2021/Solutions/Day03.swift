@@ -25,6 +25,14 @@ final class Day03: XCTestCase {
         let gamma = _gamma(from: diagnostics)
         let epsilon = _epsilon(from: gamma, bitWidth: 5)
         XCTAssertEqual(gamma * epsilon, 198)
+        
+        let oxygen = _gasRating(from: diagnostics, bitWidth: 5) { sum, threshold in
+            sum >= threshold ? 1 : 0
+        }!
+        let co2 = _gasRating(from: diagnostics, bitWidth: 5) { sum, threshold in
+            sum >= threshold ? 0 : 1
+        }!
+        XCTAssertEqual(oxygen * co2, 230)
     }
 
     func test_solution() {
@@ -35,6 +43,14 @@ final class Day03: XCTestCase {
         let gamma = _gamma(from: diagnostics)
         let epsilon = _epsilon(from: gamma, bitWidth: 12)
         XCTAssertEqual(Int(gamma) * Int(epsilon), 3_985_686)
+        
+        let oxygen = _gasRating(from: diagnostics, bitWidth: 12) { sum, threshold in
+            sum >= threshold ? 1 : 0
+        }!
+        let co2 = _gasRating(from: diagnostics, bitWidth: 12) { sum, threshold in
+            sum >= threshold ? 0 : 1
+        }!
+        XCTAssertEqual(Int(oxygen) * Int(co2), 2_555_739)
     }
     
 }
@@ -63,12 +79,35 @@ private extension Diagnostic {
 }
 
 private func _gamma(from diagnostics: [Diagnostic]) -> Word {
-    let diagnostic = diagnostics.reduce(Diagnostic.zero, &+)
+    let sum = diagnostics.reduce(Diagnostic.zero, &+)
     let majorityThreshold = diagnostics.count / 2
-    return diagnostic.replacing(with: 0, where: diagnostic .<= majorityThreshold).asWord!
+    return sum.replacing(with: 0, where: sum .<= majorityThreshold).asWord!
 }
 
 private func _epsilon(from gamma: Word, bitWidth: Int) -> Word {
     let mask = Word((1 << bitWidth) - 1)
     return ~gamma & mask
+}
+
+private func _gasRating(
+    from diagnostics: [Diagnostic],
+    bitWidth: Int,
+    bitCriteria: (_ sum: Int, _ threshold: Int) -> Int
+) -> Word? {
+    let firstBitIndex = Diagnostic.scalarCount - bitWidth
+    var remainingDiagnostics = diagnostics
+    
+    for bitIndex in firstBitIndex ..< Diagnostic.scalarCount {
+        let sum = remainingDiagnostics.reduce(Diagnostic.zero, &+)
+        let threshold = (remainingDiagnostics.count + 1) / 2
+        let targetBitValue = bitCriteria(sum[bitIndex], threshold)
+
+        remainingDiagnostics = remainingDiagnostics.filter {
+            $0[bitIndex] == targetBitValue
+        }
+        
+        if remainingDiagnostics.count == 1 { return remainingDiagnostics[0].asWord }
+    }
+    
+    return nil
 }

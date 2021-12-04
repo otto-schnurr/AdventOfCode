@@ -1,6 +1,2 @@
-public struct AdventOfCode {
-    public private(set) var text = "Hello, World!"
-
-    public init() {
-    }
-}
+// Placeholder code for hooking up ../Solutions as unit tests.
+public struct AdventOfCode { }

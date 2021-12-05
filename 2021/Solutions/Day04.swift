@@ -38,16 +38,20 @@ final class Day04: XCTestCase {
         """
         let lines = data.components(separatedBy: .newlines)
         let (numbers, boards) = _parse(lines)
-        let result = _solve(numbers: numbers, boards: boards)
         
+        let result = _solve(numbers: numbers, boards: boards) { boards in
+            boards.contains { $0.bingo }
+        }
         XCTAssertEqual(result, 4_512)
     }
     
     func test_solution() {
         let lines = Array(TestHarnessInput("input04.txt", includeEmptyLines: true)!)
         let (numbers, boards) = _parse(lines)
-        let result = _solve(numbers: numbers, boards: boards)
         
+        let result = _solve(numbers: numbers, boards: boards) { boards in
+            boards.contains { $0.bingo }
+        }
         XCTAssertEqual(result, 54_275)
     }
     
@@ -70,15 +74,17 @@ private func _parse(_ lines: [String]) -> (numbers: [Int], boards: [Board]) {
     return (numbers, boards)
 }
 
-private func _solve(numbers: [Int], boards: [Board]) -> Int {
-    var mutableBoards = boards
+private func _solve(
+    numbers: [Int], boards: [Board], winningCriteria: (_ boards: [Board]) -> Bool
+) -> Int {
+    var updatedBoards = boards
 
     for nextNumber in numbers {
-        for (boardIndex, var board) in mutableBoards.enumerated() {
+        for (boardIndex, var board) in updatedBoards.enumerated() {
             board.mark(number: nextNumber)
-            mutableBoards[boardIndex] = board
+            updatedBoards[boardIndex] = board
             
-            if board.bingo {
+            if winningCriteria(updatedBoards) {
                 return nextNumber * board.unmarkedSum
             }
         }

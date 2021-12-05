@@ -37,22 +37,18 @@ final class Day04: XCTestCase {
          2  0 12  3  7
         """
         let lines = data.components(separatedBy: .newlines)
-        var (numbers, boards) = _parse(lines)
-        var result = 0
-        
-        outerLoop: for nextNumber in numbers {
-            for (boardIndex, var board) in boards.enumerated() {
-                board.mark(number: nextNumber)
-                boards[boardIndex] = board
-                
-                if board.bingo {
-                    result = nextNumber * board.unmarkedSum
-                    break outerLoop
-                }
-            }
-        }
+        let (numbers, boards) = _parse(lines)
+        let result = _solve(numbers: numbers, boards: boards)
         
         XCTAssertEqual(result, 4_512)
+    }
+    
+    func test_solution() {
+        let lines = Array(TestHarnessInput("input04.txt", includeEmptyLines: true)!)
+        let (numbers, boards) = _parse(lines)
+        let result = _solve(numbers: numbers, boards: boards)
+        
+        XCTAssertEqual(result, 54_275)
     }
     
 }
@@ -72,6 +68,23 @@ private func _parse(_ lines: [String]) -> (numbers: [Int], boards: [Board]) {
     }
     
     return (numbers, boards)
+}
+
+private func _solve(numbers: [Int], boards: [Board]) -> Int {
+    var mutableBoards = boards
+
+    for nextNumber in numbers {
+        for (boardIndex, var board) in mutableBoards.enumerated() {
+            board.mark(number: nextNumber)
+            mutableBoards[boardIndex] = board
+            
+            if board.bingo {
+                return nextNumber * board.unmarkedSum
+            }
+        }
+    }
+    
+    return 0
 }
 
 private struct Board {

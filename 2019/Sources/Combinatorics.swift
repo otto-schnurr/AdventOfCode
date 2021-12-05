@@ -1,6 +1,6 @@
 //  MIT License
 //  Copyright © 2019 Otto Schnurr
-//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+//  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE
 
 //
 //  Array+Permute.swift
@@ -45,7 +45,7 @@ public extension Array {
 // MARK: - Private
 private extension Combinatorics {
 
-    // reference https://github.com/raywenderlich/swift-algorithm-club/tree/master/Combinatorics
+    // reference https://github.com/raywenderlich/swift-algorithm-club/tree/main/Combinatorics
     static func permuteWirth<T>(_ a: [T], _ n: Int, result: inout [[T]]) {
         if n == 0 {
             result.append(a)

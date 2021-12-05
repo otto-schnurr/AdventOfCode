@@ -37,30 +37,75 @@ final class Day04: XCTestCase {
          2  0 12  3  7
         """
         let lines = data.components(separatedBy: .newlines)
-        let (numbers, boards) = _parse(lines)
-        var boardMarkers = Array(repeating: BoardState(), count: boards.count)
+        var (numbers, boards) = _parse(lines)
+        var result = 0
         
-        print(numbers)
-        print(boards)
+        outerLoop: for nextNumber in numbers {
+            for (boardIndex, var board) in boards.enumerated() {
+                board.mark(number: nextNumber)
+                boards[boardIndex] = board
+                
+                if board.bingo {
+                    result = nextNumber * board.unmarkedSum
+                    break outerLoop
+                }
+            }
+        }
+        
+        XCTAssertEqual(result, 4_512)
     }
     
 }
 
 
 // MARK: - Private
-private typealias Board = [Int]
-private typealias BoardState = IndexSet
-
 private func _parse(_ lines: [String]) -> (numbers: [Int], boards: [Board]) {
     let groups = lines.split(separator: "").map { Array($0) }
     
     let numbers = groups[0][0].split(separator: ",").compactMap { Int(String($0)) }
     
-    let boards = groups[1...].map {
-        group in group.flatMap {
+    let boards = groups[1...].map { (group: [String]) -> Board in
+        let numbers = group.flatMap {
             line in line.split(separator: " ").compactMap { Int($0) }
         }
+        return Board(numbers: numbers)
     }
     
     return (numbers, boards)
 }
+
+private struct Board {
+    
+    let numbers: [Int]
+    private(set) var marks = IndexSet()
+    
+    var bingo: Bool {
+        return _winningIndexSets.contains { winningSet in
+            marks.contains(integersIn: winningSet)
+        }
+    }
+    
+    var unmarkedSum: Int {
+        let sum = numbers.reduce(0, +)
+        let markedSum = marks.map { numbers[$0] }.reduce(0, +)
+        return sum - markedSum
+    }
+    
+    mutating func mark(number: Int) {
+        if let index = numbers.firstIndex(of: number) {
+            marks.insert(index)
+        }
+    }
+    
+}
+
+private let _winningIndexSets: [IndexSet] = {
+    let winningRows = stride(from: 0, to: 25, by: 5).map {
+        IndexSet($0 ..< ($0 + 5))
+    }
+    let winningColumns = (0 ..< 5).map {
+        IndexSet(stride(from: $0, to: $0 + 25, by: 5))
+    }
+    
+    return [ winningRows, winningColumns ].flatMap { $0 }
+}()

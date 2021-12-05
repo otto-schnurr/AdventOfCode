@@ -39,20 +39,30 @@ final class Day04: XCTestCase {
         let lines = data.components(separatedBy: .newlines)
         let (numbers, boards) = _parse(lines)
         
-        let result = _solve(numbers: numbers, boards: boards) { boards in
+        var result = _solve(numbers: numbers, boards: boards) { boards in
             boards.contains { $0.bingo }
         }
         XCTAssertEqual(result, 4_512)
+        
+        result = _solve(numbers: numbers, boards: boards) { boards in
+            boards.allSatisfy { $0.bingo }
+        }
+        XCTAssertEqual(result, 1_924)
     }
     
     func test_solution() {
         let lines = Array(TestHarnessInput("input04.txt", includeEmptyLines: true)!)
         let (numbers, boards) = _parse(lines)
         
-        let result = _solve(numbers: numbers, boards: boards) { boards in
+        var result = _solve(numbers: numbers, boards: boards) { boards in
             boards.contains { $0.bingo }
         }
         XCTAssertEqual(result, 54_275)
+        
+        result = _solve(numbers: numbers, boards: boards) { boards in
+            boards.allSatisfy { $0.bingo }
+        }
+        XCTAssertEqual(result, 13_158)
     }
     
 }

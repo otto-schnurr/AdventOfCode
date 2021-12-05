@@ -1,6 +1,6 @@
 //  MIT License
 //  Copyright © 2020 Otto Schnurr
-//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+//  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE
 
 //
 //  Grid.swift
@@ -119,7 +119,7 @@ public extension Grid {
     /// Calculates the smallest distance needed to traverse the graph.
     ///
     /// More details about [Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
-    /// can be found [here](https://github.com/raywenderlich/swift-algorithm-club/tree/master/Shortest%20Path%20(Unweighted)).
+    /// can be found [here](https://github.com/raywenderlich/swift-algorithm-club/tree/main/Shortest%20Path%20(Unweighted)).
     ///
     /// - Parameter startingPosition:
     ///   The position to measure distances from.

@@ -1,6 +1,6 @@
 //  MIT License
 //  Copyright © 2020 Otto Schnurr
-//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+//  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE
 
 //
 //  Day09.swift

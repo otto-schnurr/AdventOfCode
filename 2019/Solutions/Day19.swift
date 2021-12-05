@@ -1,6 +1,6 @@
 //  MIT License
 //  Copyright © 2019 Otto Schnurr
-//  https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+//  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE
 
 //
 //  Day19.swift

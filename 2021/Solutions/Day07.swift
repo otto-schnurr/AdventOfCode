@@ -14,4 +14,11 @@ import XCTest
 
 final class Day07: XCTestCase {
 
+    func test_example() {
+        let data = [16, 1, 2, 0, 4, 2, 7, 1, 2, 14].sorted()
+        let median = data[data.count / 2]
+        let deviation = data.map { abs($0 - median) }
+        XCTAssertEqual(deviation.reduce(0, +), 37)
+    }
+    
 }

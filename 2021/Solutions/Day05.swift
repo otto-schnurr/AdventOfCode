@@ -31,16 +31,22 @@ final class Day05: XCTestCase {
             .components(separatedBy: .newlines)
             .compactMap { Vent(text: $0) }
         
-        let grid = Grid(vents: vents.filter({ !$0.isDiagonal }))
+        var grid = Grid(vents: vents.filter({ !$0.isDiagonal }))
         XCTAssertEqual(grid.filter({ $0.value >= 2 }).count, 5)
+        
+        grid = Grid(vents: vents)
+        XCTAssertEqual(grid.filter({ $0.value >= 2 }).count, 12)
     }
 
     func test_solution() {
         let vents = Array(TestHarnessInput("input05.txt")!)
             .compactMap { Vent(text: $0) }
 
-        let grid = Grid(vents: vents.filter({ !$0.isDiagonal }))
+        var grid = Grid(vents: vents.filter({ !$0.isDiagonal }))
         XCTAssertEqual(grid.filter({ $0.value >= 2 }).count, 4_728)
+
+        grid = Grid(vents: vents)
+        XCTAssertEqual(grid.filter({ $0.value >= 2 }).count, 17_717)
     }
 
 }

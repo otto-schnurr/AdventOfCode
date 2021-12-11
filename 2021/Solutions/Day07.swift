@@ -16,17 +16,25 @@ final class Day07: XCTestCase {
 
     func test_example() {
         let data = [16, 1, 2, 0, 4, 2, 7, 1, 2, 14]
+        
         let median = data.sorted()[data.count / 2]
-        let deviation = data.map { abs($0 - median) }
-        XCTAssertEqual(deviation.reduce(0, +), 37)
+        let fuel = data.map { _cheapFuel($0, median) }
+        XCTAssertEqual(fuel.reduce(0, +), 37)
     }
     
     func test_solution() {
         let line = Array(TestHarnessInput("input07.txt")!).first!
         let data = line.split(separator: ",").compactMap { Int(String($0)) }
+        
         let median = data.sorted()[data.count / 2]
-        let deviation = data.map { abs($0 - median) }
-        XCTAssertEqual(deviation.reduce(0, +), 323_647)
+        let fuel = data.map { _cheapFuel($0, median) }
+        XCTAssertEqual(fuel.reduce(0, +), 323_647)
     }
 
+}
+
+
+// MARK: - Private
+private func _cheapFuel(_ first: Int, _ second: Int) -> Int {
+    return abs(second - first)
 }

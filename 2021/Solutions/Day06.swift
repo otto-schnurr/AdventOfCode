@@ -16,10 +16,17 @@ final class Day06: XCTestCase {
 
     func test_example() {
         var population = [3, 4, 3, 1, 2]
-        for _ in 1...80 {
-            _simulate(&population)
-        }
+        
+        for _ in 1...80 { _simulate(&population) }
         XCTAssertEqual(population.count, 5_934)
+    }
+    
+    func test_solution() {
+        let line = Array(TestHarnessInput("input06.txt")!).first!
+        var population = line.split(separator: ",").compactMap { Int(String($0)) }
+
+        for _ in 1...80 { _simulate(&population) }
+        XCTAssertEqual(population.count, 353_079)
     }
     
 }

@@ -14,4 +14,29 @@ import XCTest
 
 final class Day06: XCTestCase {
 
+    func test_example() {
+        var population = [3, 4, 3, 1, 2]
+        for _ in 1...80 {
+            _simulate(&population)
+        }
+        XCTAssertEqual(population.count, 5_934)
+    }
+    
+}
+
+
+// MARK: - Private
+private func _simulate(_ population: inout [Int]) {
+    var spawnCount = 0
+
+    for index in 0 ..< population.count {
+        population[index] -= 1
+        
+        if population[index] < 0 {
+            population[index] = 6
+            spawnCount += 1
+        }
+    }
+    
+    population += Array(repeating: 8, count: spawnCount)
 }

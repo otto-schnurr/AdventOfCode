@@ -35,6 +35,14 @@ final class Day05: XCTestCase {
         XCTAssertEqual(grid.filter({ $0.value >= 2 }).count, 5)
     }
 
+    func test_solution() {
+        let vents = Array(TestHarnessInput("input05.txt")!)
+            .compactMap { Vent(text: $0) }
+
+        let grid = Grid(vents: vents.filter({ !$0.isDiagonal }))
+        XCTAssertEqual(grid.filter({ $0.value >= 2 }).count, 4_728)
+    }
+
 }
 
 

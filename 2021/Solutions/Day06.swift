@@ -15,35 +15,50 @@ import XCTest
 final class Day06: XCTestCase {
 
     func test_example() {
-        var population = [3, 4, 3, 1, 2]
+        let individuals = [3, 4, 3, 1, 2]
+        let originalPopulation = _parse(individuals)
         
-        for _ in 1...80 { _simulate(&population) }
-        XCTAssertEqual(population.count, 5_934)
+        var population = originalPopulation
+        for _ in 1...80 { population = _tick(population) }
+        XCTAssertEqual(population.values.reduce(0, +), 5_934)
     }
     
     func test_solution() {
         let line = Array(TestHarnessInput("input06.txt")!).first!
-        var population = line.split(separator: ",").compactMap { Int(String($0)) }
-
-        for _ in 1...80 { _simulate(&population) }
-        XCTAssertEqual(population.count, 353_079)
+        let individuals = line.split(separator: ",").compactMap { Int(String($0)) }
+        let originalPopulation = _parse(individuals)
+        
+        var population = originalPopulation
+        for _ in 1...80 { population = _tick(population) }
+        XCTAssertEqual(population.values.reduce(0, +), 353_079)
     }
     
 }
 
 
 // MARK: - Private
-private func _simulate(_ population: inout [Int]) {
-    var spawnCount = 0
+private typealias Population = [Int: Int]
 
-    for index in 0 ..< population.count {
-        population[index] -= 1
-        
-        if population[index] < 0 {
-            population[index] = 6
-            spawnCount += 1
+private func _parse(_ array: [Int]) -> Population {
+    return array.reduce(Population()) {
+        var population = $0
+        population[$1, default: 0] += 1
+        return population
+    }
+}
+
+private func _tick(_ population: Population) -> Population {
+    var result = Population()
+    
+    population.forEach { key, value in
+        switch key {
+        case 0:
+            result[6, default: 0] += value
+            result[8, default: 0] += value
+        default:
+            result[key - 1, default: 0] += value
         }
     }
     
-    population += Array(repeating: 8, count: spawnCount)
+    return result
 }

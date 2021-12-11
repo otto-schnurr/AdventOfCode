@@ -18,8 +18,13 @@ final class Day07: XCTestCase {
         let data = [16, 1, 2, 0, 4, 2, 7, 1, 2, 14]
         
         let median = data.sorted()[data.count / 2]
-        let fuel = data.map { _cheapFuel($0, median) }
+        var fuel = data.map { _cheapFuel($0, median) }
         XCTAssertEqual(fuel.reduce(0, +), 37)
+        
+        // HACK: Manually did a local search around the mean.
+        let mean = data.reduce(0, +) / data.count
+        fuel = data.map { _expensiveFuel($0, mean + 1) }
+        XCTAssertEqual(fuel.reduce(0, +), 168)
     }
     
     func test_solution() {
@@ -27,8 +32,13 @@ final class Day07: XCTestCase {
         let data = line.split(separator: ",").compactMap { Int(String($0)) }
         
         let median = data.sorted()[data.count / 2]
-        let fuel = data.map { _cheapFuel($0, median) }
+        var fuel = data.map { _cheapFuel($0, median) }
         XCTAssertEqual(fuel.reduce(0, +), 323_647)
+        
+        // HACK: Manually did a local search around the mean.
+        let mean = data.reduce(0, +) / data.count
+        fuel = data.map { _expensiveFuel($0, mean) }
+        XCTAssertEqual(fuel.reduce(0, +), 87_640_209)
     }
 
 }
@@ -37,4 +47,10 @@ final class Day07: XCTestCase {
 // MARK: - Private
 private func _cheapFuel(_ first: Int, _ second: Int) -> Int {
     return abs(second - first)
+}
+
+private func _expensiveFuel(_ first: Int, _ second: Int) -> Int {
+    // note: Area of triangular geometry.
+    let cheapFuel = _cheapFuel(first, second)
+    return cheapFuel * (cheapFuel + 1) / 2
 }

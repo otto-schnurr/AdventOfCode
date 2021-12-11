@@ -21,6 +21,10 @@ final class Day06: XCTestCase {
         var population = originalPopulation
         for _ in 1...80 { population = _tick(population) }
         XCTAssertEqual(population.values.reduce(0, +), 5_934)
+        
+        population = originalPopulation
+        for _ in 1...256 { population = _tick(population) }
+        XCTAssertEqual(population.values.reduce(0, +), 26_984_457_539)
     }
     
     func test_solution() {
@@ -31,6 +35,10 @@ final class Day06: XCTestCase {
         var population = originalPopulation
         for _ in 1...80 { population = _tick(population) }
         XCTAssertEqual(population.values.reduce(0, +), 353_079)
+        
+        population = originalPopulation
+        for _ in 1...256 { population = _tick(population) }
+        XCTAssertEqual(population.values.reduce(0, +), 1_605_400_130_036)
     }
     
 }

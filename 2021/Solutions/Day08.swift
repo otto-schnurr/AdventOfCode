@@ -35,6 +35,15 @@ final class Day08: XCTestCase {
         XCTAssertEqual(count, 26)
     }
     
+    func test_solution() {
+        let lines = Array(TestHarnessInput("input08.txt")!)
+        let entries = _parse(lines)
+        let count = entries
+            .map { _uniqueOutputs(for: $0).count }
+            .reduce(0, +)
+        XCTAssertEqual(count, 310)
+    }
+    
 }
 
 

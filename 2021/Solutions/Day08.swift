@@ -48,18 +48,21 @@ final class Day08: XCTestCase {
 
 
 // MARK: - Private
-private typealias Entry = (patterns: [String], output: [String])
+private typealias Segments = Set<Character>
+private typealias Entry = (patterns: [Segments], output: [Segments])
 
 private func _parse(_ lines: [String]) -> [Entry] {
     return lines.compactMap { line in
         let components = line.split(separator: " ").map { String($0) }
-        let groups = components.split(separator: "|").map { $0.map { String($0) } }
+        let groups = components
+            .split(separator: "|")
+            .map { $0.map { Set($0) } }
         guard groups.count == 2 else { return nil }
         return (patterns: groups[0], output: groups[1])
     }
 }
 
-private func _uniqueOutputs(for entry: Entry) -> [String] {
+private func _uniqueOutputs(for entry: Entry) -> [Segments] {
     let uniqueLengths = [2, 3, 4, 7]
     return entry.output.filter { uniqueLengths.contains($0.count) }
 }

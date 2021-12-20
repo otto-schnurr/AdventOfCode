@@ -29,19 +29,23 @@ final class Day08: XCTestCase {
         """
         let lines = data.components(separatedBy: .newlines)
         let entries = _parse(lines)
-        let count = entries
-            .map { _uniqueOutputs(for: $0).count }
-            .reduce(0, +)
+        
+        let count = entries.map { _uniqueOutputs(for: $0).count }.reduce(0, +)
         XCTAssertEqual(count, 26)
+        
+        let sum = entries.map { _digitOutput(for: $0) }.reduce(0, +)
+        XCTAssertEqual(sum, 61_229)
     }
     
     func test_solution() {
         let lines = Array(TestHarnessInput("input08.txt")!)
         let entries = _parse(lines)
-        let count = entries
-            .map { _uniqueOutputs(for: $0).count }
-            .reduce(0, +)
+
+        let count = entries.map { _uniqueOutputs(for: $0).count }.reduce(0, +)
         XCTAssertEqual(count, 310)
+        
+        let sum = entries.map { _digitOutput(for: $0) }.reduce(0, +)
+        XCTAssertEqual(sum, 915_941)
     }
     
 }
@@ -65,4 +69,49 @@ private func _parse(_ lines: [String]) -> [Entry] {
 private func _uniqueOutputs(for entry: Entry) -> [Segments] {
     let uniqueLengths = [2, 3, 4, 7]
     return entry.output.filter { uniqueLengths.contains($0.count) }
+}
+
+private func _digitMap(_ patterns: [Segments]) -> [Segments] {
+    var charactersForDigit = Array(repeating: Segments(), count: patterns.count)
+    let sorted = patterns.sorted { $0.count < $1.count }
+    
+    charactersForDigit[1] = sorted[0] // "1" uses two segments.
+    charactersForDigit[7] = sorted[1] // "7" uses three segments.
+    charactersForDigit[4] = sorted[2] // "4" uses four segments.
+    charactersForDigit[8] = sorted[9] // "8" uses all of the segments.
+
+    charactersForDigit[2] = sorted[3...5].first {
+        // "2" overlaying "4" activates all segments.
+        $0.union(charactersForDigit[4]) == charactersForDigit[8]
+    }!
+    charactersForDigit[3] = sorted[3...5].first {
+        // "3" uses vertical segments from "1".
+        $0.isSuperset(of: charactersForDigit[1])
+    }!
+    charactersForDigit[5] = sorted[3...5].first {
+        // "5" is the remaining 5-segment digit.
+        $0 != charactersForDigit[3] && $0 != charactersForDigit[2]
+    }!
+    
+    charactersForDigit[6] = sorted[6...8].first {
+        // "6" is the only 6-segment digit not using the vertical "1" segments.
+        !$0.isSuperset(of: charactersForDigit[1])
+    }!
+    charactersForDigit[9] = charactersForDigit[4]
+        // Overlay "4" over "3" gives you the segments for "9"
+        .union(charactersForDigit[3])
+    charactersForDigit[0] = sorted[6...8].first {
+        // "0" is the remaining 6-segment digit.
+        $0 != charactersForDigit[6] && $0 != charactersForDigit[9]
+    }!
+    
+    return charactersForDigit
+}
+
+private func _digitOutput(for entry: Entry) -> Int {
+    let sortedSegments = _digitMap(entry.patterns)
+    let valueString = entry.output
+        .map { String(sortedSegments.firstIndex(of: $0)!) }
+        .joined(separator: "")
+    return Int(valueString)!
 }

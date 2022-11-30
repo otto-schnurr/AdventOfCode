@@ -9,29 +9,27 @@ Advent Of Code
 [Swift versions]: https://docs.swift.org/swift-book/RevisionHistory/RevisionHistory.html
 [license]: https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
 
-Solutions to [Advent of Code][advent-of-code] programming puzzles.
-
-- Implemented in Swift using the [Swift Package Manager][SPM].
-- Photo by [Annie Spratt].
+Solutions to [Advent of Code][advent-of-code] programming puzzles implemented in Swift.
 
 [advent-of-code]: https://adventofcode.com
-[SPM]: https://swift.org/package-manager/
-[Annie Spratt]: https://unsplash.com/@anniespratt
 
 Usage
--------
+-----
+
+### Package Management ###
+
+Dependencies are handled by [`swift sh`][swift-sh]. Use [Homebrew] to install it:
+
+    $ brew install swift-sh
+
+[swift-sh]: https://github.com/mxcl/swift-sh
+[Homebrew]: https://brew.sh
 
 ### Install ###
 
     $ git clone git@github.com:otto-schnurr/AdventOfCode.git
     $ cd AdventOfCode/2021
 
-### Test ###
+### Execution Example ###
 
-    $ swift test && echo "Solutions have been verified."
-
-### Browse ###
-
-With Xcode 13 or later.
-
-    $ open Package.swift
+    $ ./Day01.swift < Input/input01.txt

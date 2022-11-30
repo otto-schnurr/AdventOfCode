@@ -1,8 +1,8 @@
 Advent Of Code
 ==============
 
-[![Xcode versions](https://img.shields.io/badge/Xcode-13.1-informational.svg)][Xcode versions]
-[![Swift versions](https://img.shields.io/badge/swift-5.5-informational.svg)][Swift versions]
+[![Xcode versions](https://img.shields.io/badge/Xcode-14.1-informational.svg)][Xcode versions]
+[![Swift versions](https://img.shields.io/badge/swift-5.7-informational.svg)][Swift versions]
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)][license]
 
 [Xcode versions]: https://developer.apple.com/xcode/
@@ -28,7 +28,7 @@ Dependencies are handled by [`swift sh`][swift-sh]. Use [Homebrew] to install it
 ### Install ###
 
     $ git clone git@github.com:otto-schnurr/AdventOfCode.git
-    $ cd AdventOfCode/2021
+    $ cd AdventOfCode/2022
 
 ### Execution Example ###
 

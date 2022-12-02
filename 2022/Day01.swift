@@ -6,11 +6,11 @@
 //  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE
 //  Copyright © 2022 Otto Schnurr
 
-struct Input: Sequence, IteratorProtocol {
+struct StandardInput: Sequence, IteratorProtocol {
     func next() -> String? { return readLine() }
 }
 
-let inventory = Input()
+let inventory = StandardInput()
     .map { Int($0) }
     .split(separator: nil)
     .map { $0.compactMap { $0 }.reduce(0, +) }

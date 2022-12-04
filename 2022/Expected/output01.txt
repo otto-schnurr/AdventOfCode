@@ -1,2 +1,2 @@
-top one   : 24000
-top three : 45000
+top one   : 71780
+top three : 212489

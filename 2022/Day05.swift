@@ -19,14 +19,11 @@ let sections = StandardInput()
     .split(separator: "\n")
     .map { Array($0) }
 
-var stacks = parseStacks(from: sections[0])
-parseInstructions(from: sections[1]).forEach {
-    let cargo = stacks[$0.source].suffix($0.amount)
-    stacks[$0.source] = stacks[$0.source].dropLast($0.amount)
-    stacks[$0.destination].append(contentsOf: cargo.reversed())
-}
+let stacks = parseStacks(from: sections[0])
+let instructions = parseInstructions(from: sections[1])
 
-print(stacks.map { $0.last! })
+print(apply(instructions, to: stacks, oneAtATime: true))
+print(apply(instructions, to: stacks, oneAtATime: false))
 
 
 // MARK: - Private
@@ -53,4 +50,20 @@ private func parseInstructions(from section: [String]) -> [Instruction] {
         let tokens = $0.dropLast().split(separator: " ")
         return (Int(tokens[1])!, Int(tokens[3])! - 1, Int(tokens[5])! - 1)
     }
+}
+
+private func apply(
+    _ instructions: [Instruction],
+    to stacks: [[Label]],
+    oneAtATime: Bool
+) -> String {
+    var stacks = stacks
+    instructions.forEach {
+        let cargo = Array(stacks[$0.source].suffix($0.amount))
+        stacks[$0.source] = stacks[$0.source].dropLast($0.amount)
+        stacks[$0.destination].append(
+            contentsOf: oneAtATime ? cargo.reversed() : cargo
+        )
+    }
+    return String(stacks.map { $0.last! })
 }

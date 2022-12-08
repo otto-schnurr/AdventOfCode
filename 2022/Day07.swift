@@ -10,37 +10,37 @@ struct StandardInput: Sequence, IteratorProtocol {
     func next() -> String? { return readLine() }
 }
 
-func process(
+func processSubdirectory(
     remainingLines: inout StandardInput.Iterator,
     subdirectorySizes: inout [Int]
-) -> Int {
-    var subdirectorySize = 0
-    defer { subdirectorySizes.append(subdirectorySize) }
+) {
+    var directorySize = 0
+    defer { subdirectorySizes.append(directorySize) }
     
     while let nextLine = remainingLines.next() {
         let words = nextLine.split(separator: " ")
         
         if let fileSize = Int(words[0]) {
-            subdirectorySize += fileSize
+            directorySize += fileSize
         } else if nextLine == "$ cd .." {
-            return subdirectorySize
+            return
         } else if words[1] == "cd" {
-            subdirectorySize += process(
+            processSubdirectory(
                 remainingLines: &remainingLines,
                 subdirectorySizes: &subdirectorySizes
             )
+            directorySize += subdirectorySizes.last!
         }
     }
-
-    return subdirectorySize
 }
 
 var iterator = StandardInput().makeIterator()
 var subdirectorySizes = [Int]()
 
-let usedSpace = process(
+processSubdirectory(
     remainingLines: &iterator, subdirectorySizes: &subdirectorySizes
 )
+let usedSpace = subdirectorySizes.last!
 let neededSpace = usedSpace - 40_000_000
 
 let part1 = subdirectorySizes.filter { $0 <= 100_000 }.reduce(0, +)

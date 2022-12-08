@@ -11,22 +11,23 @@ struct StandardInput: Sequence, IteratorProtocol {
 }
 
 func process(
-    remainingLines: inout Array<String>.Iterator,
-    hook: (_ subdirectorySize: Int) -> Void
+    remainingLines: inout StandardInput.Iterator,
+    subdirectorySizes: inout [Int]
 ) -> Int {
     var subdirectorySize = 0
-    defer { hook(subdirectorySize) }
+    defer { subdirectorySizes.append(subdirectorySize) }
     
     while let nextLine = remainingLines.next() {
-        let word = nextLine.split(separator: " ")
+        let words = nextLine.split(separator: " ")
         
-        if let fileSize = Int(word[0]) {
+        if let fileSize = Int(words[0]) {
             subdirectorySize += fileSize
         } else if nextLine == "$ cd .." {
             return subdirectorySize
-        } else if word[1] == "cd" {
+        } else if words[1] == "cd" {
             subdirectorySize += process(
-                remainingLines: &remainingLines, hook: hook
+                remainingLines: &remainingLines,
+                subdirectorySizes: &subdirectorySizes
             )
         }
     }
@@ -34,21 +35,16 @@ func process(
     return subdirectorySize
 }
 
-let lines = Array(StandardInput())
-var iterator = lines.makeIterator()
-var part1 = 0
+var iterator = StandardInput().makeIterator()
+var subdirectorySizes = [Int]()
 
-let usedSpace = process(remainingLines: &iterator) {
-    if $0 <= 100_000 { part1 += $0 }
-}
+let usedSpace = process(
+    remainingLines: &iterator, subdirectorySizes: &subdirectorySizes
+)
+let neededSpace = usedSpace - 40_000_000
 
-iterator = lines.makeIterator()
-let desiredSize = usedSpace - 40_000_000
-var part2 = Int.max
-
-_ = process(remainingLines: &iterator) {
-    if $0 >= desiredSize && $0 < part2 { part2 = $0 }
-}
+let part1 = subdirectorySizes.filter { $0 <= 100_000 }.reduce(0, +)
+let part2 = subdirectorySizes.filter { $0 >= neededSpace }.min()!
 
 print("part 1 : \(part1)")
 print("part 2 : \(part2)")

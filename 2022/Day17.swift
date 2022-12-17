@@ -1,4 +1,4 @@
-#!/usr/bin/env swift
+#!/usr/bin/env swift sh
 
 //  A solution for https://adventofcode.com/2022/day/17
 //
@@ -6,57 +6,39 @@
 //  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE
 //  Copyright © 2022 Otto Schnurr
 
+import Algorithms // https://github.com/apple/swift-algorithms
+
 typealias Position = SIMD2<Int>
 
 struct Grid {
-    private (set) var horizontalBoundary: ClosedRange<Int>
-    private (set) var verticalBoundary: ClosedRange<Int>
-    
-    init(
-        horizontalBoundary: ClosedRange<Int>,
-        verticalBoundary: ClosedRange<Int>,
-        positions: Set<Position>
-    ) {
-        self.horizontalBoundary = horizontalBoundary
-        self.verticalBoundary = verticalBoundary
-        self.positions = positions
-    }
+    var top: Int { return positions.map { $0.y }.max() ?? 0 }
     
     init(positions: Set<Position>) {
-        let xValues = positions.map(\.x)
-        let yValues = positions.map(\.y)
-
-        horizontalBoundary = xValues.min()! ... xValues.max()!
-        verticalBoundary = yValues.min()! ... yValues.max()!
         self.positions = positions
+    }
+ 
+    init(positions: [(x: Int, y: Int)]) {
+        self.positions = Set(positions.map { Position($0.x, $0.y) })
     }
     
     func intersects(_ rhs: Grid) -> Bool {
-        guard
-            horizontalBoundary.overlaps(rhs.horizontalBoundary) ||
-            verticalBoundary.overlaps(rhs.verticalBoundary)
-        else { return false }
-        
-        return positions.isDisjoint(with: rhs.positions)
+        return !positions.isDisjoint(with: rhs.positions)
+    }
+    
+    func xValues(areContainedBy horizontalBoundary: ClosedRange<Int>) -> Bool {
+        return positions.allSatisfy { horizontalBoundary.contains($0.x) }
     }
     
     func offset(by offset: Position) -> Grid {
-        return Grid(
-            horizontalBoundary: horizontalBoundary + offset.x,
-            verticalBoundary: verticalBoundary + offset.y,
-            positions: Set(positions.map { $0 &+ offset })
-        )
+        return Grid(positions: Set(positions.map { $0 &+ offset }))
     }
     
     mutating func add(_ grid: Grid) {
-        horizontalBoundary =
-            horizontalBoundary.formUnion(grid.horizontalBoundary)
-        verticalBoundary =
-            verticalBoundary.formUnion(grid.verticalBoundary)
         positions.formUnion(grid.positions)
     }
     
-    private var positions: Set<Position>
+    // MARK: Private
+    private(set) var positions: Set<Position>
 }
 
 extension ClosedRange where Bound: AdditiveArithmetic {
@@ -76,25 +58,11 @@ extension ClosedRange where Bound: AdditiveArithmetic {
 }
 
 let rockTypes = [
-    Grid(positions: [
-        Position(0, 0), Position(1, 0), Position(2, 0), Position(3, 0)
-    ]),
-    Grid(positions: [
-        Position(1, 0),
-        Position(0, 1), Position(1, 1), Position(2, 1),
-        Position(1, 2)
-    ]),
-    Grid(positions: [
-        Position(0, 0), Position(1, 0),
-        Position(2, 0), Position(2, 1), Position(2, 2)
-    ]),
-    Grid(positions: [
-        Position(0, 0), Position(0, 1), Position(0, 2), Position(0, 3)
-    ]),
-    Grid(positions: [
-        Position(0, 0), Position(1, 0),
-        Position(0, 2), Position(1, 2)
-    ]),
+    Grid(positions: [ (0, 0), (1, 0), (2, 0), (3, 0) ]),
+    Grid(positions: [ (1, 0), (0, 1), (1, 1), (2, 1), (1, 2) ]),
+    Grid(positions: [ (0, 0), (1, 0), (2, 0), (2, 1), (2, 2) ]),
+    Grid(positions: [ (0, 0), (0, 1), (0, 2), (0, 3) ]),
+    Grid(positions: [ (0, 0), (1, 0), (0, 1), (1, 1) ])
 ]
 
 func offset(for direction: Character) -> Position {
@@ -105,32 +73,45 @@ func offset(for direction: Character) -> Position {
     }
 }
 
+let chamberWidth = 0 ... 6
+
 var rockCount = 0
 var rock: Grid?
 var rockPosition = Position()
-var chamber = Grid(horizontalBoundary: 0...6, verticalBoundary: 0...0, positions: [ ])
+var chamber = Grid(positions:
+    [ (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0)  ]
+)
 
-readLine()!.forEach { direction in
+for direction in readLine()!.cycled() {
     if rock == nil {
-        rockPosition = Position(2, chamber.verticalBoundary.upperBound + 3)
+        rockPosition = Position(2, chamber.top + 4)
         rock = rockTypes[rockCount % rockTypes.count].offset(by: rockPosition)
         rockCount += 1
     }
     
     // apply jet
-    var updatedRock = rock!.offset(by: offset(for: direction))
-    rock = chamber.horizontalBoundary.contains(updatedRock.horizontalBoundary) ?
-    updatedRock : rock
+    let jetOffset = offset(for: direction)
+    var updatedRock = rock!.offset(by: jetOffset)
+    
+    if updatedRock.xValues(areContainedBy: chamberWidth) &&
+        !chamber.intersects(updatedRock) {
+        rock = updatedRock
+        rockPosition &+= jetOffset
+    }
     
     // apply gravity
-    updatedRock = rock!.offset(by: Position(0, 1))
+    let gravityOffset = Position(0, -1)
+    updatedRock = rock!.offset(by: gravityOffset)
 
     if chamber.intersects(updatedRock) {
         chamber.add(rock!)
         rock = nil
+        
+        if rockCount >= 2022 { break }
     } else {
         rock = updatedRock
+        rockPosition &+= gravityOffset
     }
 }
 
-print("part 1: \(chamber.verticalBoundary.upperBound)")
+print("part 1: \(chamber.top)")

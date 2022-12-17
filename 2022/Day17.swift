@@ -31,17 +31,28 @@ struct Grid {
         self.positions = positions
     }
     
-    func moved(to position: Position) -> Grid {
+    func intersects(_ rhs: Grid) -> Bool {
+        guard
+            horizontalBoundary.overlaps(rhs.horizontalBoundary) ||
+            verticalBoundary.overlaps(rhs.verticalBoundary)
+        else { return false }
+        
+        return positions.isDisjoint(with: rhs.positions)
+    }
+    
+    func offset(by offset: Position) -> Grid {
         return Grid(
-            horizontalBoundary: horizontalBoundary + position.x,
-            verticalBoundary: verticalBoundary+position.y,
-            positions: Set(positions.map { $0 &+ position })
+            horizontalBoundary: horizontalBoundary + offset.x,
+            verticalBoundary: verticalBoundary + offset.y,
+            positions: Set(positions.map { $0 &+ offset })
         )
     }
     
     mutating func add(_ grid: Grid) {
-        horizontalBoundary = horizontalBoundary.formUnion(grid.horizontalBoundary)
-        verticalBoundary = verticalBoundary.formUnion(grid.verticalBoundary)
+        horizontalBoundary =
+            horizontalBoundary.formUnion(grid.horizontalBoundary)
+        verticalBoundary =
+            verticalBoundary.formUnion(grid.verticalBoundary)
         positions.formUnion(grid.positions)
     }
     
@@ -49,14 +60,18 @@ struct Grid {
 }
 
 extension ClosedRange where Bound: AdditiveArithmetic {
-    static func +(lhs: ClosedRange, rhs: Bound) -> ClosedRange {
-        return lhs.lowerBound + rhs ... lhs.upperBound + rhs
+    static func +(lhs: ClosedRange, offset: Bound) -> ClosedRange {
+        return lhs.lowerBound + offset ... lhs.upperBound + offset
     }
     
     func formUnion(_ rhs: ClosedRange<Bound>) -> ClosedRange<Bound> {
         let newLower = Swift.min(lowerBound, rhs.lowerBound)
         let newUpper = Swift.max(upperBound, rhs.upperBound)
         return newLower ... newUpper
+    }
+    
+    func contains(_ rhs: ClosedRange<Bound>) -> Bool {
+        return rhs.clamped(to: self) == rhs
     }
 }
 
@@ -82,9 +97,40 @@ let rockTypes = [
     ]),
 ]
 
-var rockIndex = 0
+func offset(for direction: Character) -> Position {
+    switch direction {
+        case "<": return Position(-1, 0)
+        case ">": return Position(+1, 0)
+        default:  return Position()
+    }
+}
+
+var rockCount = 0
+var rock: Grid?
+var rockPosition = Position()
 var chamber = Grid(horizontalBoundary: 0...6, verticalBoundary: 0...0, positions: [ ])
 
 readLine()!.forEach { direction in
-    print(direction)
+    if rock == nil {
+        rockPosition = Position(2, chamber.verticalBoundary.upperBound + 3)
+        rock = rockTypes[rockCount % rockTypes.count].offset(by: rockPosition)
+        rockCount += 1
+    }
+    
+    // apply jet
+    var updatedRock = rock!.offset(by: offset(for: direction))
+    rock = chamber.horizontalBoundary.contains(updatedRock.horizontalBoundary) ?
+    updatedRock : rock
+    
+    // apply gravity
+    updatedRock = rock!.offset(by: Position(0, 1))
+
+    if chamber.intersects(updatedRock) {
+        chamber.add(rock!)
+        rock = nil
+    } else {
+        rock = updatedRock
+    }
 }
+
+print("part 1: \(chamber.verticalBoundary.upperBound)")

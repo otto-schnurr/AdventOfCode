@@ -12,7 +12,7 @@ typealias Position = SIMD2<Int>
 typealias Boundary = ClosedRange<Int>
 
 struct Grid {
-    var top: Int { return positions.map { $0.y }.max() ?? 0 }
+    var top: Int { return vBoundary.upperBound }
     
     init(positions: Set<Position>) {
         self.positions = positions
@@ -45,6 +45,8 @@ struct Grid {
         positions.formUnion(grid.positions)
         hBoundary = hBoundary.formUnion(grid.hBoundary)
         vBoundary = vBoundary.formUnion(grid.vBoundary)
+        
+        if vBoundary.count >= 500 { pruneLowerHalf() }
     }
     
     // MARK: Private
@@ -58,6 +60,12 @@ struct Grid {
             hBoundary: xValues.min()! ... xValues.max()!,
             vBoundary: yValues.min()! ... yValues.max()!
         )
+    }
+    
+    private mutating func pruneLowerHalf() {
+        let minimumHeight = vBoundary.lowerBound + vBoundary.count / 2
+        positions = positions.filter { $0.y >= minimumHeight }
+        vBoundary = minimumHeight ... vBoundary.upperBound
     }
     
     private var positions: Set<Position>

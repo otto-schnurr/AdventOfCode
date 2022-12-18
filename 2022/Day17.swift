@@ -8,6 +8,9 @@
 
 import Algorithms // https://github.com/apple/swift-algorithms
 
+let _chamberWidth = 0...6
+let _gravityOffset = Position(0, -1)
+
 typealias Position = SIMD2<Int>
 typealias Boundary = ClosedRange<Int>
 
@@ -97,6 +100,38 @@ let rockTypes = [
     Grid(positions: [ (0, 0), (1, 0), (0, 1), (1, 1) ])
 ]
 
+func apply(_ jetOffsets: [Position], to chamber: inout Grid, maxCount: Int) {
+    var rockCount = 0
+    var rockPosition: Position!
+    
+    for jetOffset in jetOffsets.cycled() {
+        if rockPosition == nil { rockPosition = Position(2, chamber.top + 4) }
+        let rock = rockTypes[rockCount % rockTypes.count]
+        
+        // apply jet
+        var updatedPosition = rockPosition &+ jetOffset
+        let updatedRock = rock.offset(by: updatedPosition)
+        
+        if updatedRock.xValues(areContainedBy: _chamberWidth) &&
+            !chamber.intersects(updatedRock) {
+            rockPosition = updatedPosition
+        }
+        
+        // apply gravity
+        updatedPosition = rockPosition &+ _gravityOffset
+        
+        if chamber.intersects(rock.offset(by: updatedPosition) ) {
+            chamber.add(rock.offset(by: rockPosition))
+            rockPosition = nil
+            rockCount += 1
+            
+            if rockCount >= maxCount { break }
+        } else {
+            rockPosition = updatedPosition
+        }
+    }
+}
+
 func offset(for direction: Character) -> Position {
     switch direction {
         case "<": return Position(-1, 0)
@@ -105,41 +140,10 @@ func offset(for direction: Character) -> Position {
     }
 }
 
-let chamberWidth = 0 ... 6
 let jetOffsets = readLine()!.map { offset(for: $0) }
-let gravityOffset = Position(0, -1)
-
-var rockCount = 0
-var rockPosition: Position!
 var chamber = Grid(positions:
     [ (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0)  ]
 )
 
-for jetOffset in jetOffsets.cycled() {
-    if rockPosition == nil { rockPosition = Position(2, chamber.top + 4) }
-    let rock = rockTypes[rockCount % rockTypes.count]
-
-    // apply jet
-    var updatedPosition = rockPosition &+ jetOffset
-    let updatedRock = rock.offset(by: updatedPosition)
-    
-    if updatedRock.xValues(areContainedBy: chamberWidth) &&
-        !chamber.intersects(updatedRock) {
-        rockPosition = updatedPosition
-    }
-    
-    // apply gravity
-    updatedPosition = rockPosition &+ gravityOffset
-    
-    if chamber.intersects(rock.offset(by: updatedPosition) ) {
-        chamber.add(rock.offset(by: rockPosition))
-        rockPosition = nil
-        rockCount += 1
-        
-        if rockCount >= 2022 { break }
-    } else {
-        rockPosition = updatedPosition
-    }
-}
-
+apply(jetOffsets, to: &chamber, maxCount: 2022)
 print("part 1: \(chamber.top)")

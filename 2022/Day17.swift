@@ -9,19 +9,27 @@
 import Algorithms // https://github.com/apple/swift-algorithms
 
 typealias Position = SIMD2<Int>
+typealias Boundary = ClosedRange<Int>
 
 struct Grid {
     var top: Int { return positions.map { $0.y }.max() ?? 0 }
     
     init(positions: Set<Position>) {
         self.positions = positions
+        (hBoundary, vBoundary) = Grid.boundaries(for: positions)
     }
  
     init(positions: [(x: Int, y: Int)]) {
         self.positions = Set(positions.map { Position($0.x, $0.y) })
+        (hBoundary, vBoundary) = Grid.boundaries(for: self.positions)
     }
     
     func intersects(_ rhs: Grid) -> Bool {
+        guard
+            hBoundary.overlaps(rhs.hBoundary) ||
+            vBoundary.overlaps(rhs.vBoundary)
+        else { return false}
+        
         return !positions.isDisjoint(with: rhs.positions)
     }
     
@@ -35,10 +43,26 @@ struct Grid {
     
     mutating func add(_ grid: Grid) {
         positions.formUnion(grid.positions)
+        hBoundary = hBoundary.formUnion(grid.hBoundary)
+        vBoundary = vBoundary.formUnion(grid.vBoundary)
     }
     
     // MARK: Private
-    private(set) var positions: Set<Position>
+    private static func boundaries(
+        for positions: Set<Position>
+    ) -> (hBoundary: Boundary, vBoundary: Boundary) {
+        let xValues = positions.map { $0.x }
+        let yValues = positions.map { $0.y }
+        
+        return (
+            hBoundary: xValues.min()! ... xValues.max()!,
+            vBoundary: yValues.min()! ... yValues.max()!
+        )
+    }
+    
+    private var positions: Set<Position>
+    private var hBoundary: Boundary
+    private var vBoundary: Boundary
 }
 
 extension ClosedRange where Bound: AdditiveArithmetic {

@@ -106,43 +106,39 @@ func offset(for direction: Character) -> Position {
 }
 
 let chamberWidth = 0 ... 6
+let jetOffsets = readLine()!.map { offset(for: $0) }
+let gravityOffset = Position(0, -1)
 
 var rockCount = 0
-var rock: Grid?
-var rockPosition = Position()
+var rockPosition: Position!
 var chamber = Grid(positions:
     [ (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0)  ]
 )
 
-for direction in readLine()!.cycled() {
-    if rock == nil {
-        rockPosition = Position(2, chamber.top + 4)
-        rock = rockTypes[rockCount % rockTypes.count].offset(by: rockPosition)
-        rockCount += 1
-    }
-    
+for jetOffset in jetOffsets.cycled() {
+    if rockPosition == nil { rockPosition = Position(2, chamber.top + 4) }
+    let rock = rockTypes[rockCount % rockTypes.count]
+
     // apply jet
-    let jetOffset = offset(for: direction)
-    var updatedRock = rock!.offset(by: jetOffset)
+    var updatedPosition = rockPosition &+ jetOffset
+    let updatedRock = rock.offset(by: updatedPosition)
     
     if updatedRock.xValues(areContainedBy: chamberWidth) &&
         !chamber.intersects(updatedRock) {
-        rock = updatedRock
-        rockPosition &+= jetOffset
+        rockPosition = updatedPosition
     }
     
     // apply gravity
-    let gravityOffset = Position(0, -1)
-    updatedRock = rock!.offset(by: gravityOffset)
-
-    if chamber.intersects(updatedRock) {
-        chamber.add(rock!)
-        rock = nil
+    updatedPosition = rockPosition &+ gravityOffset
+    
+    if chamber.intersects(rock.offset(by: updatedPosition) ) {
+        chamber.add(rock.offset(by: rockPosition))
+        rockPosition = nil
+        rockCount += 1
         
         if rockCount >= 2022 { break }
     } else {
-        rock = updatedRock
-        rockPosition &+= gravityOffset
+        rockPosition = updatedPosition
     }
 }
 

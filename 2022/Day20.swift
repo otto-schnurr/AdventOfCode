@@ -12,12 +12,21 @@ struct StandardInput: Sequence, IteratorProtocol {
 
 extension RangeReplaceableCollection where Index == Int {
     mutating func moveElement(from sourceIndex: Index, distance: Index) {
+        print("    moveElement(from: \(sourceIndex), distance: \(distance))")
         guard !isEmpty else { return }
         
         let source = sourceIndex % count
-        let _target = (source + distance) % count
+
+        // positive distance: insert after
+        // negative distance: insert before
+        let offset = distance
+            + (distance < 0 ? -1 : 0)
+            + (source + distance >= count ? +1 : 0)
+        
+        let _target = (source + offset) % count
         let target = _target < 0 ? count + _target : _target
         let element = self[source]
+        print("    moving \(element) from \(source) to \(target)")
         
         if source < target {
             replaceSubrange(source ..< target, with: self[source + 1 ... target])
@@ -37,5 +46,3 @@ for originalIndex in 0..<list.count {
     list.moveElement(from: source, distance: list[source].element)
     print(list)
 }
-
-print(list)

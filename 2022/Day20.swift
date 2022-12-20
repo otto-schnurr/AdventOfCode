@@ -11,7 +11,6 @@ struct StandardInput: Sequence, IteratorProtocol {
 }
 
 var list = Array(StandardInput().compactMap(Int.init).enumerated())
-print(list)
 
 for originalIndex in 0..<list.count {
     let sourceIndex = list.firstIndex { $0.offset == originalIndex }!
@@ -25,5 +24,11 @@ for originalIndex in 0..<list.count {
     } else {
         list.insert(source, at: targetIndex)
     }
-    print(list)
 }
+
+let zeroIndex = list.firstIndex { $0.element == 0 }!
+let part1 = [1_000, 2_000, 3_000]
+    .map { list[(zeroIndex + $0) % list.count].element }
+    .reduce(0, +)
+
+print("part 1 : \(part1)")

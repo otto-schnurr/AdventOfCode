@@ -44,19 +44,20 @@ func calculate(_ expression: Expression, valueFor: [Name: Int]) -> Int? {
     }
 }
 
-// part 1
-var valueFor = _valueFor
-var expressionFor = _expressionFor
-
-while valueFor["root"] == nil {
-    for (name, expression) in expressionFor {
-        if let value = calculate(expression, valueFor: valueFor) {
-            valueFor[name] = value
-            expressionFor.removeValue(forKey: name)
+func solve() -> Int? {
+    var valueFor = _valueFor
+    var expressionFor = _expressionFor
+    
+    while valueFor["root"] == nil {
+        for (name, expression) in expressionFor {
+            if let value = calculate(expression, valueFor: valueFor) {
+                valueFor[name] = value
+                expressionFor.removeValue(forKey: name)
+            }
         }
     }
+    
+    return valueFor["root"]
 }
 
-let part1 = valueFor["root"]!
-
-print("part 1 : \(part1)")
+print("part 1 : \(solve()!)")

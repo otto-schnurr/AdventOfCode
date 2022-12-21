@@ -13,23 +13,23 @@ struct StandardInput: Sequence, IteratorProtocol {
 typealias Name = String
 typealias Expression = (lhs: String, operation: String, rhs: String)
 
-var valueFor = [Name: Int]()
-var expressionFor = [Name: Expression]()
+var _valueFor = [Name: Int]()
+var _expressionFor = [Name: Expression]()
 
 StandardInput().forEach { line in
     let words = line.split(separator: " ").map(String.init)
     let name = Name(words[0].prefix(words[0].count - 1))
 
     if let value = Int(words[1]) {
-        valueFor[name] = value
+        _valueFor[name] = value
     } else {
-        expressionFor[name] = Expression(
+        _expressionFor[name] = Expression(
             lhs: words[1], operation: words[2], rhs: words[3]
         )
     }
 }
 
-func calculate(_ expression: Expression) -> Int? {
+func calculate(_ expression: Expression, valueFor: [Name: Int]) -> Int? {
     guard
         let lhsValue = valueFor[expression.lhs],
         let rhsValue = valueFor[expression.rhs]
@@ -44,13 +44,19 @@ func calculate(_ expression: Expression) -> Int? {
     }
 }
 
+// part 1
+var valueFor = _valueFor
+var expressionFor = _expressionFor
+
 while valueFor["root"] == nil {
     for (name, expression) in expressionFor {
-        if let value = calculate(expression) {
+        if let value = calculate(expression, valueFor: valueFor) {
             valueFor[name] = value
             expressionFor.removeValue(forKey: name)
         }
     }
 }
 
-print("part 1 : \(valueFor["root"]!)")
+let part1 = valueFor["root"]!
+
+print("part 1 : \(part1)")

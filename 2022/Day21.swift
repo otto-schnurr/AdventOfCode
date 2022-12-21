@@ -61,3 +61,31 @@ func solve() -> Int? {
 }
 
 print("part 1 : \(solve()!)")
+
+let rootExpression = _expressionFor["root"]!
+_expressionFor["root"] = Expression(
+    lhs: rootExpression.lhs, operation: "-", rhs: rootExpression.rhs
+)
+
+var range = 0 ... 5_000_000_000_000
+
+// binary search
+while range.count > 1 {
+    let nextInput =
+        range.lowerBound + (range.upperBound - range.lowerBound) / 2
+    
+    _valueFor["humn"] = nextInput
+    let nextOutput = solve()!
+    
+    switch nextOutput {
+    case ..<0 : range = range.lowerBound ... nextInput
+    case 0    : range = nextInput ... nextInput
+    case 1... : range = nextInput ... range.upperBound
+    default   : break
+    }
+}
+
+_valueFor["humn"] = range.lowerBound - 1
+let part2 = solve()! == 0 ? range.lowerBound - 1 : range.lowerBound
+
+print("part 2 : \(part2)")

@@ -18,7 +18,7 @@ var expressionFor = [Name: Expression]()
 
 StandardInput().forEach { line in
     let words = line.split(separator: " ").map(String.init)
-    let name = String(words[0].prefix(words[0].count - 1))
+    let name = Name(words[0].prefix(words[0].count - 1))
 
     if let value = Int(words[1]) {
         valueFor[name] = value
@@ -29,5 +29,28 @@ StandardInput().forEach { line in
     }
 }
 
-print(valueFor)
-print(expressionFor)
+func calculate(_ expression: Expression) -> Int? {
+    guard
+        let lhsValue = valueFor[expression.lhs],
+        let rhsValue = valueFor[expression.rhs]
+    else { return nil }
+
+    switch expression.operation {
+    case "+": return lhsValue + rhsValue
+    case "-": return lhsValue - rhsValue
+    case "*": return lhsValue * rhsValue
+    case "/": return lhsValue / rhsValue
+    default: return nil
+    }
+}
+
+while valueFor["root"] == nil {
+    for (name, expression) in expressionFor {
+        if let value = calculate(expression) {
+            valueFor[name] = value
+            expressionFor.removeValue(forKey: name)
+        }
+    }
+}
+
+print("part 1 : \(valueFor["root"]!)")

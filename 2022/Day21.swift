@@ -47,7 +47,7 @@ func calculate(_ expression: Expression, valueFor: [Name: Int]) -> Int? {
 func solve() -> Int? {
     var valueFor = _valueFor
     var expressionFor = _expressionFor
-    
+
     while valueFor["root"] == nil {
         for (name, expression) in expressionFor {
             if let value = calculate(expression, valueFor: valueFor) {
@@ -56,36 +56,42 @@ func solve() -> Int? {
             }
         }
     }
-    
+
     return valueFor["root"]
 }
 
 print("part 1 : \(solve()!)")
 
+// Change solve() to indicate the difference between the last two arguments.
 let rootExpression = _expressionFor["root"]!
 _expressionFor["root"] = Expression(
     lhs: rootExpression.lhs, operation: "-", rhs: rootExpression.rhs
 )
 
-var range = 0 ... 5_000_000_000_000
+extension ClosedRange where Element: FixedWidthInteger {
+    var middle: Element {
+        return lowerBound + (upperBound - lowerBound) / 2
+    }
+}
+
+var search = 0 ... 5_000_000_000_000
 
 // binary search
-while range.count > 1 {
-    let nextInput =
-        range.lowerBound + (range.upperBound - range.lowerBound) / 2
-    
+while search.count > 1 {
+    let nextInput = search.middle
     _valueFor["humn"] = nextInput
     let nextOutput = solve()!
-    
+
     switch nextOutput {
-    case ..<0 : range = range.lowerBound ... nextInput
-    case 0    : range = nextInput ... nextInput
-    case 1... : range = nextInput ... range.upperBound
+    case ..<0 : search = search.lowerBound ... nextInput
+    case 0    : search = nextInput ... nextInput
+    case 1... : search = nextInput ... search.upperBound
     default   : break
     }
 }
 
-_valueFor["humn"] = range.lowerBound - 1
-let part2 = solve()! == 0 ? range.lowerBound - 1 : range.lowerBound
+// In case we skipped over adjacent solutions. Choose the lower one.
+_valueFor["humn"] = search.lowerBound - 1
+let part2 = solve()! == 0 ? search.lowerBound - 1 : search.lowerBound
 
 print("part 2 : \(part2)")

@@ -12,7 +12,8 @@ struct StandardInput: Sequence, IteratorProtocol {
 
 typealias Position = SIMD2<Int>
 
-enum Direction {
+enum Direction: Int {
+    static let count = 4
     case north, east, south, west
     
     func adjacentPositions(from position: Position) -> Set<Position> {
@@ -25,12 +26,12 @@ enum Direction {
         case .south:
             result = (position.x - 1 ... position.x + 1)
                 .map { ($0, position.y + 1) }
-        case .east:
-            result = (position.y - 1 ... position.y + 1)
-                .map { (position.x + 1, $0) }
         case .west:
             result = (position.y - 1 ... position.y + 1)
                 .map { (position.x - 1, $0) }
+        case .east:
+            result = (position.y - 1 ... position.y + 1)
+                .map { (position.x + 1, $0) }
         }
         
         return Set(result.map { Position($0.x, $0.y) })
@@ -52,6 +53,19 @@ struct Grid {
         
         self.positions = Set(positions)
     }
+    
+    mutating func apply(_ directions: [Direction]) {
+        // implement me
+    }
 }
 
-let grid = Grid(lines: Array(StandardInput()))
+var grid = Grid(lines: Array(StandardInput()))
+
+for roundIndex in 0 ..< 10 {
+    let directions = (0 ..< Direction.count).map {
+        Direction(rawValue: (roundIndex + $0) % Direction.count)!
+    }
+    grid.apply(directions)
+}
+
+print(grid.positions)

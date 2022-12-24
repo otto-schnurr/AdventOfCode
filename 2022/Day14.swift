@@ -35,6 +35,30 @@ struct Grid {
     init(segments: [Segment]) {
         positions = Set(segments.map(positions(for:)).joined())
     }
+    
+    mutating func addedSandComesToRest() -> Bool {
+        let bottom = bottom
+        var currentPosition = Position(500, 0)
+        var nextPosition = incrementSand(at: currentPosition)
+        
+        while currentPosition != nextPosition {
+            currentPosition = nextPosition
+            guard currentPosition.y <= bottom else { return false }
+            nextPosition = incrementSand(at: currentPosition)
+        }
+
+        positions.insert(currentPosition)
+        return true
+    }
+    
+    // MARK: Private
+    private var bottom: Int { return positions.map { $0.y }.max()! }
+    
+    private func incrementSand(at position: Position) -> Position {
+        let candidates =
+            [ 0, -1, +1 ].map { Position(position.x + $0, position.y + 1) }
+        return candidates.first { !positions.contains($0) } ?? position
+    }
 }
 
 let segments = StandardInput().map { line in
@@ -47,4 +71,8 @@ let segments = StandardInput().map { line in
         .map { from, to in Segment(from, to) }
 }
 var grid = Grid(segments: Array(segments.joined()))
-print(grid.positions)
+
+var sandCount = 0
+while grid.addedSandComesToRest() { sandCount += 1 }
+
+print("part 1 : \(sandCount)")

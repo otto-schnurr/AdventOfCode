@@ -129,13 +129,23 @@ struct Grid {
 }
 
 var grid = Grid(lines: Array(StandardInput()))
+var roundIndex = 0
 
-for roundIndex in 0 ..< 10 {
+while true {
     let directions = (0 ..< Direction.count).map {
         Direction(rawValue: (roundIndex + $0) % Direction.count)!
     }
+
+    let previousPositions = grid.positions
     grid.apply(directions)
+    roundIndex += 1
+
+    if roundIndex == 10 {
+        let (width, height) = grid.extent
+        print("part 1 : \(width * height - grid.positions.count)")
+    }
+
+    if previousPositions == grid.positions { break }
 }
 
-let (width, height) = grid.extent
-print("part 1 : \(width * height - grid.positions.count)")
+print("part 2 : \(roundIndex)")

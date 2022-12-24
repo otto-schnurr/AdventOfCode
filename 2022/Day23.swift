@@ -74,6 +74,15 @@ func iterate(
 }
 
 struct Grid {
+    var extent: (width: Int, height: Int) {
+        let xValues = positions.map { $0.x }
+        let yValues = positions.map { $0.y }
+        return (
+            xValues.max()! - xValues.min()! + 1,
+            yValues.max()! - yValues.min()! + 1
+        )
+    }
+    
     private(set) var positions: Set<Position>
     
     init(lines: [String]) {
@@ -90,8 +99,6 @@ struct Grid {
     }
     
     mutating func apply(_ directions: [Direction]) {
-        print("applying: \(directions)")
-        print()
         var countFor = [Position: Int]()
         
         iterate(directions: directions, appliedTo: positions) { position, selectedDirection in
@@ -122,27 +129,13 @@ struct Grid {
 }
 
 var grid = Grid(lines: Array(StandardInput()))
-print()
-print(grid)
 
 for roundIndex in 0 ..< 10 {
     let directions = (0 ..< Direction.count).map {
         Direction(rawValue: (roundIndex + $0) % Direction.count)!
     }
     grid.apply(directions)
-    
-    print("Round \(roundIndex + 1)")
-    print(grid)
 }
 
-func print(_ grid: Grid) {
-    for y in 0 ..< 12 {
-        for x in 0 ..< 14 {
-            let character = grid.positions.contains(Position(x, y)) ? "#" : "."
-            print(character, separator: "", terminator: "")
-        }
-        print()
-    }
-    
-    print()
-}
+let (width, height) = grid.extent
+print("part 1 : \(width * height - grid.positions.count)")

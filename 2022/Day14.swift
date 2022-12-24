@@ -13,8 +13,28 @@ struct StandardInput: Sequence, IteratorProtocol {
 typealias Position = SIMD2<Int>
 typealias Segment = (from: Position, to: Position)
 
+func positions(for segment: Segment) -> [Position] {
+    if segment.from.x == segment.to.x {
+        let range = segment.from.y < segment.to.y ?
+            (segment.from.y ... segment.to.y) :
+            (segment.to.y ... segment.from.y)
+        return range.map { Position(segment.from.x, $0) }
+    } else if segment.from.y == segment.to.y {
+        let range = segment.from.x < segment.to.x ?
+            (segment.from.x ... segment.to.x) :
+            (segment.to.x ... segment.from.x)
+        return range.map { Position($0, segment.from.y) }
+    } else {
+        return [ ]
+    }
+}
+
 struct Grid {
     private(set) var positions: Set<Position>
+    
+    init(segments: [Segment]) {
+        positions = Set(segments.map(positions(for:)).joined())
+    }
 }
 
 let segments = StandardInput().map { line in
@@ -23,7 +43,8 @@ let segments = StandardInput().map { line in
         let numbers = words[$0].split(separator: ",").map { Int($0)! }
         return Position(numbers[0], numbers[1])
     }
-    return zip(positions, positions[1...]).map { from, to in Segment(from, to) }
+    return zip(positions, positions[1...])
+        .map { from, to in Segment(from, to) }
 }
-
-print(segments)
+var grid = Grid(segments: Array(segments.joined()))
+print(grid.positions)

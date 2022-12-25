@@ -13,7 +13,7 @@ struct StandardInput: Sequence, IteratorProtocol {
 typealias Position = SIMD2<Int>
 typealias Segment = (from: Position, to: Position)
 
-func positions(for segment: Segment) -> [Position] {
+func allPositions(for segment: Segment) -> [Position] {
     if segment.from.x == segment.to.x {
         let range = segment.from.y < segment.to.y ?
             (segment.from.y ... segment.to.y) :
@@ -33,22 +33,32 @@ struct Grid {
     private(set) var positions: Set<Position>
     
     init(segments: [Segment]) {
-        positions = Set(segments.map(positions(for:)).joined())
+        positions = Set(segments.map(allPositions(for:)).joined())
     }
     
-    mutating func addedSandComesToRest() -> Bool {
+    mutating func addFloor() {
+        let floorDepth = bottom + 2
+        let floorRadius = floorDepth
+        let floorSegment = (
+            from: Position(500 - floorRadius, floorDepth),
+            to: Position(500 + floorRadius, floorDepth)
+        )
+        positions.formUnion(allPositions(for: floorSegment))
+    }
+    
+    mutating func addedSandComesToRestAt() -> Position? {
         let bottom = bottom
         var currentPosition = Position(500, 0)
         var nextPosition = incrementSand(at: currentPosition)
         
         while currentPosition != nextPosition {
             currentPosition = nextPosition
-            guard currentPosition.y <= bottom else { return false }
+            guard currentPosition.y < bottom else { return nil }
             nextPosition = incrementSand(at: currentPosition)
         }
 
         positions.insert(currentPosition)
-        return true
+        return currentPosition
     }
     
     // MARK: Private
@@ -70,9 +80,17 @@ let segments = StandardInput().map { line in
     return zip(positions, positions[1...])
         .map { from, to in Segment(from, to) }
 }
-var grid = Grid(segments: Array(segments.joined()))
+var grid1 = Grid(segments: Array(segments.joined()))
+var grid2 = grid1
+grid2.addFloor()
 
 var sandCount = 0
-while grid.addedSandComesToRest() { sandCount += 1 }
-
+while grid1.addedSandComesToRestAt() != nil { sandCount += 1 }
 print("part 1 : \(sandCount)")
+
+sandCount = 0
+while let sandPosition = grid2.addedSandComesToRestAt() {
+    sandCount += 1
+    guard sandPosition.y > 0 else { break }
+}
+print("part 2 : \(sandCount)")

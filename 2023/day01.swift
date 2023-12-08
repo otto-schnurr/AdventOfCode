@@ -1,4 +1,4 @@
-#!/usr/bin/env swift sh
+#!/usr/bin/env swift
 
 //  A solution for https://adventofcode.com/2023/day/1
 //

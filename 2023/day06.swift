@@ -16,7 +16,7 @@ func winningCount(time: Double, distance: Double) -> Int {
     let remainder = ((time * time) - 4.0 * distance).squareRoot()
     let start = 0.5 * (time - remainder)
     let end =  0.5 * (time + remainder)
-    return Int(end.rounded(.up) - start.rounded(.down) - 1.0)
+    return Int(end.rounded(.down) - start.rounded(.up) + 1.0)
 }
 
 let winningCounts = zip(times, distances).map(winningCount)

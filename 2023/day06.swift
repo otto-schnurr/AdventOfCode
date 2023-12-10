@@ -1,6 +1,6 @@
 #!/usr/bin/env swift
 
-//  A solution for https://adventofcode.com/2023/day/1
+//  A solution for https://adventofcode.com/2023/day/6
 //
 //  MIT License
 //  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE

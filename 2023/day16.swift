@@ -11,20 +11,6 @@ typealias Terrain = Character
 typealias Map = [Position: Terrain]
 
 // MARK: Types
-extension Map {
-    init(lines: [String]) {
-        var result: Map = [:]
-        
-        for (y, line) in lines.enumerated() {
-            for (x, character) in line.enumerated() {
-                result[Position(x, y)] = character
-            }
-        }
-        
-        self = result
-    }
-}
-
 enum Direction {
     case up, down, left, right
     
@@ -37,12 +23,12 @@ enum Direction {
         }
     }
     
-    func applied(to position: Position) -> Position {
+    var offset: Position {
         switch self {
-        case .up:    return position &+ Position(0, -1)
-        case .down:  return position &+ Position(0, +1)
-        case .left:  return position &+ Position(-1, 0)
-        case .right: return position &+ Position(+1, 0)
+        case .up:    return Position(0, -1)
+        case .down:  return Position(0, +1)
+        case .left:  return Position(-1, 0)
+        case .right: return Position(+1, 0)
         }
     }
     
@@ -80,30 +66,57 @@ enum Direction {
 struct Traversal: Hashable {
     let position: Position
     let direction: Direction
+
+    init(_ position: Position, _ direction: Direction) {
+        self.position = position
+        self.direction = direction
+    }
+}
+
+extension Map {
+    init(lines: [String]) {
+        var result: Map = [:]
+        
+        for (y, line) in lines.enumerated() {
+            for (x, character) in line.enumerated() {
+                result[Position(x, y)] = character
+            }
+        }
+        
+        self = result
+    }
 }
 
 // MARK: Data
 struct StandardInput: Sequence, IteratorProtocol {
     func next() -> String? { return readLine() }
 }
-
 let map = Map(lines: Array(StandardInput()))
-var history = Set<Traversal>()
 
-func apply(_ traversal: Traversal) {
-    guard
-        !history.contains(traversal),
-        let terrain = map[traversal.position]
-    else { return }
-    
-    history.insert(traversal)
-    
-    for newDirection in traversal.direction.traversing(terrain) {
-        let newPosition = newDirection.applied(to: traversal.position)
-        apply(Traversal(position: newPosition, direction: newDirection))
+func activation(for map: Map, startingFrom traversal: Traversal) -> Int {
+    var history = Set<Traversal>()
+    apply(traversal)
+
+    func apply(_ traversal: Traversal) {
+        guard
+            !history.contains(traversal),
+            let terrain = map[traversal.position]
+        else { return }
+        
+        history.insert(traversal)
+        
+        for newDirection in traversal.direction.traversing(terrain) {
+            let newPosition = traversal.position &+ newDirection.offset
+            apply(Traversal(newPosition, newDirection))
+        }
     }
+    
+    return Set(history.map { $0.position }).count
 }
 
-apply(Traversal(position: .zero, direction: .right))
+let part1 = activation(
+    for: map,
+    startingFrom: Traversal(.zero, .right)
+)
 
-print("part 1 : \(Set(history.map { $0.position }).count)")
+print("part 1 : \(part1)")

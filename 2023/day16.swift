@@ -91,7 +91,10 @@ extension Map {
 struct StandardInput: Sequence, IteratorProtocol {
     func next() -> String? { return readLine() }
 }
-let map = Map(lines: Array(StandardInput()))
+
+let lines = Array(StandardInput())
+let mapSize = (width: lines[0].count, height: lines.count)
+let map = Map(lines: lines)
 
 func activation(for map: Map, startingFrom traversal: Traversal) -> Int {
     var history = Set<Traversal>()
@@ -114,9 +117,14 @@ func activation(for map: Map, startingFrom traversal: Traversal) -> Int {
     return Set(history.map { $0.position }).count
 }
 
-let part1 = activation(
-    for: map,
-    startingFrom: Traversal(.zero, .right)
-)
+let activations = [
+    (0 ..< mapSize.height).map { y in Traversal(Position(0, y), .right) },
+    (0 ..< mapSize.height).map { y in Traversal(Position(mapSize.width - 1, y), .left) },
+    (0 ..< mapSize.width).map { x in Traversal(Position(x, 0), .down) },
+    (0 ..< mapSize.width).map { x in Traversal(Position(x, mapSize.height - 1), .up) }
+]
+    .flatMap { $0 }
+    .map { activation(for: map, startingFrom: $0) }
 
-print("part 1 : \(part1)")
+print("part 1 : \(activations.first!)")
+print("part 2 : \(activations.max()!)")

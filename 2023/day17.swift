@@ -28,11 +28,7 @@ enum Direction: CaseIterable {
         }
     }
     
-    var successors: Set<Self> {
-        var result = Self.all
-        result.remove(self.reversed)
-        return result
-    }
+    var successors: Set<Self> { Self.all.subtracting(Set([ self.reversed ])) }
     
     var reversed: Self {
         switch self {

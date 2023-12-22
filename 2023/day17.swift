@@ -71,8 +71,15 @@ struct Traversal: Hashable {
     }
     
     func successorsWithTailLength(in range: Range<Int>) -> Set<Direction> {
-        let notAllowed = range.contains(tailLength) ? [ ] : [ direction ]
-        return direction.successors.subtracting(Set(notAllowed))
+        let currentDirection = Set([ direction ])
+
+        if range.contains(tailLength) {
+            return direction.successors
+        } else if tailLength < range.lowerBound {
+            return currentDirection
+        } else {
+            return direction.successors.subtracting(currentDirection)
+        }
     }
     
 }
@@ -106,18 +113,22 @@ let lines = Array(StandardInput())
 let gridSize = (width: lines[0].count, height: lines.count)
 let gridCost = parseGrid(from: lines)
 
-let part1 = findPath(
-    across: gridCost,
-    from: State(
-        traversal: Traversal(.zero, .right),
-        cost: .zero,
-        estimatedRemainingCost: .zero
-    ),
-    to: Position(gridSize.width - 1, gridSize.height - 1),
-    allowedTailLengths: 0 ..< 2
+let begin = State(
+    traversal: Traversal(.zero, .right),
+    cost: .zero,
+    estimatedRemainingCost: .zero
 )
+let end = Position(gridSize.width - 1, gridSize.height - 1)
 
+let part1 = findPath(
+    across: gridCost, from: begin, to: end, allowedTailLengths: 0 ..< 2
+)
 print("part 1 : \(part1)")
+
+let part2 = findPath(
+    across: gridCost, from: begin, to: end, allowedTailLengths: 3 ..< 9
+)
+print("part 2 : \(part2)")
 
 // MARK: Functions
 func parseGrid(from lines: [String]) -> [Position: Cost] {

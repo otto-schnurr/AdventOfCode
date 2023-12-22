@@ -134,7 +134,11 @@ func parseGrid(from lines: [String]) -> [Position: Cost] {
     return grid
 }
 
-// A-Star
+//
+///// A-Star
+//
+// reference: https://github.com/davecom/SwiftPriorityQueue/blob/master/SwiftPriorityQueue/astar.swift
+//
 func estimatedCost(from start: Position, to end: Position) -> Cost {
     let diff = end &- start
     return diff.indices.reduce(into: 0) { $0 += abs(diff[$1]) }

@@ -49,29 +49,29 @@ struct Traversal: Hashable {
     
     let position: Position
     let direction: Direction
-    let history: [Direction]
+    let tailLength: Int
 
     static func == (lhs: Traversal, rhs: Traversal) -> Bool {
         lhs.position == rhs.position &&
         lhs.direction == rhs.direction &&
-        lhs.history == rhs.history
+        lhs.tailLength == rhs.tailLength
     }
     
-    init(_ position: Position, _ direction: Direction, _ history: [Direction] = [ ]) {
+    init(_ position: Position, _ direction: Direction, _ tailLength: Int = 0) {
         self.position = position
         self.direction = direction
-        self.history = history
+        self.tailLength = tailLength
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(position)
         hasher.combine(direction)
-        hasher.combine(history)
+        hasher.combine(tailLength)
     }
     
     func makeNextTraversal(_ nextPosition: Position, _ nextDirection: Direction) -> Self {
-        let nextHistory = [ direction ] + history
-        return Traversal(nextPosition, nextDirection, Array(nextHistory.prefix(2)))
+        let nextTailLength = nextDirection == direction ? tailLength + 1 : 0
+        return Traversal(nextPosition, nextDirection, nextTailLength)
     }
     
 }
@@ -145,11 +145,10 @@ func estimatedCost(from start: Position, to end: Position) -> Cost {
 }
 
 func threeMaxPolicy(traversal: Traversal) -> Set<Direction> {
-    let direction = traversal.direction
-    let mustTurn = traversal.history == [ direction, direction ]
+    let mustTurn = traversal.tailLength >= 2
 
-    var result = direction.successors
-    if mustTurn { result.remove(direction) }
+    var result = traversal.direction.successors
+    if mustTurn { result.remove(traversal.direction) }
     
     return result
 }

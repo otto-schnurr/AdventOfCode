@@ -70,6 +70,11 @@ struct Traversal: Hashable {
         return Traversal(nextPosition, nextDirection, nextTailLength)
     }
     
+    func successorsWithTailLength(in range: Range<Int>) -> Set<Direction> {
+        let notAllowed = range.contains(tailLength) ? [ ] : [ direction ]
+        return direction.successors.subtracting(Set(notAllowed))
+    }
+    
 }
 
 struct State: Hashable, Comparable {
@@ -116,7 +121,7 @@ let part1 = findPath(
     across: gridCost,
     from: State(traversal: Traversal(.zero, .right)),
     to: Position(gridSize.width - 1, gridSize.height - 1),
-    successors: threeMaxPolicy
+    allowedTailLengths: 0 ..< 2
 )
 
 print("part 1 : \(part1)")
@@ -144,30 +149,22 @@ func estimatedCost(from start: Position, to end: Position) -> Cost {
     return diff.indices.reduce(into: 0) { $0 += abs(diff[$1]) }
 }
 
-func threeMaxPolicy(traversal: Traversal) -> Set<Direction> {
-    let mustTurn = traversal.tailLength >= 2
-
-    var result = traversal.direction.successors
-    if mustTurn { result.remove(traversal.direction) }
-    
-    return result
-}
-
 func findPath(
     across grid: Grid,
     from startingState: State,
     to target: Position,
-    successors: (Traversal) -> Set<Direction>
+    allowedTailLengths: Range<Int>
 ) -> Cost {
     var accumulatedCostFor: [Traversal: Cost] = [:]
     var frontier = PriorityQueue(ascending: true, startingValues: [ startingState ])
     
     while let currentState = frontier.pop() {
-        if currentState.traversal.position == target {
-            return currentState.cost
-        }
+        let currentTraversal = currentState.traversal
+        guard currentTraversal.position != target else { return currentState.cost }
         
-        for nextDirection in successors(currentState.traversal) {
+        let successors = currentTraversal.successorsWithTailLength(in: allowedTailLengths)
+        
+        for nextDirection in successors {
             let currentTraversal = currentState.traversal
             let nextPosition = currentTraversal.position &+ nextDirection.offset
             let nextTraversal = currentTraversal.makeNextTraversal(nextPosition, nextDirection)

@@ -74,7 +74,7 @@ struct State: Hashable, Comparable {
     let estimatedRemainingCost: Cost
     
     var successors: Set<Direction> {
-        let mustTurn = history.allSatisfy { $0 == traversal.direction }
+        let mustTurn = history == [ traversal.direction, traversal.direction ]
 
         var result = traversal.direction.successors
         if mustTurn { result.remove(traversal.direction) }
@@ -92,11 +92,12 @@ struct State: Hashable, Comparable {
     }
 
     static func == (lhs: State, rhs: State) -> Bool {
-        lhs.traversal == rhs.traversal
+        lhs.traversal == rhs.traversal && lhs.history == rhs.history
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(traversal)
+        hasher.combine(history)
     }
     
     init(
@@ -115,7 +116,7 @@ struct State: Hashable, Comparable {
     func makeNextState(
         traversal: Traversal, cost: Cost, estimatedRemainingCost: Cost
     ) -> Self {
-        let nextHistory = [traversal.direction] + history
+        let nextHistory = [ self.traversal.direction ] + history
         return State(
             traversal: traversal,
             history: Array(nextHistory.prefix(2)),
@@ -170,7 +171,7 @@ func findPath(
     from startingStates: [State],
     to target: Position
 ) -> Cost {
-    var accumulatedCostFor: [Traversal: Cost] = [:]
+    var accumulatedCostFor: [State: Cost] = [:]
     var frontier = PriorityQueue(ascending: true, startingValues: startingStates)
     
     while let currentState = frontier.pop() {
@@ -183,16 +184,17 @@ func findPath(
             guard let gridCost = grid[nextPosition] else { continue }
             
             let nextTraversal = Traversal(nextPosition, nextDirection)
-            let previousCost = accumulatedCostFor[nextTraversal, default: Cost.max]
             let newCost = currentState.cost + gridCost
-            
+            let nextState = currentState.makeNextState(
+                traversal: nextTraversal,
+                cost: newCost,
+                estimatedRemainingCost: estimatedCost(from: nextPosition, to: target)
+            )
+
+            let previousCost = accumulatedCostFor[nextState, default: Cost.max]
+
             if newCost < previousCost {
-                accumulatedCostFor[nextTraversal] = newCost
-                let nextState = currentState.makeNextState(
-                    traversal: nextTraversal,
-                    cost: newCost,
-                    estimatedRemainingCost: estimatedCost(from: nextPosition, to: target)
-                )
+                accumulatedCostFor[nextState] = newCost
                 frontier.push(nextState)
             }
         }

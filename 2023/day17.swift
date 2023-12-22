@@ -94,18 +94,7 @@ struct State: Hashable, Comparable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(traversal)
     }
-    
-    init(
-        traversal: Traversal,
-        cost: Cost = .zero,
-        estimatedRemainingCost: Cost = .zero
-    )
-    {
-        self.traversal = traversal
-        self.cost = cost
-        self.estimatedRemainingCost = estimatedRemainingCost
-    }
-    
+
 }
 
 // MARK: Data
@@ -119,7 +108,11 @@ let gridCost = parseGrid(from: lines)
 
 let part1 = findPath(
     across: gridCost,
-    from: State(traversal: Traversal(.zero, .right)),
+    from: State(
+        traversal: Traversal(.zero, .right),
+        cost: .zero,
+        estimatedRemainingCost: .zero
+    ),
     to: Position(gridSize.width - 1, gridSize.height - 1),
     allowedTailLengths: 0 ..< 2
 )

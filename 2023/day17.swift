@@ -73,15 +73,6 @@ struct State: Hashable, Comparable {
     let cost: Cost
     let estimatedRemainingCost: Cost
     
-    var successors: Set<Direction> {
-        let mustTurn = history == [ traversal.direction, traversal.direction ]
-
-        var result = traversal.direction.successors
-        if mustTurn { result.remove(traversal.direction) }
-        
-        return result
-    }
-    
     var nextHistory: [Direction] {
         let newHistory = [traversal.direction] + history
         return Array(newHistory.prefix(2))
@@ -138,11 +129,9 @@ let gridCost = parseGrid(from: lines)
 
 let part1 = findPath(
     across: gridCost,
-    from: [
-        State(traversal: Traversal(.zero, .right)),
-        State(traversal: Traversal(.zero, .down)),
-    ],
-    to: Position(gridSize.width - 1, gridSize.height - 1)
+    from: State(traversal: Traversal(.zero, .right)),
+    to: Position(gridSize.width - 1, gridSize.height - 1),
+    successors: threeMaxPolicy
 )
 
 print("part 1 : \(part1)")
@@ -166,20 +155,31 @@ func estimatedCost(from start: Position, to end: Position) -> Cost {
     return diff.indices.reduce(into: 0) { $0 += abs(diff[$1]) }
 }
 
+func threeMaxPolicy(state: State) -> Set<Direction> {
+    let direction = state.traversal.direction
+    let mustTurn = state.history == [ direction, direction ]
+
+    var result = direction.successors
+    if mustTurn { result.remove(direction) }
+    
+    return result
+}
+
 func findPath(
     across grid: Grid,
-    from startingStates: [State],
-    to target: Position
+    from startingState: State,
+    to target: Position,
+    successors: (State) -> Set<Direction>
 ) -> Cost {
     var accumulatedCostFor: [State: Cost] = [:]
-    var frontier = PriorityQueue(ascending: true, startingValues: startingStates)
+    var frontier = PriorityQueue(ascending: true, startingValues: [ startingState ])
     
     while let currentState = frontier.pop() {
         if currentState.traversal.position == target {
             return currentState.cost
         }
         
-        for nextDirection in currentState.successors {
+        for nextDirection in successors(currentState) {
             let nextPosition = currentState.traversal.position &+ nextDirection.offset
             guard let gridCost = grid[nextPosition] else { continue }
             

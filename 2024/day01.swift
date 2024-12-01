@@ -1,4 +1,4 @@
-#!/usr/bin/env swift sh
+#!/usr/bin/env swift
 
 //  A solution for https://adventofcode.com/2024/day/1
 //
@@ -18,7 +18,6 @@ let unzipped = (
     rhs: locationIDs.map { $0[1] }.sorted()
 )
 let distances = zip(unzipped.lhs, unzipped.rhs).map { abs($0.0 - $0.1) }
-
 print("part 1 : \(distances.reduce(0, +))")
 
 var countForLocation = [Int: Int]()
@@ -28,5 +27,4 @@ for locationID in unzipped.rhs {
 }
 
 let similarities = unzipped.lhs.map { $0 * countForLocation[$0, default: 0] }
-
 print("part 2 : \(similarities.reduce(0, +))")

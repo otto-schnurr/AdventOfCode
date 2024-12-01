@@ -20,3 +20,13 @@ let unzipped = (
 let distances = zip(unzipped.lhs, unzipped.rhs).map { abs($0.0 - $0.1) }
 
 print("part 1 : \(distances.reduce(0, +))")
+
+var countForLocation = [Int: Int]()
+
+for locationID in unzipped.rhs {
+    countForLocation[locationID, default: 0] += 1
+}
+
+let similarities = unzipped.lhs.map { $0 * countForLocation[$0, default: 0] }
+
+print("part 2 : \(similarities.reduce(0, +))")

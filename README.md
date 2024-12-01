@@ -28,8 +28,8 @@ Dependencies are handled by [`swift sh`][swift-sh]. Use [Homebrew] to install it
 ### Install ###
 
     $ git clone git@github.com:otto-schnurr/AdventOfCode.git
-    $ cd AdventOfCode/2023
+    $ cd AdventOfCode/2024
 
 ### Execution Example ###
 
-    $ ./day01.swift < input/input01.txt
+    $ ./day01.swift < input.txt

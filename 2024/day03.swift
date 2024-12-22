@@ -12,18 +12,29 @@ struct StandardInput: Sequence, IteratorProtocol {
     func next() -> String? { return readLine() }
 }
 
-let instruction = Regex {
+let mul = Regex {
     "mul("
     Capture { OneOrMore(.digit) }
     ","
     Capture { OneOrMore(.digit) }
     ")"
 }
+let instruction = Regex {
+    Capture {
+        ChoiceOf {
+            "do()"
+            "don't()"
+            mul
+        }
+    }
+}
 var result = 0
 
 for line in StandardInput() {
     for match in line.matches(of: instruction) {
-        result += Int(match.1)! * Int(match.2)!
+        if match.0.hasPrefix("mul") {
+            result += Int(match.2!)! * Int(match.3!)!
+        }
     }
 }
 print("part 1 : \(result)")

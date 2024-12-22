@@ -17,17 +17,15 @@ let directions = [
     Position(0, 1),  Position(1, 1),   Position(1, 0),  Position(1, -1),
     Position(0, -1), Position(-1, -1), Position(-1, 0), Position(-1, 1),
 ]
-let kernel = directions.map { direction in (0...3).map { $0 &* direction } }
+let firstKernel = directions.map {
+    direction in (0...3).map { $0 &* direction }
+}
 
 let lines = Array(StandardInput())
 let mapSize = (width: lines[0].count, height: lines.count)
 let grid = Grid(lines: lines)
-let wordStarts = grid.filter { $0.value == "X" }.map { $0.key }
 
-let words = wordStarts.flatMap { origin in
-    kernel.map { $0.map { origin &+ $0 } }
-}.map { grid.word(for: $0) }
-
+let words = grid.words(startingWith: "X", for: firstKernel)
 print("part 1 : \(words.filter { $0 == "XMAS" }.count)")
 
 extension Grid {
@@ -45,5 +43,17 @@ extension Grid {
 
     func word(for positions: [Position]) -> String {
         return String(positions.compactMap { self[$0] })
+    }
+
+    func words(
+        startingWith firstCharacter: Character, for kernel: [[Position]]
+    ) -> [String] {
+        let wordStarts = self.filter {
+            $0.value == firstCharacter
+        }.map { $0.key }
+
+        return wordStarts.flatMap { origin in
+            kernel.map { $0.map { origin &+ $0 } }
+        }.map { self.word(for: $0) }
     }
 }

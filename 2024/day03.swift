@@ -28,6 +28,7 @@ let instruction = Regex {
         }
     }
 }
+
 var part1 = 0
 var part2 = 0
 var enabled = true
@@ -40,7 +41,7 @@ for line in StandardInput() {
             default:
                 let product = Int(match.2!)! * Int(match.3!)!
                 part1 += product
-                part2 += (enabled ? 1 : 0) * product
+                if enabled { part2 += product }
         }
     }
 }

@@ -14,10 +14,12 @@ typealias Position = SIMD2<Int>
 typealias Grid = [Position: Character]
 
 let directions = [
-    Position(0, 1),  Position(1, 1),   Position(1, 0),  Position(1, -1),
-    Position(0, -1), Position(-1, -1), Position(-1, 0), Position(-1, 1),
+    Position(+1, +1), Position(+1, -1), Position(-1, -1), Position(-1, +1),
+    Position(0, +1),  Position(+1, 0),  Position(0, -1),  Position(-1, 0)
 ]
-let firstKernel = directions.map {
+let corners = directions.prefix(4)
+
+let directionKernel = directions.map {
     direction in (0...3).map { $0 &* direction }
 }
 
@@ -25,8 +27,8 @@ let lines = Array(StandardInput())
 let mapSize = (width: lines[0].count, height: lines.count)
 let grid = Grid(lines: lines)
 
-let words = grid.words(startingWith: "X", for: firstKernel)
-print("part 1 : \(words.filter { $0 == "XMAS" }.count)")
+let directionWords = grid.words(startingWith: "X", for: directionKernel)
+print("part 1 : \(directionWords.filter { $0 == "XMAS" }.count)")
 
 extension Grid {
     init(lines: [String]) {

@@ -28,13 +28,21 @@ let instruction = Regex {
         }
     }
 }
-var result = 0
+var part1 = 0
+var part2 = 0
+var enabled = true
 
 for line in StandardInput() {
     for match in line.matches(of: instruction) {
-        if match.0.hasPrefix("mul") {
-            result += Int(match.2!)! * Int(match.3!)!
+        switch match.0.prefix(3) {
+            case "do(": enabled = true
+            case "don": enabled = false
+            default:
+                let product = Int(match.2!)! * Int(match.3!)!
+                part1 += product
+                part2 += (enabled ? 1 : 0) * product
         }
     }
 }
-print("part 1 : \(result)")
+print("part 1 : \(part1)")
+print("part 2 : \(part2)")

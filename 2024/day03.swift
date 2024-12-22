@@ -6,34 +6,24 @@
 //  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE
 //  Copyright © 2024 Otto Schnurr
 
-import Foundation
+import RegexBuilder
 
 struct StandardInput: Sequence, IteratorProtocol {
     func next() -> String? { return readLine() }
 }
 
-let operand = "mul"
+let instruction = Regex {
+    "mul("
+    Capture { OneOrMore(.digit) }
+    ","
+    Capture { OneOrMore(.digit) }
+    ")"
+}
 var result = 0
 
 for line in StandardInput() {
-    let scanner = Scanner(string: line)
-
-    while !scanner.isAtEnd {
-        let _ = scanner.scanUpToString(operand)
-        if let product = scanProduct(from: scanner) { result += product }
+    for match in line.matches(of: instruction) {
+        result += Int(match.1)! * Int(match.2)!
     }
 }
 print("part 1 : \(result)")
-
-func scanProduct(from scanner: Scanner) -> Int? {
-    guard
-        let _ = scanner.scanString(operand),
-        let _ = scanner.scanString("("),
-        let lhs = scanner.scanInt(),
-        let _ = scanner.scanString(","),
-        let rhs = scanner.scanInt(),
-        let _ = scanner.scanString(")")
-    else { return nil }
-
-    return lhs * rhs
-}

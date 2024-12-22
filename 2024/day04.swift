@@ -6,10 +6,6 @@
 //  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE
 //  Copyright © 2024 Otto Schnurr
 
-struct StandardInput: Sequence, IteratorProtocol {
-    func next() -> String? { return readLine() }
-}
-
 typealias Position = SIMD2<Int>
 typealias Grid = [Position: Character]
 
@@ -31,14 +27,16 @@ let cornerKernel = [
     }
 }
 
+struct StandardInput: Sequence, IteratorProtocol {
+    func next() -> String? { return readLine() }
+}
 let lines = Array(StandardInput())
-let mapSize = (width: lines[0].count, height: lines.count)
 let grid = Grid(lines: lines)
 
-let directionWords = grid.words(startingWith: "X", for: directionKernel)
+let directionWords = grid.words(using: directionKernel, centeredOn: "X")
 print("part 1 : \(directionWords.filter { $0 == "XMAS" }.count)")
 
-let cornerWords = grid.words(startingWith: "A", for: cornerKernel)
+let cornerWords = grid.words(using: cornerKernel, centeredOn: "A")
 print("part 2 : \(cornerWords.filter { $0 == "MASMAS" }.count)")
 
 extension Grid {
@@ -59,14 +57,18 @@ extension Grid {
     }
 
     func words(
-        startingWith firstCharacter: Character, for kernel: [[Position]]
+        using kernel: [[Position]],
+        centeredOn character: Character
     ) -> [String] {
-        let wordStarts = self.filter {
-            $0.value == firstCharacter
-        }.map { $0.key }
+        let origins = self
+            .filter { $0.value == character }
+            .map { $0.key }
 
-        return wordStarts.flatMap { origin in
-            kernel.map { $0.map { origin &+ $0 } }
-        }.map { self.word(for: $0) }
+        return origins
+            .flatMap { origin in
+                kernel.map { $0.map { origin &+ $0 } }
+            }.map {
+                self.word(for: $0)
+            }
     }
 }

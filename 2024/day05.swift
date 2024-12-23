@@ -9,7 +9,7 @@
 import Algorithms // https://github.com/apple/swift-algorithms
 
 typealias Rules = [Int: Set<Int>]
-typealias Manual = [Int]
+typealias Update = [Int]
 
 struct StandardInput: Sequence, IteratorProtocol {
     func next() -> String? { return readLine(strippingNewline: false) }
@@ -19,10 +19,10 @@ let sections = StandardInput()
     .split(separator: "\n")
     .map { Array($0) }
 let rules = parseRules(from: sections[0])
-let manuals = parseManuals(from: sections[1])
-let fixedManuals = manuals.map { fix(manual: $0, using: rules) }
+let updates = parseUpdates(from: sections[1])
+let fixedUpdates = updates.map { fix(update: $0, using: rules) }
 
-let result = zip(manuals, fixedManuals)
+let result = zip(updates, fixedUpdates)
     .filter { pair in pair.0 == pair.1 }
     .map { pair in pair.0[pair.0.count / 2] }
 print("part 1 : \(result.reduce(0, +))")
@@ -38,14 +38,14 @@ func parseRules(from section: [String]) -> Rules {
     return result
 }
 
-func parseManuals(from section: [String]) -> [Manual] {
+func parseUpdates(from section: [String]) -> [Update] {
     return section.map { line in
         line.dropLast().split(separator: ",").map { Int($0)! }
     }
 }
 
-func fix(manual: Manual, using invalidPagesFollowing: Rules) -> Manual {
-    let badIndices = manual.enumerated().adjacentPairs()
+func fix(update: Update, using invalidPagesFollowing: Rules) -> Update {
+    let badIndices = update.enumerated().adjacentPairs()
         .filter { pair in
             let invalidPages = invalidPagesFollowing[pair.0.1, default: [ ]]
             return invalidPages.contains(pair.1.1)
@@ -53,7 +53,7 @@ func fix(manual: Manual, using invalidPagesFollowing: Rules) -> Manual {
             pair.0.0
         }
 
-    var manual = manual
-    badIndices.forEach { manual.swapAt($0, $0 + 1) }
-    return manual
+    var fixedUpdate = update
+    badIndices.forEach { fixedUpdate.swapAt($0, $0 + 1) }
+    return fixedUpdate
 }

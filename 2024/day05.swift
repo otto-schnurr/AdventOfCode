@@ -1,12 +1,10 @@
-#!/usr/bin/env swift sh
+#!/usr/bin/env swift
 
 //  A solution for https://adventofcode.com/2024/day/5
 //
 //  MIT License
 //  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE
 //  Copyright © 2024 Otto Schnurr
-
-import Algorithms // https://github.com/apple/swift-algorithms
 
 typealias Rules = [Int: Set<Int>]
 typealias Update = [Int]

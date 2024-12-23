@@ -20,10 +20,11 @@ let sections = StandardInput()
     .map { Array($0) }
 let rules = parseRules(from: sections[0])
 let manuals = parseManuals(from: sections[1])
+let fixedManuals = manuals.map { fix(manual: $0, using: rules) }
 
-let result = manuals
-    .filter { verify(manual: $0, against: rules) }
-    .map { $0[$0.count / 2] }
+let result = zip(manuals, fixedManuals)
+    .filter { pair in pair.0 == pair.1 }
+    .map { pair in pair.0[pair.0.count / 2] }
 print("part 1 : \(result.reduce(0, +))")
 
 func parseRules(from section: [String]) -> Rules {
@@ -43,8 +44,16 @@ func parseManuals(from section: [String]) -> [Manual] {
     }
 }
 
-func verify(manual: Manual, against invalidPagesFollowing: Rules) -> Bool {
-    return manual.adjacentPairs().allSatisfy {
-        !invalidPagesFollowing[$0.0, default: [ ]].contains($0.1)
-    }
+func fix(manual: Manual, using invalidPagesFollowing: Rules) -> Manual {
+    let badIndices = manual.enumerated().adjacentPairs()
+        .filter { pair in
+            let invalidPages = invalidPagesFollowing[pair.0.1, default: [ ]]
+            return invalidPages.contains(pair.1.1)
+        }.map { pair in
+            pair.0.0
+        }
+
+    var manual = manual
+    badIndices.forEach { manual.swapAt($0, $0 + 1) }
+    return manual
 }

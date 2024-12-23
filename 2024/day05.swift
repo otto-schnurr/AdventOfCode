@@ -21,14 +21,20 @@ let sections = StandardInput()
     .map { Array($0) }
 let rules = parseRules(from: sections[0])
 let updates = parseUpdates(from: sections[1])
-
 let fixedUpdates = updates.map { update in
     update.sorted { rules[$0, default: [ ]].contains($1) }
 }
-let result = zip(updates, fixedUpdates)
+let updatePairs = zip(updates, fixedUpdates)
+
+let result1 = updatePairs
     .filter { pair in pair.0 == pair.1 }
     .map { pair in pair.0[pair.0.count / 2] }
-print("part 1 : \(result.reduce(0, +))")
+print("part 1 : \(result1.reduce(0, +))")
+
+let result2 = updatePairs
+    .filter { pair in pair.0 != pair.1 }
+    .map { pair in pair.1[pair.1.count / 2] }
+print("part 2 : \(result2.reduce(0, +))")
 
 func parseRules(from section: [String]) -> Rules {
     var rules = Rules()

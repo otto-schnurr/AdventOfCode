@@ -30,3 +30,6 @@ playground.xcworkspace
 .swiftpm
 
 .build/
+
+## Misc
+.DS_Store

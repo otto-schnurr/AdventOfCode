@@ -1,12 +1,12 @@
 Advent Of Code
 ==============
 
-[![Xcode versions](https://img.shields.io/badge/Xcode-14.1-informational.svg)][Xcode versions]
-[![Swift versions](https://img.shields.io/badge/swift-5.7-informational.svg)][Swift versions]
+[![Xcode versions](https://img.shields.io/badge/macOS-15.7-informational.svg)][macOS versions]
+[![Clang versions](https://img.shields.io/badge/clang-17.0.0-informational.svg)][Clang versions]
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)][license]
 
-[Xcode versions]: https://developer.apple.com/xcode/
-[Swift versions]: https://docs.swift.org/swift-book/RevisionHistory/RevisionHistory.html
+[macOS versions]: https://support.apple.com/en-us/109033
+[Clang versions]: https://clang.llvm.org/cxx_status.html
 [license]: https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
 
 Solutions to [Advent of Code][advent-of-code] programming puzzles implemented in Swift.
@@ -16,20 +16,28 @@ Solutions to [Advent of Code][advent-of-code] programming puzzles implemented in
 Usage
 -----
 
-### Package Management ###
+### Mac Compiler ###
 
-Dependencies are handled by [`swift sh`][swift-sh]. Use [Homebrew] to install it:
+Verify
 
-    $ brew install swift-sh
+```sh
+clang++ --version
+make --version
+```
 
-[swift-sh]: https://github.com/mxcl/swift-sh
-[Homebrew]: https://brew.sh
+If necessary, set up the compiler using [Xcode command-line tools][Xcode].
 
-### Install ###
+    xcode-select --install
 
-    $ git clone git@github.com:otto-schnurr/AdventOfCode.git
-    $ cd AdventOfCode/2024
+[Xcode]: https://developer.apple.com/documentation/xcode/installing-the-command-line-tools/
+
+### Code ###
+
+    git clone git@github.com:otto-schnurr/AdventOfCode.git
+    cd AdventOfCode/2025
 
 ### Execution Example ###
 
-    $ ./day01.swift < input.txt
+    make day01
+    ...
+    ./day01 < input.txt

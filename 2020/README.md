@@ -1,0 +1,40 @@
+Advent Of Code 2020
+===================
+
+[![Platforms](https://img.shields.io/badge/platforms-macOS-important.svg)][Gameplay Kit]
+[![Xcode versions](https://img.shields.io/badge/Xcode-12.2-informational.svg)][Xcode versions]
+[![Swift versions](https://img.shields.io/badge/swift-5.3-informational.svg)][Swift versions]
+[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)][license]
+
+[Gameplay Kit]: https://developer.apple.com/documentation/gameplaykit
+[Xcode versions]: https://developer.apple.com/xcode/
+[Swift versions]: https://docs.swift.org/swift-book/RevisionHistory/RevisionHistory.html
+[license]: https://github.com/otto-schnurr/AdventOfCode/blob/master/LICENSE
+
+Solutions to [2020 Advent of Code][2020-advent-of-code] programming puzzles.
+
+- Implemented in Swift using the [Swift Package Manager][SPM].
+- Path finding from [Gameplay Kit].
+- Photo by [Annie Spratt].
+
+[2020-advent-of-code]: https://adventofcode.com/2020
+[SPM]: https://swift.org/package-manager/
+[Annie Spratt]: https://unsplash.com/@anniespratt
+
+Usage
+-------
+
+### Install ###
+
+    $ git clone git@github.com:otto-schnurr/AdventOfCode.git
+    $ cd AdventOfCode/2020
+
+### Test ###
+
+    $ swift test && echo "Solutions have been verified."
+
+### Browse ###
+
+With Xcode 12 or later.
+
+    $ open Package.swift

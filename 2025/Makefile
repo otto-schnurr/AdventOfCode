@@ -10,6 +10,12 @@ all: $(EXECUTABLES)
 
 # Build rule: target "dayXX" comes from "dayXX.cpp"
 %: %.cpp
+	@if command -v clang-tidy >/dev/null 2>&1; then \
+		echo "clang-tidy $<"; \
+		clang-tidy "$<" -- $(CXXFLAGS); \
+	else \
+		echo "clang-tidy not found; skipping"; \
+	fi
 	$(CXX) $(CXXFLAGS) "$<" -o "$@"
 
 clean:

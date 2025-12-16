@@ -2,6 +2,10 @@
 
 int main()
 {
-    std::cout << "hello world" << std::endl;
+    for ( std::string line; std::getline( std::cin, line ); )
+    {
+        std::cout << line << std::endl;
+    }
+
     return EXIT_SUCCESS;
 }

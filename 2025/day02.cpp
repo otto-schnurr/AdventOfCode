@@ -25,23 +25,33 @@ namespace
         return Range( _parseID( *iWord++ ), _parseID( *iWord ) );
     }
 
-    bool _isInvalid( ID id )
+    bool _isInvalid( ID id, int factor, int digitCount )
     {
-        bool result = false;
-        const int digitCount = static_cast<ID>( log10( id ) ) + 1L;
-        const bool evenNumberOfDigits = digitCount % 2 == 0;
-
-        if ( evenNumberOfDigits )
+        if ( digitCount % factor == 0 )
         {
-            const int halfLength = digitCount / 2;
-            const int divisor = static_cast<ID>( pow( 10, halfLength ) );
+            const auto stride = digitCount / factor;
+            const auto divisor = static_cast<ID>( pow( 10, stride ) );
+            ID firstSegment = 0;
 
-            const ID firstHalf = id / divisor;
-            const ID secondHalf = id % divisor;
-            result = firstHalf == secondHalf;
+            for ( auto count = 1; count <= factor; ++count )
+            {
+                const ID nextSegment = id % divisor;
+                id /= divisor;
+
+                if ( count == 1 )
+                {
+                    firstSegment = nextSegment;
+                }
+                else if ( nextSegment != firstSegment )
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
-        return result;
+        return false;
     }
 
     ID _invalidSum( Range range )
@@ -50,7 +60,8 @@ namespace
 
         for ( auto id = range.first; id <= range.second; ++id )
         {
-            result += _isInvalid( id ) ? id : 0;
+            const int digitCount = static_cast<ID>( log10( id ) ) + 1L;
+            result += _isInvalid( id, 2, digitCount ) ? id : 0;
         }
 
         return result;

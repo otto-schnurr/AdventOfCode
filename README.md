@@ -16,7 +16,7 @@ Solutions to [Advent of Code][advent-of-code] programming puzzles implemented in
 Usage
 -----
 
-### Mac Compiler ###
+### macOS C++ Compiler ###
 
 Verify
 
@@ -36,7 +36,7 @@ If necessary, set up the compiler using [Xcode command-line tools][Xcode].
     git clone git@github.com:otto-schnurr/AdventOfCode.git
     cd AdventOfCode/2025
 
-### Execution Example ###
+### Example ###
 
     make day01
     ...

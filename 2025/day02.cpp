@@ -60,8 +60,9 @@ namespace
 int main()
 {
     long part1 = 0;
+    std::string line;
 
-    for ( std::string line; std::getline( std::cin, line, ',' ); )
+    while ( std::getline( std::cin, line, ',' ) )
     {
         part1 += _invalidSum( _parseRange( line ) );
     }

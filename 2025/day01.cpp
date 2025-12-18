@@ -19,8 +19,9 @@ int main()
     int dial = 50;
     int part1 = 0;
     int part2 = 0;
+    std::string line;
 
-    for ( std::string line; std::getline( std::cin, line ); )
+    while ( std::getline( std::cin, line ) )
     {
         const int amount = _parseNumber( line );
         const int wrappedAmount = amount % _dialSize;

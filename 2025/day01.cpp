@@ -3,33 +3,14 @@
 
 namespace
 {
+    const int _dialSize = 100;
+
     int _parseNumber( std::string line )
     {
-        if ( line.front() == 'L' )
-        {
-            // Replace the L.
-            line.front() = '-';
-        }
-        else
-        {
-            // Remove the R.
-            line.erase( line.begin(), line.begin() + 1 );
-        }
-
+        auto suffix = line.substr( 1 );
         int result = 0;
-        std::from_chars( line.data(), line.data() + line.size(), result );
+        std::from_chars( suffix.data(), suffix.data() + suffix.size(), result );
         return result;
-    }
-
-    int _rotateDial( int dial, int amount )
-    {
-        const int dialSize = 100;
-
-        dial += amount % dialSize;
-        dial %= dialSize;
-        dial += dial < 0 ? dialSize : 0;
-        
-        return dial;
     }
 }
 
@@ -41,7 +22,17 @@ int main()
     for ( std::string line; std::getline( std::cin, line ); )
     {
         const int amount = _parseNumber( line );
-        dial = _rotateDial( dial, amount );
+
+        if ( line.front() == 'R' )
+        {
+            dial += amount;
+        }
+        else
+        {
+            dial -= amount;
+        }
+
+        dial %= _dialSize;
         zeroCount += dial == 0 ? 1 : 0;
     }
 

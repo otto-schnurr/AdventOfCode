@@ -4,9 +4,16 @@
 
 using ID = long;
 using Range = std::pair<long, long>;
+using Result = std::pair<long, long>;
 
 namespace
 {
+    void operator+=( Result& lhs, const Result& rhs )
+    {
+        lhs.first += rhs.first;
+        lhs.second += rhs.second;
+    }
+
     ID _parseID( std::string word )
     {
         ID result = 0;
@@ -54,14 +61,16 @@ namespace
         return false;
     }
 
-    ID _invalidSum( Range range )
+    Result _invalidSums( Range range )
     {
-        ID result = 0;
+        Result result = { };
 
         for ( auto id = range.first; id <= range.second; ++id )
         {
             const int digitCount = static_cast<ID>( log10( id ) ) + 1L;
-            result += _isInvalid( id, 2, digitCount ) ? id : 0;
+            const bool isInvalid = _isInvalid( id, 2, digitCount );
+            result.first += isInvalid ? id : 0;
+            result.second += isInvalid ? id : 0;
         }
 
         return result;
@@ -70,14 +79,15 @@ namespace
 
 int main()
 {
-    long part1 = 0;
+    Result result =  { };
     std::string line;
 
     while ( std::getline( std::cin, line, ',' ) )
     {
-        part1 += _invalidSum( _parseRange( line ) );
+        result += _invalidSums( _parseRange( line ) );
     }
 
-    std::cout << "part 1: " << part1 << std::endl;
+    std::cout << "part 1: " << result.first << std::endl;
+    std::cout << "part 2: " << result.second << std::endl;
     return EXIT_SUCCESS;
 }

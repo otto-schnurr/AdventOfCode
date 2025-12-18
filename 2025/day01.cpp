@@ -17,25 +17,39 @@ namespace
 int main()
 {
     int dial = 50;
-    int zeroCount = 0;
+    int part1 = 0;
+    int part2 = 0;
 
     for ( std::string line; std::getline( std::cin, line ); )
     {
         const int amount = _parseNumber( line );
+        const int wrappedAmount = amount % _dialSize;
+        part2 += amount / _dialSize;
 
         if ( line.front() == 'R' )
         {
-            dial += amount;
+            dial += wrappedAmount;
+            part2 += dial >= _dialSize ? 1 : 0;
+            dial %= _dialSize;
         }
         else
         {
-            dial -= amount;
+            const int previousDial = dial;
+            dial -= wrappedAmount;
+
+            if ( dial < 0 )
+            {
+                dial += _dialSize;
+                part2 += previousDial > 0 ? 1 : 0;
+            }
+
+            part2 += dial == 0 ? 1 : 0;
         }
 
-        dial %= _dialSize;
-        zeroCount += dial == 0 ? 1 : 0;
+        part1 += dial == 0 ? 1 : 0;
     }
 
-    std::cout << "part 1: " << zeroCount << std::endl;
+    std::cout << "part 1: " << part1 << std::endl;
+    std::cout << "part 2: " << part2 << std::endl;
     return EXIT_SUCCESS;
 }

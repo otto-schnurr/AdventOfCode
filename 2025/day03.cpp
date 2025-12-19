@@ -8,8 +8,8 @@ namespace
 {
     Joltage _processLine( const std::string& line )
     {
-        const auto firstDigit = max_element( line.begin(), line.end() - 1 );
-        const auto secondDigit = max_element( firstDigit + 1, line.end() );
+        const auto firstDigit = max_element( line.cbegin(), line.cend() - 1 );
+        const auto secondDigit = max_element( firstDigit + 1, line.cend() );
         const auto word = std::string() + *firstDigit + *secondDigit;
 
         Joltage result = 0;

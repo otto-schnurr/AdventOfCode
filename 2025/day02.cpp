@@ -1,3 +1,9 @@
+//  A solution for https://adventofcode.com/2025/day/2
+//
+//  MIT License
+//  https://github.com/otto-schnurr/AdventOfCode/blob/main/LICENSE
+//  Copyright © 2025 Otto Schnurr
+
 #include <iostream>
 #include <charconv>
 #include <regex>

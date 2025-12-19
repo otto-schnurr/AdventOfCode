@@ -67,10 +67,19 @@ namespace
 
         for ( auto id = range.first; id <= range.second; ++id )
         {
-            const int digitCount = static_cast<ID>( log10( id ) ) + 1L;
-            const bool isInvalid = _isInvalid( id, 2, digitCount );
-            result.first += isInvalid ? id : 0;
-            result.second += isInvalid ? id : 0;
+            const auto digitCount = static_cast<ID>( log10( id ) ) + 1L;
+
+            for ( auto factor = 2; factor <= digitCount; ++factor )
+            {
+                if ( _isInvalid( id, factor, digitCount ) )
+                {
+                    if ( factor == 2 ) { result.first += id; }
+                    result.second += id;
+
+                    // Only count a given ID once.
+                    factor = digitCount;
+                }
+            }
         }
 
         return result;

@@ -27,13 +27,16 @@ namespace
 int main()
 {
     Joltage part1 = 0;
+    Joltage part2 = 0;
     std::string line;
 
     while ( std::getline( std::cin, line ) )
     {
         part1 += _processLine( line, 2 );
+        part2 += _processLine( line, 12 );
     }
 
     std::cout << "part 1: " << part1 << std::endl;
+    std::cout << "part 2: " << part2 << std::endl;
     return EXIT_SUCCESS;
 }
